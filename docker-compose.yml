@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: easy-class-pay-frontend
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '${APP_PORT}:3000'
+    command: npm run dev
+    # develop block removed to avoid confusion with standard volume mounts
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next 
