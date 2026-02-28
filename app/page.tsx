@@ -1,7 +1,9 @@
+import HomeView from "@/features/landing/templates/home-view";
+
 export default function Home() {
   return (
-    <div className="">
-      <h1>Landing page</h1>
-    </div>
+    <>
+      <HomeView />
+    </>
   );
 }
