@@ -1,36 +1,187 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Easy Class Pay Frontend
 
-## Getting Started
+Frontend application for Easy Class Pay.
 
-First, run the development server:
+This repository contains the web frontend only. The backend is expected to be a separate REST API service.
+
+## Tech Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Ant Design
+- SWR
+- Zustand
+- Docker Compose
+
+## Requirements
+
+- Node.js 20 or newer
+- npm
+- Docker and Docker Compose, when running with containers
+
+## Environment Variables
+
+Create a local `.env` file:
+
+```env
+NODE_ENV=development
+APP_PORT=3000
+```
+
+Do not commit real secrets or production credentials.
+
+## Installation
+
+```bash
+npm install
+```
+
+## Development
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the app at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Build
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Production Start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run `npm run build` before `npm run start`.
 
-## Deploy on Vercel
+## Lint
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Docker
+
+Run the frontend with Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+Stop the container:
+
+```bash
+docker compose down
+```
+
+The app port is controlled by `APP_PORT` in `.env`.
+
+## Project Structure
+
+```text
+app/
+components/
+features/
+lib/
+public/
+```
+
+Recommended structure as the project grows:
+
+```text
+app/
+components/
+features/
+hooks/
+lib/
+services/
+store/
+types/
+utils/
+```
+
+## Development Rules
+
+- Use the Next.js App Router.
+- Keep TypeScript strict mode enabled.
+- Use functional React components.
+- Prefer Server Components when possible.
+- Use Client Components only when browser/client behavior is required.
+- Put reusable feature UI in `features/`.
+- Put shared UI in `components/`.
+- Put API calls in `services/`.
+- Do not call APIs directly from presentational components.
+- Use SWR for client-side server data.
+- Use Zustand only for shared client state.
+- Use Tailwind CSS and existing Ant Design patterns for UI.
+- Avoid `any`.
+- Prefer `async/await`.
+
+## API Architecture
+
+Expected full-stack flow:
+
+```text
+Frontend (Next.js)
+-> REST API
+-> Backend controller
+-> Service layer
+-> Repository layer
+-> PostgreSQL
+```
+
+Frontend rules:
+
+- Do not access the database directly.
+- Communicate with the backend through REST API only.
+- Use JWT authentication for protected API calls when required.
+- Keep API base URLs and environment-specific values in environment variables.
+
+## CI/CD Status
+
+This repository does not currently include a CI/CD workflow.
+
+Not present yet:
+
+- `.github/workflows`
+- Automated lint on push or pull request
+- Automated build on push or pull request
+- Automated deployment
+
+Recommended first CI workflow:
+
+- Install dependencies with `npm ci`.
+- Run `npm run lint`.
+- Run `npm run build`.
+
+## Documentation for Codex
+
+Project-specific Codex instructions are stored in:
+
+```text
+AGENTS.md
+```
+
+Update `AGENTS.md` when project rules, commands, architecture, or conventions change.
+
+## Definition of Done
+
+Before finishing a task:
+
+- Run `npm run lint`.
+- Run `npm run build` for build-sensitive changes.
+- Verify changed UI flows manually.
+- Keep secrets out of source code.
+- Update documentation when setup or behavior changes.
