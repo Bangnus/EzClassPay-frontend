@@ -2,8 +2,10 @@
 
 ## Project Overview
 
-Easy Class Pay Frontend is a Next.js application for the Easy Class Pay product.
+EzClassPay Frontend is a Next.js application for the EzClassPay product.
 This repository currently contains the frontend application only.
+
+EzClassPay is a web application designed to reduce the chaos of collecting shared money, such as classroom funds, trip funds, or office shared expenses. The product focuses on transparency, clear payment status, and records that can be checked later.
 
 - Frontend: Next.js 16 App Router, React 19, TypeScript
 - Styling: Tailwind CSS 4 and Ant Design
@@ -12,6 +14,18 @@ This repository currently contains the frontend application only.
 - Backend contract: REST API provided by a separate service, expected to be Go Fiber
 - Database: PostgreSQL, accessed only by the backend
 - Deployment/local runtime: Docker Compose
+
+Main roles:
+
+- `manager`: A room manager who creates collection rooms, configures payment rules, invites/removes members, reviews slips, and approves or rejects payments. Managers are the paid subscription users for long-term usage.
+- `member`: A room participant who joins rooms, checks outstanding balances, transfers money, and uploads payment slips. Members use the system for free.
+- `admin`: A platform administrator who manages users, rooms, subscriptions, and system-level settings.
+
+Core product areas:
+
+- Room Management System: Managers create rooms, name them, set payment goals, choose payment patterns such as one-time or monthly collection, and invite members through links or QR codes.
+- Role & Access System: Permissions are scoped by room. Managers control room operations, members handle their own payments, and admins oversee platform-level operations.
+- Payment & Verification Flow: Members pay mainly through PromptPay, upload payment slips, wait in `pending` status, and managers approve or reject the payment. Approved payments update the member's payment status in real time.
 
 ## Architecture
 
@@ -70,25 +84,29 @@ Current repository structure:
 app/
 components/
 features/
-lib/
-public/
-```
-
-Preferred structure as the app grows:
-
-```text
-app/
-components/
-features/
 hooks/
 lib/
 services/
 store/
 types/
 utils/
+public/
 ```
 
-Use `features/<feature-name>/` for feature-specific UI and logic. Keep shared UI in `components/`, shared utilities in `lib/` or `utils/`, API clients in `services/`, and reusable hooks in `hooks/`.
+Folder responsibilities:
+
+- `app/`: Next.js App Router routes, layouts, route-level loading/error files, and metadata.
+- `components/`: Shared reusable UI components used across multiple features.
+- `features/`: Feature-specific UI, templates, and logic. Use `features/<feature-name>/` for each product area.
+- `hooks/`: Reusable React hooks, especially hooks shared by multiple features.
+- `lib/`: Shared library code, configuration helpers, constants, and framework integrations.
+- `services/`: API clients and external service calls. Components should not call APIs directly.
+- `store/`: Zustand stores and shared client-side state.
+- `types/`: Shared TypeScript interfaces/types, especially API contracts and common domain models.
+- `utils/`: Small pure utility functions that are framework-independent.
+- `public/`: Static assets served by Next.js.
+
+Keep feature-owned code inside its feature folder when it is not reused elsewhere. Move code into shared folders only when at least two features need it or when it is clearly project-wide infrastructure.
 
 ## Frontend Rules
 

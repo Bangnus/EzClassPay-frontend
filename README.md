@@ -1,8 +1,47 @@
-# Easy Class Pay Frontend
+# EzClassPay Frontend
 
-Frontend application for Easy Class Pay.
+Frontend application for EzClassPay.
 
 This repository contains the web frontend only. The backend is expected to be a separate REST API service.
+
+EzClassPay is a web application designed to reduce the chaos of collecting shared money, such as classroom funds, trip funds, or office shared expenses. The product focuses on transparency, clear payment status, and records that can be checked later.
+
+## Core Features
+
+### Room Management System
+
+Managers can create money collection rooms, set room names, define collection goals, and choose payment patterns such as one-time collection or monthly collection.
+
+After a room is created, the system can provide an invite link or QR code so members can join from a group chat.
+
+### Role & Access System
+
+Each room has clear role-based access:
+
+- Manager: manages the room, configures room settings, invites/removes members, reviews payment slips, and approves or rejects payments.
+- Member: joins rooms, checks outstanding balances, transfers money, and uploads payment slips.
+- Admin: manages users, rooms, subscriptions, and platform-level settings.
+
+Managers are the paid subscription users for long-term usage. Members use the system for free.
+
+### Payment & Verification Flow
+
+EzClassPay primarily supports payment through PromptPay.
+
+Basic flow:
+
+1. Member transfers money through PromptPay.
+2. Member uploads the payment slip.
+3. Payment status becomes `pending`.
+4. Manager reviews the amount and slip.
+5. Manager approves or rejects the payment.
+6. Approved payments update the member's payment status to paid in real time.
+
+## Main Roles
+
+- Manager: creates and manages money collection rooms.
+- Member: joins rooms and submits payments.
+- Admin: manages the platform.
 
 ## Tech Stack
 
