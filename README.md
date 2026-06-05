@@ -213,7 +213,21 @@ Project-specific Codex instructions are stored in:
 AGENTS.md
 ```
 
+Product and domain context is stored in:
+
+```text
+CONTEXT.md
+```
+
+Security policy and baseline rules are stored in:
+
+```text
+SECURITY.md
+```
+
 Update `AGENTS.md` when project rules, commands, architecture, or conventions change.
+Update `CONTEXT.md` when product scope, roles, workflows, or business rules change.
+Update `SECURITY.md` when authentication, authorization, payment slip handling, deployment, or incident response rules change.
 
 ## Definition of Done
 
