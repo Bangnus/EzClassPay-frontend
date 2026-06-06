@@ -1,14 +1,15 @@
 "use client";
 
 import Navbar from "../components/navbar";
-import Body from "../components/body";
+import Header from "../components/header";
 import Footer from "../components/footer";
+import Recomment from "../components/recomment";
 export default function HomeView() {
   return (
     <>
       <Navbar />
-      
-      <Body />
+      <Header />
+      <Recomment/>
       <Footer />
     </>
   );
