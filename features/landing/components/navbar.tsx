@@ -7,9 +7,15 @@ export default function Navbar() {
         <h1 className="text-2xl font-bold">Navbar</h1>
         <div className="">
           <ul className="flex gap-4">
-            <li className="cursor-pointer transition-colors duration-300 hover:text-secondary-light">Home</li>
-            <li className="cursor-pointer transition-colors duration-300 hover:text-secondary-light">About</li>
-            <li className="cursor-pointer transition-colors duration-300 hover:text-secondary-light">Contact</li>
+            <li className="cursor-pointer transition-colors duration-300 hover:text-secondary-light">
+              Home
+            </li>
+            <li className="cursor-pointer transition-colors duration-300 hover:text-secondary-light">
+              About
+            </li>
+            <li className="cursor-pointer transition-colors duration-300 hover:text-secondary-light">
+              Contact
+            </li>
           </ul>
         </div>
       </div>
