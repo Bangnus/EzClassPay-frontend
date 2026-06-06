@@ -4,16 +4,19 @@ const Button = ({
   type = "primary",
   children = "Button",
   icon,
+  iconPosition = "left",
   borderRadius = 12,
   fontSize = 14,
   padding,
   color,
   ...props
-}: Omit<ButtonProps, "color"> & {
+}: Omit<ButtonProps, "color" | "icon" | "iconPosition"> & {
   borderRadius?: number;
   fontSize?: number;
   padding?: number | string;
   color?: string;
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
 }) => {
   return (
     <ConfigProvider
@@ -28,7 +31,6 @@ const Button = ({
       <AntButton
         type={type}
         {...props}
-        icon={icon}
         block={true}
         style={{
           padding: padding,
@@ -36,7 +38,10 @@ const Button = ({
           ...props.style,
         }}
       >
-        <p className="font-semibold">{children}</p>
+        <div className={`flex items-center justify-center gap-2 ${iconPosition === "right" ? "flex-row-reverse" : ""}`}>
+          {icon}
+          <span className="font-semibold leading-none">{children}</span>
+        </div>
       </AntButton>
     </ConfigProvider>
   );
