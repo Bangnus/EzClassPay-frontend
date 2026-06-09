@@ -4,7 +4,6 @@ import Shield from "@/public/images/icons/shield.png";
 import Loupe from "@/public/images/icons/loupe.png";
 import DataProtection from "@/public/images/icons/data-protection.png";
 import Accordion from "@/components/ui/accordion";
-import { Search, ShieldCheck, Database } from "lucide-react";
 
 const SECURITY_DATA = [
   {
