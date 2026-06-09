@@ -38,7 +38,9 @@ const Button = ({
           ...props.style,
         }}
       >
-        <div className={`flex items-center justify-center gap-2 ${iconPosition === "right" ? "flex-row-reverse" : ""}`}>
+        <div
+          className={`flex items-center justify-center gap-2 ${iconPosition === "right" ? "flex-row-reverse" : ""}`}
+        >
           {icon}
           <span className="font-semibold leading-none">{children}</span>
         </div>

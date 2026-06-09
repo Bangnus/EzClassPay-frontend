@@ -54,7 +54,9 @@ export default function Accordion({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="px-6 py-4 text-base text-text-secondary leading-relaxed font-normal">{children}</div>
+          <div className="px-6 py-4 text-base text-text-secondary leading-relaxed font-normal">
+            {children}
+          </div>
         </div>
       </div>
     </div>

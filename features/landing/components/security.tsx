@@ -10,7 +10,7 @@ const SECURITY_DATA = [
   {
     title: "โปร่งใส ตรวจสอบประวัติได้ 100% (Full Transparency)",
     description:
-      "ระบบบันทึกทุกการเคลื่อนไหว สมาชิกสามารถตรวจสอบประวัติการส่งสลิป และยอดค้างชำระของตัวเองได้แบบเรียลไทม์ตลอด 24 ชั่วโมง หมดปัญหาความขัดแย้งและคำถามที่ว่า \"เงินหายไปไหน\"",
+      'ระบบบันทึกทุกการเคลื่อนไหว สมาชิกสามารถตรวจสอบประวัติการส่งสลิป และยอดค้างชำระของตัวเองได้แบบเรียลไทม์ตลอด 24 ชั่วโมง หมดปัญหาความขัดแย้งและคำถามที่ว่า "เงินหายไปไหน"',
     icon: <Image src={Loupe} alt="loupe" width={25} height={25} />,
     defaultOpen: true,
   },
@@ -24,7 +24,14 @@ const SECURITY_DATA = [
     title: "ปกป้องข้อมูลด้วยมาตรฐานระดับสูง (Data Privacy)",
     description:
       "ข้อมูลส่วนบุคคลและข้อมูลการทำธุรกรรมของคุณจะถูกจัดเก็บและเข้ารหัสอย่างปลอดภัยตามมาตรฐานสูงสุด เพื่อป้องกันการเข้าถึงจากบุคคลที่สาม",
-    icon: <Image src={DataProtection} alt="data-protection" width={25} height={25} />,
+    icon: (
+      <Image
+        src={DataProtection}
+        alt="data-protection"
+        width={25}
+        height={25}
+      />
+    ),
   },
 ];
 
@@ -32,7 +39,13 @@ export default function Security() {
   return (
     <div className="w-full flex items-center justify-between px-[80px] py-16">
       <div className="w-1/2 pr-10">
-        <Image src={Undrawsetup} alt="Undrawsetup" width={500} height={500} className="w-full h-auto" />
+        <Image
+          src={Undrawsetup}
+          alt="Undrawsetup"
+          width={500}
+          height={500}
+          className="w-full h-auto"
+        />
       </div>
       <div className="w-1/2 ">
         <div className="flex items-center gap-2 mb-2">
