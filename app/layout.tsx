@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   description:
     "ระบบจัดการเงินกลุ่มที่มีความโปร่งใส ตรวจสอบได้ทุกยอดโอน ใช้งานง่าย สะดวก และปลอดภัยสำหรับทุกคน ไม่ว่าจะทริปเที่ยว งานเลี้ยง หรือเงินกองกลาง",
   icons: {
-    icon: "/public/images/icons/logo.png",
+    icon: "/images/icons/logo.png",
   },
 };
 
