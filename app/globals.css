@@ -26,7 +26,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-inter);
-  --shadow-soft: 0 8px 24px rgb(51 51 51 / 0);
+  --shadow-soft: 0 8px 24px rgb(51 51 51 / 0.03);
   --shadow-card: 0 12px 32px rgb(51 51 51 / 0.1);
   --shadow-button: 0 8px 18px rgb(0 198 174 / 0.24);
   --shadow-floating: 0 20px 48px rgb(51 51 51 / 0.14);

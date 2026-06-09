@@ -1,6 +1,6 @@
 import Image from "next/image";
 import MobilePaymeent from "@/public/images/Mobile payments-pana.png";
-import rafiki from "@/public/images/To the stars-rafiki.png";
+import rafiki from "@/public/images/stars-rafiki.png";
 import Button from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import AvatarGroup from "./avatar-group";
