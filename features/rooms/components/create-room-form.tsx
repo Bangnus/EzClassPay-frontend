@@ -12,7 +12,7 @@ export default function CreateRoomForm() {
   const [lineGroupId, setLineGroupId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    collection_type: "fix",
+    collection_type: "MONTHLY",
     amount: "",
     promptpay_no: "",
   });
@@ -69,11 +69,9 @@ export default function CreateRoomForm() {
         name: formData.name,
         collection_type: formData.collection_type,
         total_target_amount:
-          formData.collection_type === "target"
-            ? Number(formData.amount)
-            : null,
+          formData.collection_type === "TARGET" ? Number(formData.amount) : null,
         periodic_amount:
-          formData.collection_type === "fix" ? Number(formData.amount) : null,
+          formData.collection_type === "MONTHLY" ? Number(formData.amount) : null,
         promptpay_no: formData.promptpay_no,
         line_group_id: lineGroupId,
       };
@@ -178,8 +176,8 @@ export default function CreateRoomForm() {
             onChange={handleChange}
             className="mt-1.5 block w-full rounded-xl border border-neutral-300 px-5 py-3.5 shadow-sm text-lg bg-white focus:border-green-500 focus:ring-2 focus:ring-green-100 transition duration-150"
           >
-            <option value="fix">ยอดคงที่ (เก็บเรื่อยๆ เช่น รายเดือน)</option>
-            <option value="target">
+            <option value="MONTHLY">ยอดคงที่ (เก็บเรื่อยๆ เช่น รายเดือน)</option>
+            <option value="TARGET">
               มีเป้าหมายรวม (เก็บทีเดียว เช่น ค่าเที่ยว)
             </option>
           </select>
@@ -187,7 +185,7 @@ export default function CreateRoomForm() {
 
         <div>
           <label className="text-sm font-semibold text-neutral-600">
-            {formData.collection_type === "target"
+            {formData.collection_type === "TARGET"
               ? "ยอดเป้าหมายรวม (บาท)"
               : "ยอดเก็บต่อรอบ (บาท)"}
           </label>
