@@ -9,6 +9,7 @@ export default function CreateRoomForm() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [lineGroupId, setLineGroupId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     collection_type: "fix",
@@ -23,6 +24,13 @@ export default function CreateRoomForm() {
         if (liff.isLoggedIn()) {
           const userProfile = await liff.getProfile();
           setProfile(userProfile);
+
+          // 🟢 ดึงข้อมูลว่าเปิดจากกลุ่มไหน
+          const context = liff.getContext();
+          if (context && context.groupId) {
+            setLineGroupId(context.groupId);
+            console.log("เปิดจากกลุ่มไอดี:", context.groupId);
+          }
         } else {
           // หากรันบน localhost (คอมพิวเตอร์) จะข้ามขั้นตอนนี้ไปก่อน
           if (liff.isInClient()) {
@@ -65,6 +73,7 @@ export default function CreateRoomForm() {
         periodic_amount:
           formData.collection_type === "fix" ? Number(formData.amount) : null,
         promptpay_no: formData.promptpay_no,
+        line_group_id: lineGroupId,
       };
 
       await createRoom(payload);

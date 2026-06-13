@@ -5,4 +5,5 @@ export interface CreateRoomPayload {
   total_target_amount: number | null;
   periodic_amount: number | null;
   promptpay_no: string;
+  line_group_id?: string | null;
 }
