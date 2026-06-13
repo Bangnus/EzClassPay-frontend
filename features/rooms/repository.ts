@@ -1,24 +1,16 @@
-// ตัวอย่าง
-// 'use server'
-// import { axiosInstance } from "@/lib/axios";
-// import { UserDto } from "./types";
+"use server";
 
-// export const fetchUsers = async (): Promise<UserDto[]> => {
-//   try {
-//     const res = await axiosInstance.get("/users");
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error fetching users:", error);
-//     return [];
-//   }
-// };
+import { axiosInstance } from "@/lib/axios";
+import { CreateRoomPayload } from "./types";
 
-// export const fetchUserById = async (id: string): Promise<UserDto | null> => {
-//   try {
-//     const res = await axiosInstance.get(`/users/${id}`);
-//     return res.data;
-//   } catch (error) {
-//     console.log(error)
-//     return null;
-//   }
-// };
+export const createRoomApi = async (payload: CreateRoomPayload) => {
+  try {
+    const response = await axiosInstance.post("/api/rooms", payload);
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data.message || JSON.stringify(error.response.data));
+    }
+    throw error;
+  }
+};
