@@ -69,7 +69,9 @@ export default function CreateRoomForm() {
         name: formData.name,
         collection_type: formData.collection_type,
         total_target_amount:
-          formData.collection_type === "target" ? Number(formData.amount) : null,
+          formData.collection_type === "target"
+            ? Number(formData.amount)
+            : null,
         periodic_amount:
           formData.collection_type === "fix" ? Number(formData.amount) : null,
         promptpay_no: formData.promptpay_no,
@@ -111,7 +113,9 @@ export default function CreateRoomForm() {
             />
           </svg>
         </div>
-        <h1 className="text-3xl font-extrabold text-green-700">สร้างห้องสำเร็จ!</h1>
+        <h1 className="text-3xl font-extrabold text-green-700">
+          สร้างห้องสำเร็จ!
+        </h1>
         <p className="text-neutral-600 text-lg">
           ระบบกำลังพาท่านกลับไปที่หน้าแชท...
         </p>
@@ -175,7 +179,9 @@ export default function CreateRoomForm() {
             className="mt-1.5 block w-full rounded-xl border border-neutral-300 px-5 py-3.5 shadow-sm text-lg bg-white focus:border-green-500 focus:ring-2 focus:ring-green-100 transition duration-150"
           >
             <option value="fix">ยอดคงที่ (เก็บเรื่อยๆ เช่น รายเดือน)</option>
-            <option value="target">มีเป้าหมายรวม (เก็บทีเดียว เช่น ค่าเที่ยว)</option>
+            <option value="target">
+              มีเป้าหมายรวม (เก็บทีเดียว เช่น ค่าเที่ยว)
+            </option>
           </select>
         </div>
 
