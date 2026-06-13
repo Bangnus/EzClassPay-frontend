@@ -97,16 +97,27 @@ Folder responsibilities:
 
 - `app/`: Next.js App Router routes, layouts, route-level loading/error files, and metadata.
 - `components/`: Shared reusable UI components used across multiple features.
-- `features/`: Feature-specific UI, templates, and logic. Use `features/<feature-name>/` for each product area.
+- `features/`: Feature-specific UI, templates, logic, and data access. Use `features/<feature-name>/` for each product area.
 - `hooks/`: Reusable React hooks, especially hooks shared by multiple features.
 - `lib/`: Shared library code, configuration helpers, constants, and framework integrations.
-- `services/`: API clients and external service calls. Components should not call APIs directly.
-- `store/`: Zustand stores and shared client-side state.
-- `types/`: Shared TypeScript interfaces/types, especially API contracts and common domain models.
+- `services/`: Global API clients and external service calls shared across features. Feature-specific APIs belong in `features/<feature-name>/`.
+- `store/`: Global Zustand stores. Feature-specific state belongs in `features/<feature-name>/store.ts`.
+- `types/`: Shared TypeScript interfaces/types. Feature-specific types belong in `features/<feature-name>/types.ts`.
 - `utils/`: Small pure utility functions that are framework-independent.
 - `public/`: Static assets served by Next.js.
 
 Keep feature-owned code inside its feature folder when it is not reused elsewhere. Move code into shared folders only when at least two features need it or when it is clearly project-wide infrastructure.
+
+### Feature Architecture
+
+Each feature inside `features/<feature-name>/` must encapsulate its own logic using the following file structure together:
+
+- `types.ts`: TypeScript interfaces and types specific to the feature (e.g., payloads, domain models).
+- `repository.ts`: Data access layer containing actual HTTP requests (`fetch` or `axios`).
+- `services.ts`: Business logic layer that wraps `repository.ts`. Components should call `services.ts`, not `repository.ts` directly.
+- `store.ts`: Feature-specific Zustand state management (if needed).
+- `components/`: UI components specific to this feature.
+- `templates/`: View layouts that assemble multiple components.
 
 ## Frontend Rules
 

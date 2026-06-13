@@ -1,12 +1,10 @@
-import axios from "axios";
+import { createRoomApi } from "./repository";
 import { CreateRoomPayload } from "./types";
 
-// Fallback to ngrok URL if environment variable is not set
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://equivocal-unmapped-pecan.ngrok-free.dev";
-
 export const createRoom = async (payload: CreateRoomPayload) => {
-  const response = await axios.post(`${BACKEND_URL}/api/rooms`, payload);
-  return response.data;
+  // สามารถแทรก Business Logic ก่อนส่งข้อมูลให้ API (Repository) ได้ที่นี่
+  const data = await createRoomApi(payload);
+  
+  // สามารถแทรก Data Mapping หลังจากได้ Response กลับมาได้ที่นี่
+  return data;
 };
