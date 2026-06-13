@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Undrawsetup from "@/public/svg/undraw_setup_fzje.svg";
 import Shield from "@/public/images/icons/shield.png";
+import Shield2 from "@/public/images/icons/shield2.png";
 import Loupe from "@/public/images/icons/loupe.png";
 import DataProtection from "@/public/images/icons/data-protection.png";
 import Accordion from "@/components/ui/accordion";
@@ -17,7 +18,7 @@ const SECURITY_DATA = [
     title: "ระบบยืนยันยอดที่แม่นยำ (Secure Verification)",
     description:
       "มีระบบตรวจสอบสลิปและการอนุมัติยอดที่รัดกุม ป้องกันการสวมรอยหรือการแจ้งยอดซ้ำ ให้คุณมั่นใจได้ว่าทุกยอดเงินตรงปก",
-    icon: <Image src={Shield} alt="shield" width={25} height={25} />,
+    icon: <Image src={Shield2} alt="shield" width={25} height={25} />,
   },
   {
     title: "ปกป้องข้อมูลด้วยมาตรฐานระดับสูง (Data Privacy)",
@@ -36,7 +37,7 @@ const SECURITY_DATA = [
 
 export default function Security() {
   return (
-    <div className="w-full flex items-center justify-between px-[80px] py-16">
+    <div className="w-full flex items-start justify-between px-[80px] py-16">
       <div className="w-1/2 pr-10">
         <Image
           src={Undrawsetup}
