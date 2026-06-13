@@ -85,9 +85,18 @@ export default function CreateRoomForm() {
           liff.closeWindow();
         }
       }, 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("เกิดข้อผิดพลาด ระบบไม่สามารถสร้างห้องได้ในขณะนี้");
+      
+      // 🟢 ดักจับ Error ที่ Backend ส่งมาเตือนว่ามีห้องซ้ำ
+      if (error.response && error.response.status === 400) {
+        alert(error.response.data.message); // จะขึ้นข้อความว่า "กลุ่มนี้มีการตั้งห้อง..."
+      } else if (error.message) {
+        // รองรับกรณีที่ Error ถูกโยนมาจาก Server Action (Next.js)
+        alert(error.message);
+      } else {
+        alert("เกิดข้อผิดพลาด ระบบไม่สามารถสร้างห้องได้ในขณะนี้");
+      }
     } finally {
       setLoading(false);
     }
