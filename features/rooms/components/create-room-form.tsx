@@ -36,11 +36,22 @@ export default function CreateRoomForm() {
 
           // 🟢 ดึงข้อมูลว่าเปิดจากกลุ่มไหน
           const context = liff.getContext();
-          if (context && context.groupId) {
-            setLineGroupId(context.groupId);
-            console.log("เปิดจากกลุ่มไอดี:", context.groupId);
+          const urlParams = new URLSearchParams(window.location.search);
+          const groupId = urlParams.get("groupId") || context?.groupId || null;
+
+          console.log("🔍 LIFF Debug:", {
+            url: window.location.href,
+            search: window.location.search,
+            contextType: context?.type,
+            groupIdFromUrl: urlParams.get("groupId"),
+            groupIdFromContext: context?.groupId,
+            finalGroupId: groupId,
+          });
+
+          if (groupId) {
+            setLineGroupId(groupId);
           } else {
-            console.warn("⚠️ ไม่พบ Group ID — อาจเปิดจากลิงก์ข้อความ หรือ Browser");
+            alert("กรุณาเปิดลิงก์นี้จากภายในกลุ่ม LINE ที่ต้องการสร้างห้อง โดยกดปุ่ม '👑 สร้างห้องกองกลาง' ที่บอทส่งให้ในกลุ่ม");
           }
         } else {
           // หากรันบน localhost (คอมพิวเตอร์) จะข้ามขั้นตอนนี้ไปก่อน
@@ -98,8 +109,6 @@ export default function CreateRoomForm() {
         promptpay_no: formData.promptpay_no,
         line_group_id: lineGroupId,
       };
-
-      console.log("📌 [createRoom] ส่ง payload:", JSON.stringify(payload));
 
       await createRoom(payload);
 
