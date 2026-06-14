@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { createRoom } from "../services";
+import { syncUserWithBackend } from "@/services/auth";
 
 export default function CreateRoomForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,11 +26,21 @@ export default function CreateRoomForm() {
           const userProfile = await liff.getProfile();
           setProfile(userProfile);
 
+          // 🚀 ซิงค์ข้อมูลผู้ใช้กับ Backend (Auto-Register + จัดการ Rich Menu)
+          await syncUserWithBackend({
+            line_uid: userProfile.userId,
+            name: userProfile.displayName,
+            profile_url: userProfile.pictureUrl,
+            action: "create_room",
+          });
+
           // 🟢 ดึงข้อมูลว่าเปิดจากกลุ่มไหน
           const context = liff.getContext();
           if (context && context.groupId) {
             setLineGroupId(context.groupId);
             console.log("เปิดจากกลุ่มไอดี:", context.groupId);
+          } else {
+            console.warn("⚠️ ไม่พบ Group ID — อาจเปิดจากลิงก์ข้อความ หรือ Browser");
           }
         } else {
           // หากรันบน localhost (คอมพิวเตอร์) จะข้ามขั้นตอนนี้ไปก่อน
@@ -52,6 +63,13 @@ export default function CreateRoomForm() {
     initLiff();
   }, []);
 
+  const closeAndGoToChat = () => {
+    if (liff.isInClient()) {
+      liff.closeWindow();
+    }
+    window.location.href = `https://line.me/R/ti/p/${process.env.NEXT_PUBLIC_LINE_BOT_ID}`;
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -61,6 +79,11 @@ export default function CreateRoomForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!profile) return;
+
+    if (!lineGroupId) {
+      alert("กรุณาเปิดลิงก์นี้จากภายในกลุ่ม LINE ที่ต้องการสร้างห้อง โดยกดปุ่ม '👑 สร้างห้องกองกลาง' ที่บอทส่งให้ในกลุ่ม");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -76,15 +99,11 @@ export default function CreateRoomForm() {
         line_group_id: lineGroupId,
       };
 
+      console.log("📌 [createRoom] ส่ง payload:", JSON.stringify(payload));
+
       await createRoom(payload);
 
       setSubmitted(true);
-
-      setTimeout(() => {
-        if (liff.isInClient()) {
-          liff.closeWindow();
-        }
-      }, 3000);
     } catch (error: any) {
       console.error(error);
       
@@ -124,8 +143,14 @@ export default function CreateRoomForm() {
           สร้างห้องสำเร็จ!
         </h1>
         <p className="text-neutral-600 text-lg">
-          ระบบกำลังพาท่านกลับไปที่หน้าแชท...
+          ข้อมูลถูกบันทึกแล้ว
         </p>
+        <button
+          onClick={closeAndGoToChat}
+          className="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-green-200 transition duration-150 text-lg"
+        >
+          บันทึกข้อมูลและกลับไปที่แชท
+        </button>
       </div>
     );
   }
