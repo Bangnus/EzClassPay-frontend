@@ -9,7 +9,6 @@ export default function CreateRoomForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [lineGroupId, setLineGroupId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -74,13 +73,6 @@ export default function CreateRoomForm() {
     initLiff();
   }, []);
 
-  const closeAndGoToChat = () => {
-    if (liff.isInClient()) {
-      liff.closeWindow();
-    }
-    window.location.href = `https://line.me/R/ti/p/${process.env.NEXT_PUBLIC_LINE_BOT_ID}`;
-  };
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -112,16 +104,16 @@ export default function CreateRoomForm() {
 
       await createRoom(payload);
 
-      setSubmitted(true);
-    } catch (error: any) {
-      console.error(error);
-      
-      // 🟢 ดักจับ Error ที่ Backend ส่งมาเตือนว่ามีห้องซ้ำ
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.message); // จะขึ้นข้อความว่า "กลุ่มนี้มีการตั้งห้อง..."
-      } else if (error.message) {
-        // รองรับกรณีที่ Error ถูกโยนมาจาก Server Action (Next.js)
-        alert(error.message);
+      liff.closeWindow();
+    } catch (err) {
+      console.error(err);
+
+      const errorObj = err as Error & { response?: { status?: number; data?: { message?: string } } };
+
+      if (errorObj?.response?.status === 400) {
+        alert("กลุ่มนี้มีการตั้งห้องกองกลางไว้แล้ว ไม่สามารถสร้างซ้ำได้ครับ");
+      } else if (errorObj?.message) {
+        alert(errorObj.message);
       } else {
         alert("เกิดข้อผิดพลาด ระบบไม่สามารถสร้างห้องได้ในขณะนี้");
       }
@@ -129,40 +121,6 @@ export default function CreateRoomForm() {
       setLoading(false);
     }
   };
-
-  if (submitted) {
-    return (
-      <div className="text-center py-10 space-y-5">
-        <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 text-green-600">
-          <svg
-            className="h-12 w-12"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="3"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        </div>
-        <h1 className="text-3xl font-extrabold text-green-700">
-          สร้างห้องสำเร็จ!
-        </h1>
-        <p className="text-neutral-600 text-lg">
-          ข้อมูลถูกบันทึกแล้ว
-        </p>
-        <button
-          onClick={closeAndGoToChat}
-          className="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-green-200 transition duration-150 text-lg"
-        >
-          บันทึกข้อมูลและกลับไปที่แชท
-        </button>
-      </div>
-    );
-  }
 
   return (
     <>
