@@ -122,7 +122,7 @@ export default function PayBillForm() {
     } catch (e) {
       addDebug(`QR exception: ${e instanceof Error ? e.message : e}`);
     }
-  }, [room, amount]);
+  }, [room, amount, loading]);
 
   const handleConfirm = async () => {
     if (!profile || !roomId) return;
