@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getManagerRooms, approvePayment, rejectPayment } from "@/features/rooms/services";
+import { getManagerRooms, approvePayment, rejectPayment, getRoom } from "@/features/rooms/services";
 import type { Room } from "@/features/rooms/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -20,6 +20,7 @@ export default function DashboardView() {
   const [profile, setProfile] = useState<any>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [pendingPayments, setPendingPayments] = useState<PaymentSummary[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(false);
@@ -43,10 +44,19 @@ export default function DashboardView() {
           action: "pay_bill",
         });
 
-        const roomsData = await getManagerRooms(userProfile.userId);
-        setRooms(roomsData as Room[]);
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomIdFromUrl = urlParams.get("roomId");
+
+        if (roomIdFromUrl) {
+          const roomData = await getRoom(roomIdFromUrl);
+          if (roomData) setRooms([roomData as Room]);
+        } else {
+          const roomsData = await getManagerRooms(userProfile.userId);
+          setRooms(roomsData as Room[]);
+        }
       } catch (error) {
         console.error("Dashboard Init Error:", error);
+        setError("ไม่สามารถโหลดข้อมูลห้องได้ กรุณาลองอีกครั้ง");
       } finally {
         setLoading(false);
       }
@@ -58,7 +68,9 @@ export default function DashboardView() {
     setSelectedRoom(roomId);
     setLoadingPayments(true);
     try {
-      const res = await fetch(`${API_URL}/api/payments/room/${roomId}/pending`);
+      const res = await fetch(`${API_URL}/api/payments/room/${roomId}/pending`, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+      });
       const data = await res.json();
       if (data.success) {
         setPendingPayments(data.data || []);
@@ -89,8 +101,7 @@ export default function DashboardView() {
   };
 
   const openInLiff = (path: string) => {
-    const url = new URL(path, window.location.origin);
-    window.location.href = url.toString();
+    window.location.href = new URL(path, window.location.origin).toString();
   };
 
   if (loading) {
@@ -104,12 +115,10 @@ export default function DashboardView() {
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-800 pb-20">
       <div className="max-w-lg mx-auto p-4 space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-green-700">แดชบอร์ด</h1>
         </div>
 
-        {/* Profile Card */}
         {profile && (
           <div className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-neutral-200 shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -125,19 +134,25 @@ export default function DashboardView() {
           </div>
         )}
 
-        {/* Summary Cards */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-green-50 rounded-2xl p-4 border border-green-100">
             <p className="text-2xl font-extrabold text-green-700">{rooms.length}</p>
             <p className="text-xs text-green-600">ห้องทั้งหมด</p>
           </div>
           <div className="bg-orange-50 rounded-2xl p-4 border border-orange-100">
-            <p className="text-2xl font-extrabold text-orange-600">0</p>
+            <p className="text-2xl font-extrabold text-orange-600">
+              {pendingPayments.length}
+            </p>
             <p className="text-xs text-orange-600">รอตรวจสอบ</p>
           </div>
         </div>
 
-        {/* Room List or Selected Room Detail */}
         {selectedRoom ? (
           <SelectedRoomDetail
             roomId={selectedRoom}
@@ -153,14 +168,20 @@ export default function DashboardView() {
             <div>
               <h2 className="text-lg font-bold text-neutral-800 mb-3">ห้องของฉัน</h2>
               {rooms.length === 0 ? (
-                <div className="bg-white rounded-2xl p-8 text-center border border-neutral-200">
-                  <p className="text-neutral-400">ยังไม่มีห้อง</p>
-                  <button
-                    onClick={() => openInLiff("/create-room")}
-                    className="mt-4 inline-block py-3 px-6 rounded-xl font-bold text-white bg-green-600"
-                  >
-                    + สร้างห้อง
-                  </button>
+                <div className="space-y-3">
+                  <div className="bg-white rounded-2xl p-8 text-center border border-neutral-200">
+                    <p className="text-neutral-400">ยังไม่มีห้อง</p>
+                    <button
+                      onClick={() => openInLiff("/create-room")}
+                      className="mt-4 inline-block py-3 px-6 rounded-xl font-bold text-white bg-green-600"
+                    >
+                      + สร้างห้อง
+                    </button>
+                  </div>
+                  <div className="bg-white rounded-2xl p-4 border border-neutral-200">
+                    <p className="text-sm text-neutral-500 mb-2">หรือมีห้องอยู่แล้ว? ใส่รหัสห้อง:</p>
+                    <RoomIdInput onLoad={(rid) => selectRoom(rid)} />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -171,36 +192,41 @@ export default function DashboardView() {
               )}
             </div>
 
-            {/* Quick Actions */}
             <div>
               <h2 className="text-lg font-bold text-neutral-800 mb-3">เมนู</h2>
               <div className="grid grid-cols-2 gap-3">
-                <ActionCard
-                  icon="➕"
-                  label="สร้างห้อง"
-                  onClick={() => openInLiff("/create-room")}
-                />
-                <ActionCard
-                  icon="📋"
-                  label="บันทึกค่าใช้จ่าย"
-                  onClick={() => openInLiff("/expense")}
-                />
-                <ActionCard
-                  icon="📊"
-                  label="ประวัติ"
-                  onClick={() => openInLiff("/history")}
-                />
-                <ActionCard
-                  icon="ℹ️"
-                  label="ติดต่อสอบถาม"
-                  onClick={() => {}}
-                />
+                <ActionCard icon="➕" label="สร้างห้อง" onClick={() => openInLiff("/create-room")} />
+                <ActionCard icon="📋" label="บันทึกค่าใช้จ่าย" onClick={() => openInLiff("/expense")} />
+                <ActionCard icon="📊" label="ประวัติ" onClick={() => openInLiff("/history")} />
+                <ActionCard icon="ℹ️" label="ติดต่อสอบถาม" onClick={() => {}} />
               </div>
             </div>
           </>
         )}
       </div>
     </main>
+  );
+}
+
+function RoomIdInput({ onLoad }: { onLoad: (id: string) => void }) {
+  const [input, setInput] = useState("");
+
+  return (
+    <div className="flex gap-2">
+      <input
+        type="text"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        placeholder="Room ID"
+        className="flex-1 rounded-xl border border-neutral-300 px-4 py-2.5 text-sm"
+      />
+      <button
+        onClick={() => { if (input.trim()) onLoad(input.trim()); }}
+        className="px-4 py-2.5 rounded-xl font-bold text-white bg-green-600 text-sm"
+      >
+        ยืนยัน
+      </button>
+    </div>
   );
 }
 
@@ -224,21 +250,11 @@ function RoomCard({ room, onSelect }: { room: Room; onSelect: (id: string) => vo
 }
 
 function SelectedRoomDetail({
-  roomId,
-  rooms,
-  pendingPayments,
-  loadingPayments,
-  onApprove,
-  onReject,
-  onBack,
+  roomId, rooms, pendingPayments, loadingPayments, onApprove, onReject, onBack,
 }: {
-  roomId: string;
-  rooms: Room[];
-  pendingPayments: PaymentSummary[];
-  loadingPayments: boolean;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
-  onBack: () => void;
+  roomId: string; rooms: Room[]; pendingPayments: PaymentSummary[];
+  loadingPayments: boolean; onApprove: (id: string) => void;
+  onReject: (id: string) => void; onBack: () => void;
 }) {
   const room = rooms.find(r => r.id === roomId);
 
@@ -277,7 +293,6 @@ function SelectedRoomDetail({
         </button>
       </div>
 
-      {/* Pending Payments Preview */}
       <div>
         <h3 className="font-bold text-neutral-800 mb-2">สลิปรอตรวจสอบ</h3>
         {loadingPayments ? (
@@ -302,18 +317,8 @@ function SelectedRoomDetail({
                   <img src={payment.slipUrl} alt="สลิป" className="w-full rounded-xl border" />
                 )}
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => onApprove(payment.id)}
-                    className="flex-1 py-2.5 rounded-xl font-bold text-white bg-green-600"
-                  >
-                    ✅ อนุมัติ
-                  </button>
-                  <button
-                    onClick={() => onReject(payment.id)}
-                    className="flex-1 py-2.5 rounded-xl font-bold text-white bg-red-500"
-                  >
-                    ❌ ปฏิเสธ
-                  </button>
+                  <button onClick={() => onApprove(payment.id)} className="flex-1 py-2.5 rounded-xl font-bold text-white bg-green-600">✅ อนุมัติ</button>
+                  <button onClick={() => onReject(payment.id)} className="flex-1 py-2.5 rounded-xl font-bold text-white bg-red-500">❌ ปฏิเสธ</button>
                 </div>
               </div>
             ))}
