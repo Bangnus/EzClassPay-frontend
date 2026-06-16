@@ -19,7 +19,10 @@ export default function PayBillForm() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [roomId, setRoomId] = useState("");
+  const [debug, setDebug] = useState<string[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const addDebug = (msg: string) => setDebug(p => [...p, msg]);
 
   useEffect(() => {
     const initLiff = async () => {
@@ -28,7 +31,17 @@ export default function PayBillForm() {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const liffQuery = (liff as any).getQuery?.() || {};
-        const rid = liffQuery.roomId || sessionStorage.getItem("pay_bill_roomId");
+        const qRoomId = liffQuery.roomId;
+        const urlRoomId = new URLSearchParams(window.location.search).get("roomId");
+        const ssRoomId = sessionStorage.getItem("pay_bill_roomId");
+
+        addDebug(`liffQuery: ${JSON.stringify(liffQuery)}`);
+        addDebug(`qRoomId: ${qRoomId}`);
+        addDebug(`urlRoomId: ${urlRoomId}`);
+        addDebug(`ssRoomId: ${ssRoomId}`);
+        addDebug(`href: ${window.location.href}`);
+
+        const rid = qRoomId || urlRoomId || ssRoomId;
         if (rid) {
           setRoomId(rid);
           sessionStorage.setItem("pay_bill_roomId", rid);
@@ -60,8 +73,10 @@ export default function PayBillForm() {
         }
 
         if (rid && userProfile) {
+          addDebug(`fetching /api/rooms/${rid}`);
           const res = await fetch(`${API_URL}/api/rooms/${rid}`);
           const roomData = await res.json();
+          addDebug(`room API response: ${JSON.stringify(roomData)}`);
           if (roomData.success) {
             setRoom(roomData.data);
           }
@@ -145,6 +160,11 @@ export default function PayBillForm() {
         <button onClick={goBack} className="w-full py-4 px-6 rounded-2xl text-xl font-bold text-white bg-green-600">
           กลับไปที่แชท
         </button>
+        {debug.length > 0 && (
+          <div className="mt-6 p-4 bg-gray-100 rounded-xl text-xs text-left font-mono whitespace-pre-wrap break-all">
+            {debug.map((d, i) => <p key={i}>{d}</p>)}
+          </div>
+        )}
       </>
     );
   }
