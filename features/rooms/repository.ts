@@ -28,6 +28,14 @@ export const getRoomApi = async (roomId: string) => {
   return response.data;
 };
 
+export const getRoomPaymentsApi = async (roomId: string, lineUid?: string) => {
+  const params = lineUid ? `?lineUid=${lineUid}` : "";
+  const response = await axiosInstance.get<{ success: boolean; data: Payment[] }>(
+    `/api/payments/room/${roomId}${params}`
+  );
+  return response.data;
+};
+
 export const getManagerRoomsApi = async (lineUid: string) => {
   const response = await axiosInstance.get<{ success: boolean; data: unknown[] }>(
     `/api/rooms/my-rooms?lineUid=${lineUid}`
