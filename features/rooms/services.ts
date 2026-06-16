@@ -5,6 +5,7 @@ import {
   rejectPaymentApi,
   getRoomApi,
   getRoomPaymentsApi,
+  getRoomByGroupApi,
   getManagerRoomsApi,
 } from "./repository";
 import { CreateRoomPayload } from "./types";
@@ -35,6 +36,15 @@ export const getRoom = async (roomId: string) => {
 export const getRoomPayments = async (roomId: string, lineUid?: string) => {
   const res = await getRoomPaymentsApi(roomId, lineUid);
   return res.data || [];
+};
+
+export const getRoomByGroup = async (groupId: string) => {
+  try {
+    const res = await getRoomByGroupApi(groupId);
+    return res.data || null;
+  } catch {
+    return null;
+  }
 };
 
 export const getManagerRooms = async (lineUid: string) => {

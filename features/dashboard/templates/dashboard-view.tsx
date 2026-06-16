@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getManagerRooms, approvePayment, rejectPayment, getRoom } from "@/features/rooms/services";
+import { getManagerRooms, getRoomByGroup, approvePayment, rejectPayment, getRoom } from "@/features/rooms/services";
 import type { Room } from "@/features/rooms/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -51,8 +51,22 @@ export default function DashboardView() {
           const roomData = await getRoom(roomIdFromUrl);
           if (roomData) setRooms([roomData as Room]);
         } else {
-          const roomsData = await getManagerRooms(userProfile.userId);
-          setRooms(roomsData as Room[]);
+          let foundRooms: Room[] = [];
+
+          const ctx = liff.getContext();
+          if (ctx?.groupId) {
+            const roomData = await getRoomByGroup(ctx.groupId);
+            if (roomData) foundRooms = [roomData as Room];
+          }
+
+          if (foundRooms.length === 0) {
+            try {
+              const roomsData = await getManagerRooms(userProfile.userId);
+              foundRooms = roomsData as Room[];
+            } catch { /* silent */ }
+          }
+
+          setRooms(foundRooms);
         }
       } catch (error) {
         console.error("Dashboard Init Error:", error);
@@ -180,7 +194,15 @@ export default function DashboardView() {
                   </div>
                   <div className="bg-white rounded-2xl p-4 border border-neutral-200">
                     <p className="text-sm text-neutral-500 mb-2">หรือมีห้องอยู่แล้ว? ใส่รหัสห้อง:</p>
-                    <RoomIdInput onLoad={(rid) => selectRoom(rid)} />
+                    <RoomIdInput onLoad={async (rid) => {
+                      try {
+                        const roomData = await getRoom(rid);
+                        if (roomData) {
+                          setRooms(prev => prev.some(r => r.id === rid) ? prev : [...prev, roomData as Room]);
+                        }
+                      } catch { /* silent */ }
+                      selectRoom(rid);
+                    }} />
                   </div>
                 </div>
               ) : (
