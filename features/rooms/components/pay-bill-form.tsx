@@ -23,8 +23,11 @@ export default function PayBillForm() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const rid = params.get("roomId");
-    if (rid) setRoomId(rid);
+    const rid = params.get("roomId") || sessionStorage.getItem("pay_bill_roomId");
+    if (rid) {
+      setRoomId(rid);
+      sessionStorage.setItem("pay_bill_roomId", rid);
+    }
 
     const initLiff = async () => {
       try {
@@ -42,6 +45,7 @@ export default function PayBillForm() {
           });
         } else {
           if (liff.isInClient()) {
+            sessionStorage.setItem("pay_bill_roomId", rid || "");
             liff.login();
             return;
           }
