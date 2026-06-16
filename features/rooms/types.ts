@@ -1,3 +1,19 @@
+export interface Room {
+  id: string;
+  managerId: string;
+  name: string;
+  collectionType: string;
+  totalTargetAmount: number | null;
+  periodicAmount: number;
+  promptpayNo: string;
+  isPremium: boolean;
+  lineGroupId: string | null;
+  createdAt: string;
+  members: { userId: string; joinedAt: string; user: { displayName: string; pictureUrl?: string } }[];
+  manager: { displayName: string; pictureUrl?: string; lineUid: string };
+  periods: unknown[];
+}
+
 export interface CreateRoomPayload {
   line_uid: string;
   name: string;

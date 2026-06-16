@@ -27,3 +27,10 @@ export const getRoomApi = async (roomId: string) => {
   const response = await axiosInstance.get(`/api/rooms/${roomId}`);
   return response.data;
 };
+
+export const getManagerRoomsApi = async (lineUid: string) => {
+  const response = await axiosInstance.get<{ success: boolean; data: unknown[] }>(
+    `/api/rooms/my-rooms?lineUid=${lineUid}`
+  );
+  return response.data;
+};
