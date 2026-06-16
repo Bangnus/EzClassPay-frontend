@@ -27,6 +27,8 @@ export default function MemberHistoryForm() {
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_MEMBER_HISTORY as string });
 
+        console.log('[LIFF_OPEN] MemberHistory URL:', window.location.href, 'context:', JSON.stringify(liff.getContext()));
+
         if (!liff.isLoggedIn()) {
           liff.login();
           return;

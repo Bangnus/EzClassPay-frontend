@@ -26,6 +26,7 @@ export default function DashboardView() {
   const [loadingPayments, setLoadingPayments] = useState(false);
 
   useEffect(() => {
+    console.log('[LIFF_OPEN] Dashboard URL:', window.location.href);
     const init = async () => {
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_DASHBOARD as string });

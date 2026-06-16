@@ -23,6 +23,7 @@ export default function PayBillForm() {
 
   useEffect(() => {
     const initLiff = async () => {
+      console.log('[LIFF_OPEN] PayBill URL:', window.location.href);
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_PAY_BILL as string });
 

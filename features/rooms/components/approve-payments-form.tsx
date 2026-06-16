@@ -23,6 +23,7 @@ export default function ApprovePaymentsForm() {
     if (rid) setRoomId(rid);
 
     const init = async () => {
+      console.log('[LIFF_OPEN] ApprovePayments URL:', window.location.href);
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_APPROVE as string });
         let userProfile: { userId: string; displayName: string; pictureUrl?: string } | null = null;

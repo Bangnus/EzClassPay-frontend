@@ -25,6 +25,8 @@ export default function HistoryForm() {
   useEffect(() => {
     const init = async () => {
       try {
+        console.log('[LIFF_OPEN] History URL:', window.location.href);
+
         const params = new URLSearchParams(window.location.search);
         const ridFromUrl = params.get("roomId");
 

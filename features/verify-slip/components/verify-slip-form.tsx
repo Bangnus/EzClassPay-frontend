@@ -37,6 +37,8 @@ export default function VerifySlipForm() {
   useEffect(() => {
     const init = async () => {
       try {
+        console.log('[LIFF_OPEN] VerifySlip URL:', window.location.href);
+
         const params = new URLSearchParams(window.location.search);
         const ridFromUrl = params.get("roomId");
 
