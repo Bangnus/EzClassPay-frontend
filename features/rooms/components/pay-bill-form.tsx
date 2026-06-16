@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
+import QRCode from "qrcode";
+import { generatePromptPayPayload } from "@/lib/promptpay";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -17,6 +19,7 @@ export default function PayBillForm() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [roomId, setRoomId] = useState("");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -77,6 +80,18 @@ export default function PayBillForm() {
     initLiff();
   }, []);
 
+  const amount = bill?.amount || room?.periodicAmount || 0;
+
+  useEffect(() => {
+    if (!canvasRef.current || !room || !amount) return;
+    const payload = generatePromptPayPayload(room.promptpayNo, Number(amount));
+    QRCode.toCanvas(canvasRef.current, payload, {
+      width: 256,
+      margin: 2,
+      color: { dark: "#000", light: "#fff" },
+    });
+  }, [room, amount]);
+
   const handleConfirm = async () => {
     if (!profile || !roomId) return;
     setSubmitting(true);
@@ -128,9 +143,6 @@ export default function PayBillForm() {
       </>
     );
   }
-
-  const amount = bill?.amount || room.periodicAmount || 0;
-  const qrUrl = `https://promptpay.io/${room.promptpayNo}/${amount}`;
 
   if (done) {
     return (
@@ -194,22 +206,22 @@ export default function PayBillForm() {
         </div>
 
         <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={qrUrl}
-            alt="PromptPay QR"
-            className="mx-auto w-64 h-64"
-          />
+          <canvas ref={canvasRef} className="mx-auto w-64 h-64" />
           <p className="text-sm text-neutral-500">
             สแกน QR Code เพื่อชำระเงินผ่าน PromptPay
           </p>
-          <a
-            href={qrUrl}
-            download={`promptpay-${room.promptpayNo}.png`}
+          <button
+            onClick={() => {
+              if (!canvasRef.current) return;
+              const link = document.createElement("a");
+              link.download = `promptpay-${room.promptpayNo}.png`;
+              link.href = canvasRef.current.toDataURL("image/png");
+              link.click();
+            }}
             className="inline-block w-full py-3 px-6 rounded-xl text-base font-semibold text-orange-700 bg-orange-50 border border-orange-200 hover:bg-orange-100 text-center"
           >
             💾 บันทึก QR Code
-          </a>
+          </button>
         </div>
 
         <button
