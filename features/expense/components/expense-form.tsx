@@ -30,15 +30,7 @@ export default function ExpenseForm() {
             action: "create_room",
           });
         } else {
-          if (liff.isInClient()) {
-            liff.login();
-          } else {
-            setProfile({
-              displayName: "ผู้ทดสอบ (บนคอม)",
-              pictureUrl: "https://via.placeholder.com/150",
-              userId: "test_user_on_pc",
-            });
-          }
+          liff.login();
         }
       } catch (error) {
         console.error("LIFF Init Error:", error);

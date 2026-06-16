@@ -37,16 +37,8 @@ export default function ApprovePaymentsForm() {
             action: "pay_bill",
           });
         } else {
-          if (liff.isInClient()) {
-            liff.login();
-            return;
-          }
-          userProfile = {
-            displayName: "ผู้ทดสอบ",
-            pictureUrl: "https://via.placeholder.com/150",
-            userId: "test_user_on_pc",
-          };
-          setProfile(userProfile);
+          liff.login();
+          return;
         }
 
         if (rid) {

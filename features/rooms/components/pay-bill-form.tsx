@@ -62,17 +62,9 @@ export default function PayBillForm() {
             action: "pay_bill",
           });
         } else {
-          if (liff.isInClient()) {
-            sessionStorage.setItem("pay_bill_roomId", rid || "");
-            liff.login();
-            return;
-          }
-          userProfile = {
-            displayName: "ผู้ทดสอบ (บนคอม)",
-            pictureUrl: "https://via.placeholder.com/150",
-            userId: "test_user_on_pc",
-          };
-          setProfile(userProfile);
+          sessionStorage.setItem("pay_bill_roomId", rid || "");
+          liff.login();
+          return;
         }
 
         if (rid && userProfile) {
@@ -107,25 +99,32 @@ export default function PayBillForm() {
   const amount = bill?.amount || room?.periodicAmount || 0;
 
   useEffect(() => {
-    if (!canvasRef.current || !room || !amount) {
-      addDebug(`QR skip: canvas=${!!canvasRef.current} room=${!!room} amount=${amount}`);
+    if (!room || !amount) {
+      addDebug(`QR skip: room=${!!room} amount=${amount}`);
       return;
     }
     addDebug(`QR generating: promptpay=${room.promptpayNo} amount=${amount}`);
-    try {
-      const payload = generatePromptPayPayload(room.promptpayNo, Number(amount));
-      addDebug(`QR payload: ${payload.substring(0, 40)}...`);
-      QRCode.toCanvas(canvasRef.current, payload, {
-        width: 256,
-        margin: 2,
-        color: { dark: "#000", light: "#fff" },
-      }, (err) => {
-        if (err) addDebug(`QR toCanvas error: ${err.message}`);
-        else addDebug("QR toCanvas success");
-      });
-    } catch (e) {
-      addDebug(`QR exception: ${e instanceof Error ? e.message : e}`);
-    }
+    const timer = setTimeout(() => {
+      if (!canvasRef.current) {
+        addDebug(`QR canvas still null after timeout`);
+        return;
+      }
+      try {
+        const payload = generatePromptPayPayload(room.promptpayNo, Number(amount));
+        addDebug(`QR payload: ${payload.substring(0, 40)}...`);
+        QRCode.toCanvas(canvasRef.current, payload, {
+          width: 256,
+          margin: 2,
+          color: { dark: "#000", light: "#fff" },
+        }, (err) => {
+          if (err) addDebug(`QR toCanvas error: ${err.message}`);
+          else addDebug("QR toCanvas success");
+        });
+      } catch (e) {
+        addDebug(`QR exception: ${e instanceof Error ? e.message : e}`);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [room, amount]);
 
   const handleConfirm = async () => {

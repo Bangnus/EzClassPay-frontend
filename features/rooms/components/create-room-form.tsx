@@ -53,18 +53,7 @@ export default function CreateRoomForm() {
             alert("กรุณาเปิดลิงก์นี้จากภายในกลุ่ม LINE ที่ต้องการสร้างห้อง โดยกดปุ่ม '👑 สร้างห้องกองกลาง' ที่บอทส่งให้ในกลุ่ม");
           }
         } else {
-          // หากรันบน localhost (คอมพิวเตอร์) จะข้ามขั้นตอนนี้ไปก่อน
-          if (liff.isInClient()) {
-            liff.login();
-          } else {
-            console.log("รันบน Browser ปกติ - ข้ามการ Login");
-            // เพื่อทดสอบบนคอมได้ ให้ตั้งค่า Profile ปลอมๆ ไว้ก่อน
-            setProfile({
-              displayName: "ผู้ทดสอบ (บนคอม)",
-              pictureUrl: "https://via.placeholder.com/150",
-              userId: "test_user_on_pc",
-            });
-          }
+          liff.login();
         }
       } catch (error) {
         console.error("LIFF Init Error:", error);
