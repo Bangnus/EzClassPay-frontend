@@ -24,6 +24,9 @@ export default function PayBillForm() {
 
   const addDebug = (msg: string) => setDebug(p => [...p, msg]);
 
+  const apiFetch = (url: string, init?: RequestInit) =>
+    fetch(`${API_URL}${url}`, { ...init, headers: { ...init?.headers, "ngrok-skip-browser-warning": "true" } });
+
   useEffect(() => {
     const initLiff = async () => {
       try {
@@ -74,15 +77,15 @@ export default function PayBillForm() {
 
         if (rid && userProfile) {
           addDebug(`fetching /api/rooms/${rid}`);
-          const res = await fetch(`${API_URL}/api/rooms/${rid}`);
+          const res = await apiFetch(`/api/rooms/${rid}`);
           const roomData = await res.json();
           addDebug(`room API response: ${JSON.stringify(roomData)}`);
           if (roomData.success) {
             setRoom(roomData.data);
           }
 
-          const billRes = await fetch(
-            `${API_URL}/api/bills/room/${rid}?limit=1&lineUid=${userProfile.userId}`
+          const billRes = await apiFetch(
+            `/api/bills/room/${rid}?limit=1&lineUid=${userProfile.userId}`
           );
           const billData = await billRes.json();
           if (billData.success && billData.data.length > 0) {
@@ -117,7 +120,7 @@ export default function PayBillForm() {
     if (!profile || !roomId) return;
     setSubmitting(true);
     try {
-      await fetch(`${API_URL}/api/payments/initiate`, {
+      await apiFetch("/api/payments/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
