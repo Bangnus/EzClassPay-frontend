@@ -22,16 +22,17 @@ export default function PayBillForm() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const rid = params.get("roomId") || sessionStorage.getItem("pay_bill_roomId");
-    if (rid) {
-      setRoomId(rid);
-      sessionStorage.setItem("pay_bill_roomId", rid);
-    }
-
     const initLiff = async () => {
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_PAY_BILL as string });
+
+        const params = new URLSearchParams(window.location.search);
+        const rid = params.get("roomId") || sessionStorage.getItem("pay_bill_roomId");
+        if (rid) {
+          setRoomId(rid);
+          sessionStorage.setItem("pay_bill_roomId", rid);
+        }
+
         let userProfile: { userId: string; displayName: string; pictureUrl?: string } | null = null;
 
         if (liff.isLoggedIn()) {
@@ -65,7 +66,7 @@ export default function PayBillForm() {
           }
 
           const billRes = await fetch(
-            `${API_URL}/api/bills/room/${rid}?limit=1`
+            `${API_URL}/api/bills/room/${rid}?limit=1&lineUid=${userProfile.userId}`
           );
           const billData = await billRes.json();
           if (billData.success && billData.data.length > 0) {
@@ -117,11 +118,10 @@ export default function PayBillForm() {
     }
   };
 
-  const closeAndGoToChat = () => {
+  const goBack = () => {
     if (liff.isInClient()) {
       liff.closeWindow();
     }
-    window.location.href = `https://line.me/R/ti/p/${process.env.NEXT_PUBLIC_LINE_BOT_ID}`;
   };
 
   if (loading) {
@@ -141,7 +141,7 @@ export default function PayBillForm() {
         <div className="text-center py-10 text-neutral-500">
           ไม่พบข้อมูลห้อง กรุณากลับไปที่แชท
         </div>
-        <button onClick={closeAndGoToChat} className="w-full py-4 px-6 rounded-2xl text-xl font-bold text-white bg-green-600">
+        <button onClick={goBack} className="w-full py-4 px-6 rounded-2xl text-xl font-bold text-white bg-green-600">
           กลับไปที่แชท
         </button>
       </>
@@ -165,7 +165,7 @@ export default function PayBillForm() {
             กรุณาส่งรูปสลิปเข้ามาในแชทส่วนตัวของบอท เพื่อให้ผู้ดูแลตรวจสอบ 🙏
           </p>
           <button
-            onClick={closeAndGoToChat}
+            onClick={goBack}
             className="w-full py-4 px-6 rounded-2xl text-xl font-bold text-white bg-green-600"
           >
             ไปที่แชทเพื่อส่งสลิป
