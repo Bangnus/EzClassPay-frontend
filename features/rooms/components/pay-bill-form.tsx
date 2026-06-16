@@ -276,6 +276,12 @@ export default function PayBillForm() {
           กดยืนยันหลังจากโอนเงินแล้ว จากนั้นส่งสลิปในแชทบอท
         </p>
       </div>
+
+      {debug.length > 0 && (
+        <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600 font-mono whitespace-pre-wrap break-all">
+          {debug.map((d, i) => <p key={i}>{d}</p>)}
+        </div>
+      )}
     </>
   );
 }
