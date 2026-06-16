@@ -103,28 +103,25 @@ export default function PayBillForm() {
       addDebug(`QR skip: room=${!!room} amount=${amount}`);
       return;
     }
+    if (!canvasRef.current) {
+      addDebug(`QR canvas ref null`);
+      return;
+    }
     addDebug(`QR generating: promptpay=${room.promptpayNo} amount=${amount}`);
-    const timer = setTimeout(() => {
-      if (!canvasRef.current) {
-        addDebug(`QR canvas still null after timeout`);
-        return;
-      }
-      try {
-        const payload = generatePromptPayPayload(room.promptpayNo, Number(amount));
-        addDebug(`QR payload: ${payload.substring(0, 40)}...`);
-        QRCode.toCanvas(canvasRef.current, payload, {
-          width: 256,
-          margin: 2,
-          color: { dark: "#000", light: "#fff" },
-        }, (err) => {
-          if (err) addDebug(`QR toCanvas error: ${err.message}`);
-          else addDebug("QR toCanvas success");
-        });
-      } catch (e) {
-        addDebug(`QR exception: ${e instanceof Error ? e.message : e}`);
-      }
-    }, 0);
-    return () => clearTimeout(timer);
+    try {
+      const payload = generatePromptPayPayload(room.promptpayNo, Number(amount));
+      addDebug(`QR payload: ${payload.substring(0, 40)}...`);
+      QRCode.toCanvas(canvasRef.current, payload, {
+        width: 256,
+        margin: 2,
+        color: { dark: "#000", light: "#fff" },
+      }, (err) => {
+        if (err) addDebug(`QR toCanvas error: ${err.message}`);
+        else addDebug("QR toCanvas success");
+      });
+    } catch (e) {
+      addDebug(`QR exception: ${e instanceof Error ? e.message : e}`);
+    }
   }, [room, amount]);
 
   const handleConfirm = async () => {
