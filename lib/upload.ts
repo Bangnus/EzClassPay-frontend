@@ -18,5 +18,7 @@ export async function uploadImage(file: File): Promise<string> {
   }
 
   const result = await response.json();
-  return result.data.url as string;
+  const minioUrl: string = result.data.url;
+  const filename = minioUrl.split("/").pop();
+  return `${process.env.NEXT_PUBLIC_API_URL}/api/files/${filename}`;
 }

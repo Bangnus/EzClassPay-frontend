@@ -7,3 +7,21 @@ export interface CreateRoomPayload {
   promptpay_no: string;
   line_group_id?: string | null;
 }
+
+export interface Payment {
+  id: string;
+  roomId: string;
+  lineUid: string;
+  slipUrl: string | null;
+  status: "AWAITING_SLIP" | "PENDING" | "APPROVED" | "REJECTED";
+  createdAt: string;
+  user: {
+    id: string;
+    displayName: string;
+    lineUid: string;
+  };
+  room: {
+    name: string;
+    lineGroupId: string;
+  };
+}
