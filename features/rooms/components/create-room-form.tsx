@@ -21,7 +21,7 @@ export default function CreateRoomForm() {
   useEffect(() => {
     const initLiff = async () => {
       try {
-        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID as string });
+        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_CREATE_ROOM as string });
         if (liff.isLoggedIn()) {
           const userProfile = await liff.getProfile();
           setProfile(userProfile);
