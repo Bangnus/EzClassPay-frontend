@@ -10,6 +10,7 @@ export default function CreateRoomForm() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [lineGroupId, setLineGroupId] = useState<string | null>(null);
+  const [groupDetected, setGroupDetected] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     collection_type: "MONTHLY",
@@ -50,7 +51,7 @@ export default function CreateRoomForm() {
           if (groupId) {
             setLineGroupId(groupId);
           } else {
-            alert("กรุณาเปิดลิงก์นี้จากภายในกลุ่ม LINE ที่ต้องการสร้างห้อง โดยกดปุ่ม '👑 สร้างห้องกองกลาง' ที่บอทส่งให้ในกลุ่ม");
+            setGroupDetected(false);
           }
         } else {
           liff.login();
@@ -72,11 +73,6 @@ export default function CreateRoomForm() {
     e.preventDefault();
     if (!profile) return;
 
-    if (!lineGroupId) {
-      alert("กรุณาเปิดลิงก์นี้จากภายในกลุ่ม LINE ที่ต้องการสร้างห้อง โดยกดปุ่ม '👑 สร้างห้องกองกลาง' ที่บอทส่งให้ในกลุ่ม");
-      return;
-    }
-
     setLoading(true);
     try {
       const payload = {
@@ -88,7 +84,7 @@ export default function CreateRoomForm() {
         periodic_amount:
           formData.collection_type === "MONTHLY" ? Number(formData.amount) : null,
         promptpay_no: formData.promptpay_no,
-        line_group_id: lineGroupId,
+        ...(lineGroupId ? { line_group_id: lineGroupId } : {}),
       };
 
       await createRoom(payload);
@@ -138,6 +134,13 @@ export default function CreateRoomForm() {
               {profile.displayName}
             </p>
           </div>
+        </div>
+      )}
+
+      {!groupDetected && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800 space-y-2">
+          <p className="font-bold">⚠️ ไม่พบข้อมูลกลุ่ม LINE</p>
+          <p>ห้องนี้จะถูกสร้างโดยไม่เชื่อมกับกลุ่ม LINE คุณสามารถเชื่อมกลุ่มทีหลังได้จากเมนูจัดการห้อง</p>
         </div>
       )}
 
