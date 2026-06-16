@@ -26,8 +26,9 @@ export default function PayBillForm() {
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_PAY_BILL as string });
 
-        const params = new URLSearchParams(window.location.search);
-        const rid = params.get("roomId") || sessionStorage.getItem("pay_bill_roomId");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const liffQuery = (liff as any).getQuery?.() || {};
+        const rid = liffQuery.roomId || sessionStorage.getItem("pay_bill_roomId");
         if (rid) {
           setRoomId(rid);
           sessionStorage.setItem("pay_bill_roomId", rid);
