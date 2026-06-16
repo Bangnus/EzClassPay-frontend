@@ -1,10 +1,31 @@
-import { createRoomApi } from "./repository";
+import {
+  createRoomApi,
+  getPendingPaymentsApi,
+  approvePaymentApi,
+  rejectPaymentApi,
+  getRoomApi,
+} from "./repository";
 import { CreateRoomPayload } from "./types";
 
 export const createRoom = async (payload: CreateRoomPayload) => {
-  // สามารถแทรก Business Logic ก่อนส่งข้อมูลให้ API (Repository) ได้ที่นี่
   const data = await createRoomApi(payload);
-  
-  // สามารถแทรก Data Mapping หลังจากได้ Response กลับมาได้ที่นี่
   return data;
+};
+
+export const getPendingPayments = async (roomId: string) => {
+  const res = await getPendingPaymentsApi(roomId);
+  return res.data || [];
+};
+
+export const approvePayment = async (paymentId: string) => {
+  return approvePaymentApi(paymentId);
+};
+
+export const rejectPayment = async (paymentId: string) => {
+  return rejectPaymentApi(paymentId);
+};
+
+export const getRoom = async (roomId: string) => {
+  const res = await getRoomApi(roomId);
+  return res.data || null;
 };
