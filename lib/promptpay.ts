@@ -3,7 +3,7 @@ export function generatePromptPayPayload(phoneOrId: string, amount: number, type
   let idType: string;
   if (type === "mobile") {
     const cleaned = phoneOrId.replace(/^0+/, "");
-    idValue = `66${cleaned}`;
+    idValue = `0066${cleaned}`;
     idType = "01";
   } else {
     idValue = phoneOrId;

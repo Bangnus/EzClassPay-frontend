@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import QRCode from "qrcode";
-import { generatePromptPayPayload } from "@/lib/promptpay";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -20,7 +18,6 @@ export default function PayBillForm() {
   const [done, setDone] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [debug, setDebug] = useState<string[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const addDebug = (msg: string) => setDebug(p => [...p, msg]);
 
@@ -97,32 +94,6 @@ export default function PayBillForm() {
   }, []);
 
   const amount = bill?.amount || room?.periodicAmount || 0;
-
-  useEffect(() => {
-    if (!room || !amount) {
-      addDebug(`QR skip: room=${!!room} amount=${amount}`);
-      return;
-    }
-    if (!canvasRef.current) {
-      addDebug(`QR canvas ref null`);
-      return;
-    }
-    addDebug(`QR generating: promptpay=${room.promptpayNo} amount=${amount}`);
-    try {
-      const payload = generatePromptPayPayload(room.promptpayNo, Number(amount));
-      addDebug(`QR payload: ${payload.substring(0, 40)}...`);
-      QRCode.toCanvas(canvasRef.current, payload, {
-        width: 256,
-        margin: 2,
-        color: { dark: "#000", light: "#fff" },
-      }, (err) => {
-        if (err) addDebug(`QR toCanvas error: ${err.message}`);
-        else addDebug("QR toCanvas success");
-      });
-    } catch (e) {
-      addDebug(`QR exception: ${e instanceof Error ? e.message : e}`);
-    }
-  }, [room, amount, loading]);
 
   const handleConfirm = async () => {
     if (!profile || !roomId) return;
@@ -242,16 +213,16 @@ export default function PayBillForm() {
         </div>
 
         <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-4">
-          <canvas ref={canvasRef} className="mx-auto w-64 h-64" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`https://promptpay.io/${room.promptpayNo}/${Number(amount)}.png`} alt="PromptPay QR" className="mx-auto w-64 h-64" />
           <p className="text-sm text-neutral-500">
             สแกน QR Code เพื่อชำระเงินผ่าน PromptPay
           </p>
           <button
             onClick={() => {
-              if (!canvasRef.current) return;
               const link = document.createElement("a");
               link.download = `promptpay-${room.promptpayNo}.png`;
-              link.href = canvasRef.current.toDataURL("image/png");
+              link.href = `https://promptpay.io/${room.promptpayNo}/${Number(amount)}.png`;
               link.click();
             }}
             className="inline-block w-full py-3 px-6 rounded-xl text-base font-semibold text-orange-700 bg-orange-50 border border-orange-200 hover:bg-orange-100 text-center"
