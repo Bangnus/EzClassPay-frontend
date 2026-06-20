@@ -70,3 +70,7 @@ export const deleteRoomApi = async (roomId: string) => {
   return response.data;
 };
 
+export const generateBillsApi = async (roomId: string, month: number, year: number) => {
+  const response = await axiosInstance.post(`/api/rooms/${roomId}/generate-bills`, { month, year });
+  return response.data;
+};
