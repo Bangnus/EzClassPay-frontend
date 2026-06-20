@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
 import { approvePayment, rejectPayment } from "@/features/rooms/services";
+import Spinner from "@/components/ui/spinner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -133,7 +134,7 @@ export default function VerifySlipForm() {
   };
 
   if (!initialized) {
-    return <div className="text-center py-20 text-neutral-400">กำลังโหลด...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -211,7 +212,7 @@ export default function VerifySlipForm() {
       {roomId && (
         <>
           {loading ? (
-            <div className="text-center py-10 text-neutral-400">กำลังโหลด...</div>
+            <Spinner />
           ) : payments.length === 0 ? (
             <div className="bg-white rounded-2xl p-10 text-center border border-neutral-200 space-y-3">
               <div className="text-5xl">✅</div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
 import { getPendingPayments, approvePayment, rejectPayment, getRoom } from "../services";
+import Spinner from "@/components/ui/spinner";
 import type { Payment } from "../types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -78,7 +79,7 @@ export default function ApprovePaymentsForm() {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-neutral-400">กำลังโหลด...</div>;
+    return <Spinner />;
   }
 
   if (!room) {

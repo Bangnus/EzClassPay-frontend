@@ -5,6 +5,7 @@ import liff from "@line/liff";
 import PayBillSuccess from "./pay-bill-success";
 import PayBillNotFound from "./pay-bill-not-found";
 import PayBillQR from "./pay-bill-qr";
+import Spinner from "@/components/ui/spinner";
 import { usePayBill } from "../hooks/use-pay-bill";
 
 export default function PayBillForm() {
@@ -34,7 +35,7 @@ export default function PayBillForm() {
 
   const goBack = () => liff.isInClient() && liff.closeWindow();
 
-  if (loading) return <div className="text-center py-20 text-neutral-400">กำลังโหลด...</div>;
+  if (loading) return <Spinner />;
   if (!room) return <PayBillNotFound onGoBack={goBack} />;
   if (done) return <PayBillSuccess onGoBack={goBack} />;
 

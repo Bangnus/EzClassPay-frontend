@@ -5,6 +5,7 @@ import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
 import { getRoomPayments, getRoom } from "@/features/rooms/services";
 import type { Payment } from "@/features/rooms/types";
+import Spinner from "@/components/ui/spinner";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   AWAITING_SLIP: { label: "รอสลิป", color: "text-yellow-600 bg-yellow-50" },
@@ -100,7 +101,7 @@ export default function MemberHistoryForm() {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-text-secondary">กำลังโหลด...</div>;
+    return <Spinner />;
   }
 
   if (error) {

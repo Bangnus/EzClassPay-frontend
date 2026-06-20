@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Room } from "@/features/rooms/types";
 import { getRoomMembers, removeRoomMember } from "@/features/rooms/services";
 import { History, Trash2 } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 
 interface MembersTableProps {
   roomId: string;
@@ -46,7 +47,7 @@ export default function MembersTable({ roomId }: MembersTableProps) {
   };
 
   if (loading) {
-    return <div className="text-center py-4 text-text-secondary">กำลังโหลดข้อมูลสมาชิก...</div>;
+    return <Spinner text="กำลังโหลดข้อมูลสมาชิก..." />;
   }
 
   return (

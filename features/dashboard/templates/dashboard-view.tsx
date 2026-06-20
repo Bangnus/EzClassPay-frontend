@@ -11,6 +11,7 @@ import MembersTable from "../components/members-table";
 import DangerZone from "../components/danger-zone";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -94,7 +95,7 @@ export default function DashboardView() {
   if (loading) {
     return (
       <main className="min-h-screen bg-neutral-50 p-4">
-        <div className="text-center py-20 text-neutral-400">กำลังโหลด...</div>
+        <Spinner />
       </main>
     );
   }

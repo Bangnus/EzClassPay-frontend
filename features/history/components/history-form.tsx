@@ -6,6 +6,7 @@ import { syncUserWithBackend } from "@/services/auth";
 import { getRoomPayments, getRoom } from "@/features/rooms/services";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
+import Spinner from "@/components/ui/spinner";
 import type { Payment } from "@/features/rooms/types";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -95,7 +96,7 @@ export default function HistoryForm() {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-text-secondary">กำลังโหลด...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -159,7 +160,7 @@ export default function HistoryForm() {
       {roomId && (
         <>
           {loading ? (
-            <div className="text-center py-10 text-text-secondary">กำลังโหลด...</div>
+            <Spinner />
           ) : payments.length === 0 ? (
             <div className="bg-bg rounded-2xl p-10 text-center border border-border">
               <p className="text-text-secondary">ไม่มีประวัติการชำระเงิน</p>
