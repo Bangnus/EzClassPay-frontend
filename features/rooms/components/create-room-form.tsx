@@ -193,7 +193,14 @@ export default function CreateRoomForm() {
         />
 
         <div className="pt-6">
-          <Button type="primary" borderRadius={10} padding={15}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={loading || !profile}
+            loading={loading}
+            borderRadius={10}
+            padding={15}
+          >
             ยืนยันการสร้างห้อง
           </Button>
         </div>
