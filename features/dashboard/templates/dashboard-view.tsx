@@ -106,7 +106,7 @@ export default function DashboardView() {
     <main className="min-h-screen bg-neutral-50 text-neutral-800 pb-20">
       <div className="max-w-lg mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-green-700">แดชบอร์ด</h1>
+          <h1 className="text-2xl font-extrabold">จัดการห้อง</h1>
         </div>
 
 
@@ -117,15 +117,15 @@ export default function DashboardView() {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-bg rounded-2xl p-4 border border-border">
-            <p className="text-2xl font-extrabold text-primary">{rooms.length}</p>
-            <p className="text-xs text-text-secondary">ห้องทั้งหมด</p>
+          <div className="bg-linear-to-br from-primary to-primary/80 rounded-2xl p-4 shadow-sm border border-primary/20">
+            <p className="text-2xl font-extrabold text-white">{rooms.length}</p>
+            <p className="text-xs font-medium text-white/90">ห้องทั้งหมด</p>
           </div>
-          <div className="bg-bg rounded-2xl p-4 border border-border">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
             <p className="text-2xl font-extrabold text-primary">
               {rooms.reduce((acc, room) => acc + (room.members?.length || 0), 0)}
             </p>
-            <p className="text-xs text-text-secondary">ผู้ใช้ทั้งหมดในห้อง</p>
+            <p className="text-xs font-medium text-text-secondary">ผู้ใช้ทั้งหมดในห้อง</p>
           </div>
         </div>
 
@@ -254,10 +254,10 @@ function ActionCard({ icon, label, onClick }: { icon: string; label: string; onC
   return (
     <button
       onClick={onClick}
-      className="bg-bg rounded-2xl p-5 border border-border shadow-sm text-center hover:shadow-md transition-shadow"
+      className="bg-primary/5 hover:bg-primary/10 rounded-2xl p-5 border border-primary/10 shadow-sm text-center hover:shadow-md transition-all group"
     >
-      <div className="text-2xl mb-2">{icon}</div>
-      <p className="text-sm font-bold text-text-primary">{label}</p>
+      <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{icon}</div>
+      <p className="text-sm font-bold text-primary group-hover:text-primary-dark transition-colors">{label}</p>
     </button>
   );
 }

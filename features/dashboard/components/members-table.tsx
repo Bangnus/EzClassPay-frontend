@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Room } from "@/features/rooms/types";
 import { getRoomMembers, removeRoomMember } from "@/features/rooms/services";
+import { History, Trash2 } from "lucide-react";
 
 interface MembersTableProps {
   roomId: string;
@@ -50,7 +51,7 @@ export default function MembersTable({ roomId }: MembersTableProps) {
 
   return (
     <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden mb-4">
-      <div className="p-4 border-b border-border bg-bg">
+      <div className="p-4 border-b border-border bg-white">
         <h2 className="font-bold text-text-primary text-lg">รายชื่อสมาชิก ({members.length})</h2>
       </div>
       
@@ -59,16 +60,16 @@ export default function MembersTable({ roomId }: MembersTableProps) {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-bg text-text-secondary">
+            <thead className="bg-white text-text-secondary border-b border-border">
               <tr>
                 <th className="px-4 py-3 font-semibold">ชื่อสมาชิก</th>
                 <th className="px-4 py-3 font-semibold">วันที่เข้าร่วม</th>
                 <th className="px-4 py-3 font-semibold text-right">จัดการ</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-border bg-white">
               {members.map((member) => (
-                <tr key={member.userId} className="hover:bg-bg transition-colors">
+                <tr key={member.userId} className="hover:bg-primary/5 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {member.user.pictureUrl ? (
@@ -93,14 +94,16 @@ export default function MembersTable({ roomId }: MembersTableProps) {
                     <div className="flex items-center justify-end gap-2">
                       <button 
                         onClick={() => handleView(member.userId)}
-                        className="text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-lg transition-colors"
                       >
+                        <History size={14} />
                         ประวัติ
                       </button>
                       <button 
                         onClick={() => handleRemove(member.userId, member.user.displayName)}
-                        className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors"
                       >
+                        <Trash2 size={14} />
                         ลบ
                       </button>
                     </div>

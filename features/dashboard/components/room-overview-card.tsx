@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Room } from "@/features/rooms/types";
-import { updateRoom, generateBills } from "@/features/rooms/services";
-import Input from "@/components/ui/input";
-import Select from "@/components/ui/select";
-import Button from "@/components/ui/button";
+import RoomSettingsForm from "./room-settings-form";
+import ManualBillGenerator from "./manual-bill-generator";
 
 interface RoomOverviewCardProps {
   room: Room;
@@ -15,72 +13,6 @@ export default function RoomOverviewCard({
   onUpdate,
 }: RoomOverviewCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const [amount, setAmount] = useState(
-    room.collectionType === "TARGET"
-      ? room.totalTargetAmount?.toString() || ""
-      : room.periodicAmount.toString()
-  );
-
-  const [autoBilling, setAutoBilling] = useState(
-    room.autoBillingEnabled ? "AUTO" : "MANUAL"
-  );
-  const [billingDay, setBillingDay] = useState(
-    room.billingDayOfMonth?.toString() || "1"
-  );
-
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-  const [billMonth, setBillMonth] = useState(currentMonth.toString());
-  const [billYear, setBillYear] = useState(currentYear.toString());
-  const [generating, setGenerating] = useState(false);
-
-  const handleGenerateBills = async () => {
-    if (!confirm(`ยืนยันการสร้างบิลสำหรับเดือน ${billMonth}/${billYear} หรือไม่?`)) return;
-    setGenerating(true);
-    try {
-      const result = await generateBills(room.id, Number(billMonth), Number(billYear));
-      if (result?.success) {
-        alert("สร้างบิลสำเร็จ");
-      } else {
-        alert(result?.message || "เกิดข้อผิดพลาดในการสร้างบิล");
-      }
-    } catch (error) {
-      alert("เกิดข้อผิดพลาดในการสร้างบิล");
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      const payload: Partial<Room> = {
-        autoBillingEnabled: autoBilling === "AUTO",
-        billingDayOfMonth: autoBilling === "AUTO" ? Number(billingDay) : null,
-      };
-
-      if (room.collectionType === "TARGET") {
-        payload.totalTargetAmount = Number(amount);
-      } else {
-        payload.periodicAmount = Number(amount);
-      }
-
-      await updateRoom(room.id, payload);
-      setIsEditing(false);
-      onUpdate();
-    } catch (error) {
-      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const daysOptions = Array.from({ length: 28 }, (_, i) => ({
-    value: (i + 1).toString(),
-    label: `วันที่ ${i + 1} ของเดือน`,
-  }));
 
   return (
     <div className="bg-white rounded-2xl p-5 border border-border shadow-sm mb-4">
@@ -102,50 +34,14 @@ export default function RoomOverviewCard({
       </div>
 
       {isEditing ? (
-        <div className="space-y-4 pt-2 border-t border-border mt-2">
-          <Input
-            label={
-              room.collectionType === "TARGET"
-                ? "ยอดเป้าหมายรวม (บาท)"
-                : "ยอดเก็บต่อรอบ (บาท)"
-            }
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-
-          <Select
-            label="ระบบส่งบิลเรียกเก็บเงิน"
-            value={autoBilling}
-            onChange={(v) => setAutoBilling(v as string)}
-            options={[
-              { value: "AUTO", label: "อัตโนมัติ (ระบบส่งบิลให้ทุกเดือน)" },
-              { value: "MANUAL", label: "กำหนดเอง (ผู้จัดการกดส่งเอง)" },
-            ]}
-          />
-
-          {autoBilling === "AUTO" && (
-            <Select
-              label="กำหนดวันส่งบิล"
-              value={billingDay}
-              onChange={(v) => setBillingDay(v as string)}
-              options={daysOptions}
-            />
-          )}
-
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="primary"
-              onClick={() => setIsEditing(false)}
-              disabled={loading}
-            >
-              ยกเลิก
-            </Button>
-            <Button type="primary" onClick={handleSave} loading={loading}>
-              บันทึก
-            </Button>
-          </div>
-        </div>
+        <RoomSettingsForm
+          room={room}
+          onSave={() => {
+            setIsEditing(false);
+            onUpdate();
+          }}
+          onCancel={() => setIsEditing(false)}
+        />
       ) : (
         <div className="space-y-2 text-[15px] pt-4 border-t border-border mt-2">
           <div className="flex justify-between">
@@ -175,33 +71,7 @@ export default function RoomOverviewCard({
           </div>
 
           {room.collectionType === "MONTHLY" && (
-            <div className="pt-4 border-t border-border mt-4">
-              <h3 className="font-bold text-text-primary mb-2 text-sm">สั่งสร้างบิลรอบเดือน</h3>
-              <div className="flex gap-2 items-end">
-                <div className="flex-1">
-                  <Select
-                    value={billMonth}
-                    onChange={(v) => setBillMonth(v as string)}
-                    options={Array.from({ length: 12 }, (_, i) => ({ value: (i + 1).toString(), label: `เดือน ${i + 1}` }))}
-                  />
-                </div>
-                <div className="flex-1">
-                  <Select
-                    value={billYear}
-                    onChange={(v) => setBillYear(v as string)}
-                    options={[
-                      { value: currentYear.toString(), label: `ปี ${currentYear}` },
-                      { value: (currentYear + 1).toString(), label: `ปี ${currentYear + 1}` }
-                    ]}
-                  />
-                </div>
-                <div>
-                  <Button type="primary" onClick={handleGenerateBills} loading={generating} padding="12px 16px" borderRadius={12}>
-                    สร้างบิล
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <ManualBillGenerator roomId={room.id} />
           )}
         </div>
       )}

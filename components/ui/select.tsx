@@ -20,7 +20,7 @@ export default function Select({ label, wrapperClassName, className, options, on
           {label}
         </label>
       )}
-      <div className="relative">
+      <div className="relative w-full">
         <select
           {...props}
           onChange={(e) => onChange?.(e.target.value)}

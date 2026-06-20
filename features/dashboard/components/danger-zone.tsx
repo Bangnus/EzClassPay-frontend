@@ -34,7 +34,7 @@ export default function DangerZone({ roomId, onDeleted }: DangerZoneProps) {
       <div className="mt-8 mb-4">
         <button
           onClick={() => setIsExpanded(true)}
-          className="w-full bg-bg border border-red-200 text-red-600 hover:bg-red-50 font-bold py-3 px-4 rounded-2xl transition-colors"
+          className="w-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold py-3 px-4 rounded-2xl transition-all"
         >
           ตั้งค่าขั้นสูง (ลบห้อง)
         </button>
