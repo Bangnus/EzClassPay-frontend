@@ -254,7 +254,7 @@ function ActionCard({ icon, label, onClick }: { icon: string; label: string; onC
   return (
     <button
       onClick={onClick}
-      className="bg-gray-200 rounded-2xl p-5 border border-primary/10 shadow-sm text-center hover:shadow-md transition-all group"
+      className="bg-gray-100 rounded-2xl p-5 border border-primary/10 shadow-sm text-center hover:shadow-md transition-all group"
     >
       <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{icon}</div>
       <p className="text-sm font-bold text-primary group-hover:text-primary-dark transition-colors">{label}</p>
