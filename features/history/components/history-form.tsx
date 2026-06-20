@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
 import { getRoomPayments, getRoom } from "@/features/rooms/services";
+import Input from "@/components/ui/input";
+import Button from "@/components/ui/button";
 import type { Payment } from "@/features/rooms/types";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -67,11 +69,14 @@ export default function HistoryForm() {
     setLoading(true);
     try {
       const [roomData, paymentsData] = await Promise.all([
-        getRoom(roomId),
+        getRoom(roomId).catch(() => null),
         getRoomPayments(roomId),
       ]);
       if (roomData) setRoomName((roomData as { name: string }).name || "");
-      setPayments(paymentsData as Payment[]);
+      
+      const p = paymentsData as Payment[];
+      p.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setPayments(p);
     } catch {
       setRoomName("");
       setPayments([]);
@@ -90,57 +95,61 @@ export default function HistoryForm() {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-neutral-400">กำลังโหลด...</div>;
+    return <div className="text-center py-20 text-text-secondary">กำลังโหลด...</div>;
   }
 
   return (
     <div className="space-y-6">
       <header className="text-center">
-        <h1 className="text-3xl font-extrabold text-blue-600 tracking-tight">
+        <h1 className="text-3xl font-extrabold text-primary tracking-tight">
           ประวัติการชำระเงิน
         </h1>
-        <p className="mt-2 text-neutral-500">ประวัติทั้งหมดของห้อง</p>
+        <p className="mt-2 text-text-secondary">ประวัติทั้งหมดของห้อง</p>
       </header>
 
       {profile && (
-        <div className="flex items-center gap-4 p-4 bg-neutral-100 rounded-2xl border border-neutral-200 shadow-inner">
+        <div className="flex items-center gap-4 p-4 bg-bg rounded-2xl border border-border shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={profile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full ring-4 ring-white" />
+          <img src={profile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full border border-border" />
           <div>
-            <p className="text-xs text-neutral-500">ผู้ใช้งาน</p>
-            <p className="text-lg font-bold text-neutral-900">{profile.displayName}</p>
+            <p className="text-xs text-text-secondary">ผู้จัดการ</p>
+            <p className="text-lg font-bold text-text-primary">{profile.displayName}</p>
           </div>
         </div>
       )}
 
       {!roomId && (
-        <div className="bg-white rounded-2xl p-6 border border-neutral-200 space-y-3">
-          <p className="font-bold text-neutral-800">เลือกรหัสห้อง</p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={roomInput}
-              onChange={e => setRoomInput(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") loadByRoomId(); }}
-              placeholder="Room ID"
-              className="flex-1 rounded-xl border border-neutral-300 px-4 py-3 text-base"
-            />
-            <button onClick={loadByRoomId} className="px-6 py-3 rounded-xl font-bold text-white bg-blue-500">
-              ยืนยัน
-            </button>
+        <div className="bg-bg rounded-2xl p-6 border border-border space-y-3">
+          <p className="font-bold text-text-primary">เลือกรหัสห้อง</p>
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <Input
+                label="Room ID"
+                type="text"
+                value={roomInput}
+                onChange={e => setRoomInput(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") loadByRoomId(); }}
+                placeholder="กรอกรหัสห้อง"
+              />
+            </div>
+            <div>
+              <Button type="primary" onClick={loadByRoomId}>
+                ยืนยัน
+              </Button>
+            </div>
           </div>
         </div>
       )}
 
       {roomId && roomName && (
-        <div className="bg-white rounded-2xl p-4 border border-neutral-200 flex items-center justify-between">
+        <div className="bg-bg rounded-2xl p-4 border border-border flex items-center justify-between">
           <div>
-            <p className="text-xs text-neutral-400">ห้อง</p>
-            <p className="font-bold text-neutral-900">{roomName}</p>
+            <p className="text-xs text-text-secondary">ห้อง</p>
+            <p className="font-bold text-text-primary">{roomName}</p>
           </div>
           <button
             onClick={() => { setRoomId(""); setRoomName(""); setPayments([]); }}
-            className="text-sm text-blue-600 font-bold"
+            className="text-sm text-primary font-bold"
           >
             เปลี่ยนห้อง
           </button>
@@ -150,26 +159,31 @@ export default function HistoryForm() {
       {roomId && (
         <>
           {loading ? (
-            <div className="text-center py-10 text-neutral-400">กำลังโหลด...</div>
+            <div className="text-center py-10 text-text-secondary">กำลังโหลด...</div>
           ) : payments.length === 0 ? (
-            <div className="bg-white rounded-2xl p-10 text-center border border-neutral-200">
-              <p className="text-neutral-400">ไม่มีประวัติการชำระเงิน</p>
+            <div className="bg-bg rounded-2xl p-10 text-center border border-border">
+              <p className="text-text-secondary">ไม่มีประวัติการชำระเงิน</p>
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm font-bold text-neutral-500">ทั้งหมด {payments.length} รายการ</p>
+              <p className="text-sm font-bold text-text-secondary">ทั้งหมด {payments.length} รายการ</p>
               {payments.map(payment => {
-                const st = STATUS_LABEL[payment.status] || { label: payment.status, color: "text-neutral-600 bg-neutral-50" };
+                const st = STATUS_LABEL[payment.status] || { label: payment.status, color: "text-text-secondary bg-border" };
                 return (
-                  <div key={payment.id} className="bg-white border border-neutral-200 rounded-2xl p-4 shadow-sm">
+                  <div key={payment.id} className="bg-bg border border-border rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                          {payment.user.displayName.charAt(0)}
-                        </div>
+                        {payment.user.pictureUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={payment.user.pictureUrl} alt="profile" className="w-10 h-10 rounded-full border border-border" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                            {payment.user.displayName.charAt(0)}
+                          </div>
+                        )}
                         <div>
-                          <p className="font-bold text-neutral-900">{payment.user.displayName}</p>
-                          <p className="text-xs text-neutral-400">
+                          <p className="font-bold text-text-primary">{payment.user.displayName}</p>
+                          <p className="text-xs text-text-secondary">
                             {new Date(payment.createdAt).toLocaleString("th-TH")}
                           </p>
                         </div>
@@ -178,11 +192,19 @@ export default function HistoryForm() {
                         {st.label}
                       </span>
                     </div>
+
+                    {payment.period && (
+                      <div className="mt-2 flex justify-between items-center bg-bg/50 rounded-lg p-2 border border-border">
+                        <p className="text-sm font-bold text-text-primary">ยอดเงิน: ฿{Number(payment.period.amount).toLocaleString()}</p>
+                        <p className="text-xs text-text-secondary">{payment.period.name}</p>
+                      </div>
+                    )}
+
                     {payment.slipUrl && (
                       <details className="mt-2">
-                        <summary className="text-sm text-blue-600 cursor-pointer">ดูสลิป</summary>
+                        <summary className="text-sm text-primary font-bold cursor-pointer">ดูสลิป</summary>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={payment.slipUrl} alt="สลิป" className="mt-2 w-full rounded-xl border" />
+                        <img src={payment.slipUrl} alt="สลิป" className="mt-2 w-full rounded-xl border border-border" />
                       </details>
                     )}
                   </div>
