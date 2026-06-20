@@ -7,9 +7,10 @@ import { message } from "antd";
 
 interface ManualBillGeneratorProps {
   roomId: string;
+  isAutoBilling: boolean;
 }
 
-export default function ManualBillGenerator({ roomId }: ManualBillGeneratorProps) {
+export default function ManualBillGenerator({ roomId, isAutoBilling }: ManualBillGeneratorProps) {
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
   const [billMonth, setBillMonth] = useState(currentMonth.toString());
@@ -22,13 +23,13 @@ export default function ManualBillGenerator({ roomId }: ManualBillGeneratorProps
     try {
       const result = await generateBills(roomId, Number(billMonth), Number(billYear));
       if (result?.success) {
-        message.success("สร้างบิลสำเร็จ");
+        message.success(isAutoBilling ? "ส่งแจ้งเตือนสำเร็จ" : "สร้างบิลสำเร็จ");
         setIsModalOpen(false);
       } else {
-        message.error(result?.message || "เกิดข้อผิดพลาดในการสร้างบิล");
+        message.error(result?.message || (isAutoBilling ? "เกิดข้อผิดพลาดในการส่งแจ้งเตือน" : "เกิดข้อผิดพลาดในการสร้างบิล"));
       }
     } catch (error) {
-      message.error("เกิดข้อผิดพลาดในการสร้างบิล");
+      message.error(isAutoBilling ? "เกิดข้อผิดพลาดในการส่งแจ้งเตือน" : "เกิดข้อผิดพลาดในการสร้างบิล");
     } finally {
       setGenerating(false);
     }
@@ -36,18 +37,31 @@ export default function ManualBillGenerator({ roomId }: ManualBillGeneratorProps
 
   return (
     <div className="pt-4 border-t border-border mt-4">
-      <Button 
-        type="primary" 
-        onClick={() => setIsModalOpen(true)} 
-        padding={20}
-        borderRadius={12} 
-        fontSize={15}
-      >
-        สั่งสร้างบิลรอบเดือน
-      </Button>
+      {isAutoBilling ? (
+        <Button 
+          type="default" 
+          onClick={() => setIsModalOpen(true)} 
+          padding={20}
+          borderRadius={12} 
+          fontSize={15}
+          className="border-primary text-primary hover:bg-primary-50"
+        >
+          ส่งบิลแจ้งเตือนประจำเดือน
+        </Button>
+      ) : (
+        <Button 
+          type="primary" 
+          onClick={() => setIsModalOpen(true)} 
+          padding={20}
+          borderRadius={12} 
+          fontSize={15}
+        >
+          สั่งสร้างบิลรอบเดือน
+        </Button>
+      )}
 
       <Modal
-        title={<div className="text-center font-bold text-lg mb-4">สั่งสร้างบิลรอบเดือน</div>}
+        title={<div className="text-center font-bold text-lg mb-4">{isAutoBilling ? "ส่งบิลแจ้งเตือน" : "สั่งสร้างบิลรอบเดือน"}</div>}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
@@ -55,7 +69,9 @@ export default function ManualBillGenerator({ roomId }: ManualBillGeneratorProps
       >
         <div className="flex flex-col gap-4">
           <p className="text-sm text-text-secondary text-center">
-            เลือกเดือนและปีที่ต้องการสร้างบิล ระบบจะสร้างบิลให้กับสมาชิกทุกคนในห้อง
+            {isAutoBilling 
+              ? "เลือกเดือนและปีที่ต้องการส่งบิลแจ้งเตือน ระบบจะส่งแจ้งเตือนไปยังสมาชิกที่ยังไม่ชำระเงินในเดือนนั้น" 
+              : "เลือกเดือนและปีที่ต้องการสร้างบิล ระบบจะสร้างบิลให้กับสมาชิกทุกคนในห้อง"}
           </p>
           <div className="flex gap-2">
             <div className="flex-1">
@@ -97,7 +113,7 @@ export default function ManualBillGenerator({ roomId }: ManualBillGeneratorProps
                 borderRadius={12} 
                 fontSize={15}
               >
-                ยืนยันสร้างบิล
+                {isAutoBilling ? "ยืนยันส่งแจ้งเตือน" : "ยืนยันสร้างบิล"}
               </Button>
             </div>
           </div>
