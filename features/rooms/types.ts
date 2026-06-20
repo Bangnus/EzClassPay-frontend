@@ -9,6 +9,8 @@ export interface Room {
   isPremium: boolean;
   lineGroupId: string | null;
   createdAt: string;
+  autoBillingEnabled?: boolean;
+  billingDayOfMonth?: number | null;
   members: { userId: string; joinedAt: string; user: { displayName: string; pictureUrl?: string } }[];
   manager: { displayName: string; pictureUrl?: string; lineUid: string };
   periods: unknown[];

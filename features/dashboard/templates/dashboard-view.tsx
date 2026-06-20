@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getManagerRooms, getRoomByGroup, approvePayment, rejectPayment, getRoom } from "@/features/rooms/services";
+import { getManagerRooms, getRoomByGroup, getRoom } from "@/features/rooms/services";
 import type { Room } from "@/features/rooms/types";
+import RoomOverviewCard from "../components/room-overview-card";
+import MembersTable from "../components/members-table";
+import DangerZone from "../components/danger-zone";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,8 +25,21 @@ export default function DashboardView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
-  const [pendingPayments, setPendingPayments] = useState<PaymentSummary[]>([]);
-  const [loadingPayments, setLoadingPayments] = useState(false);
+
+  const fetchRooms = async (userId: string, groupId: string | null | undefined) => {
+    let foundRooms: Room[] = [];
+    if (groupId) {
+      const roomData = await getRoomByGroup(groupId);
+      if (roomData) foundRooms = [roomData as Room];
+    }
+    if (foundRooms.length === 0) {
+      try {
+        const roomsData = await getManagerRooms(userId);
+        foundRooms = roomsData as Room[];
+      } catch { /* silent */ }
+    }
+    setRooms(foundRooms);
+  };
 
   useEffect(() => {
     console.log('[LIFF_OPEN] Dashboard URL:', window.location.href);
@@ -52,22 +68,8 @@ export default function DashboardView() {
           const roomData = await getRoom(roomIdFromUrl);
           if (roomData) setRooms([roomData as Room]);
         } else {
-          let foundRooms: Room[] = [];
-
           const ctx = liff.getContext();
-          if (ctx?.groupId) {
-            const roomData = await getRoomByGroup(ctx.groupId);
-            if (roomData) foundRooms = [roomData as Room];
-          }
-
-          if (foundRooms.length === 0) {
-            try {
-              const roomsData = await getManagerRooms(userProfile.userId);
-              foundRooms = roomsData as Room[];
-            } catch { /* silent */ }
-          }
-
-          setRooms(foundRooms);
+          await fetchRooms(userProfile.userId, ctx?.groupId);
         }
       } catch (error) {
         console.error("Dashboard Init Error:", error);
@@ -79,40 +81,21 @@ export default function DashboardView() {
     init();
   }, []);
 
-  const selectRoom = async (roomId: string) => {
+  const selectRoom = (roomId: string) => {
     setSelectedRoom(roomId);
-    setLoadingPayments(true);
-    try {
-      const res = await fetch(`${API_URL}/api/payments/room/${roomId}/pending`, {
-        headers: { "ngrok-skip-browser-warning": "true" },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setPendingPayments(data.data || []);
-      }
-    } catch {
-      setPendingPayments([]);
-    } finally {
-      setLoadingPayments(false);
-    }
   };
 
-  const handleApprove = async (paymentId: string) => {
-    try {
-      await approvePayment(paymentId);
-      setPendingPayments(prev => prev.filter(p => p.id !== paymentId));
-    } catch {
-      alert("เกิดข้อผิดพลาดในการอนุมัติ");
-    }
+  const handleUpdateRoom = async () => {
+    if (!profile) return;
+    const ctx = liff.getContext();
+    await fetchRooms(profile.userId, ctx?.groupId);
   };
 
-  const handleReject = async (paymentId: string) => {
-    try {
-      await rejectPayment(paymentId);
-      setPendingPayments(prev => prev.filter(p => p.id !== paymentId));
-    } catch {
-      alert("เกิดข้อผิดพลาดในการปฏิเสธ");
-    }
+  const handleDeletedRoom = async () => {
+    setSelectedRoom(null);
+    if (!profile) return;
+    const ctx = liff.getContext();
+    await fetchRooms(profile.userId, ctx?.groupId);
   };
 
   const openInLiff = (path: string) => {
@@ -156,27 +139,25 @@ export default function DashboardView() {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-green-50 rounded-2xl p-4 border border-green-100">
-            <p className="text-2xl font-extrabold text-green-700">{rooms.length}</p>
-            <p className="text-xs text-green-600">ห้องทั้งหมด</p>
+          <div className="bg-bg rounded-2xl p-4 border border-border">
+            <p className="text-2xl font-extrabold text-primary">{rooms.length}</p>
+            <p className="text-xs text-text-secondary">ห้องทั้งหมด</p>
           </div>
-          <div className="bg-orange-50 rounded-2xl p-4 border border-orange-100">
-            <p className="text-2xl font-extrabold text-orange-600">
-              {pendingPayments.length}
+          <div className="bg-bg rounded-2xl p-4 border border-border">
+            <p className="text-2xl font-extrabold text-primary">
+              {profile ? profile.displayName : ""}
             </p>
-            <p className="text-xs text-orange-600">รอตรวจสอบ</p>
+            <p className="text-xs text-text-secondary">ชื่อผู้ใช้</p>
           </div>
         </div>
 
         {selectedRoom ? (
-          <SelectedRoomDetail
+          <RoomManagementView
             roomId={selectedRoom}
             rooms={rooms}
-            pendingPayments={pendingPayments}
-            loadingPayments={loadingPayments}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onBack={() => { setSelectedRoom(null); setPendingPayments([]); }}
+            onUpdateRoom={handleUpdateRoom}
+            onDeletedRoom={handleDeletedRoom}
+            onBack={() => setSelectedRoom(null)}
           />
         ) : (
           <>
@@ -272,82 +253,27 @@ function RoomCard({ room, onSelect }: { room: Room; onSelect: (id: string) => vo
   );
 }
 
-function SelectedRoomDetail({
-  roomId, rooms, pendingPayments, loadingPayments, onApprove, onReject, onBack,
+function RoomManagementView({
+  roomId, rooms, onUpdateRoom, onDeletedRoom, onBack,
 }: {
-  roomId: string; rooms: Room[]; pendingPayments: PaymentSummary[];
-  loadingPayments: boolean; onApprove: (id: string) => void;
-  onReject: (id: string) => void; onBack: () => void;
+  roomId: string; rooms: Room[]; onUpdateRoom: () => void; onDeletedRoom: () => void; onBack: () => void;
 }) {
   const room = rooms.find(r => r.id === roomId);
 
+  if (!room) return null;
+
   return (
     <div className="space-y-4">
-      <button onClick={onBack} className="text-sm text-green-600 font-bold">← กลับ</button>
+      <button onClick={onBack} className="text-sm text-primary font-bold hover:underline mb-2">← กลับหน้ารวม</button>
 
-      {room && (
-        <div className="bg-white rounded-2xl p-4 border border-neutral-200">
-          <p className="text-xl font-bold text-neutral-900">{room.name}</p>
-          <p className="text-sm text-neutral-400">PromptPay: {room.promptpayNo}</p>
-          <p className="text-sm text-neutral-400">ยอด: ฿{Number(room.periodicAmount).toLocaleString()}</p>
-        </div>
-      )}
+      {/* Section 1: Room Card & Settings */}
+      <RoomOverviewCard room={room} onUpdate={onUpdateRoom} />
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            const url = new URL(`${window.location.origin}/approve-payments`);
-            url.searchParams.set("roomId", roomId);
-            window.location.href = url.toString();
-          }}
-          className="flex-1 py-3 rounded-xl font-bold text-white bg-orange-500"
-        >
-          ตรวจสอบสลิป
-        </button>
-        <button
-          onClick={() => {
-            const url = new URL(`${window.location.origin}/history`);
-            url.searchParams.set("roomId", roomId);
-            window.location.href = url.toString();
-          }}
-          className="flex-1 py-3 rounded-xl font-bold text-white bg-blue-500"
-        >
-          ประวัติ
-        </button>
-      </div>
+      {/* Section 2: Members Table */}
+      <MembersTable roomId={roomId} />
 
-      <div>
-        <h3 className="font-bold text-neutral-800 mb-2">สลิปรอตรวจสอบ</h3>
-        {loadingPayments ? (
-          <p className="text-sm text-neutral-400">กำลังโหลด...</p>
-        ) : pendingPayments.length === 0 ? (
-          <div className="bg-white rounded-2xl p-6 text-center border border-neutral-200">
-            <p className="text-3xl">✅</p>
-            <p className="text-sm text-neutral-400 mt-2">ไม่มีสลิปรอตรวจสอบ</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {pendingPayments.map(payment => (
-              <div key={payment.id} className="bg-white rounded-2xl p-4 border border-neutral-200 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
-                    {payment.user.displayName.charAt(0)}
-                  </div>
-                  <p className="font-bold text-neutral-900">{payment.user.displayName}</p>
-                </div>
-                {payment.slipUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={payment.slipUrl} alt="สลิป" className="w-full rounded-xl border" />
-                )}
-                <div className="flex gap-2">
-                  <button onClick={() => onApprove(payment.id)} className="flex-1 py-2.5 rounded-xl font-bold text-white bg-green-600">✅ อนุมัติ</button>
-                  <button onClick={() => onReject(payment.id)} className="flex-1 py-2.5 rounded-xl font-bold text-white bg-red-500">❌ ปฏิเสธ</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Section 3: Danger Zone */}
+      <DangerZone roomId={roomId} onDeleted={onDeletedRoom} />
     </div>
   );
 }

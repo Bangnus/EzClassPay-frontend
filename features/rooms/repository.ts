@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
-import { CreateRoomPayload, Payment } from "./types";
+import { CreateRoomPayload, Payment, Room } from "./types";
 
 export const createRoomApi = async (payload: CreateRoomPayload) => {
   const response = await axiosInstance.post("/api/rooms", payload);
@@ -49,3 +49,24 @@ export const getManagerRoomsApi = async (lineUid: string) => {
   );
   return response.data;
 };
+
+export const getRoomMembersApi = async (roomId: string) => {
+  const response = await axiosInstance.get<{ success: boolean; data: Room['members'] }>(`/api/rooms/${roomId}/members`);
+  return response.data;
+};
+
+export const removeRoomMemberApi = async (roomId: string, userId: string) => {
+  const response = await axiosInstance.delete(`/api/rooms/${roomId}/members/${userId}`);
+  return response.data;
+};
+
+export const updateRoomApi = async (roomId: string, payload: Partial<Room>) => {
+  const response = await axiosInstance.patch(`/api/rooms/${roomId}`, payload);
+  return response.data;
+};
+
+export const deleteRoomApi = async (roomId: string) => {
+  const response = await axiosInstance.delete(`/api/rooms/${roomId}`);
+  return response.data;
+};
+

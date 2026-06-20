@@ -7,8 +7,12 @@ import {
   getRoomPaymentsApi,
   getRoomByGroupApi,
   getManagerRoomsApi,
+  getRoomMembersApi,
+  removeRoomMemberApi,
+  updateRoomApi,
+  deleteRoomApi,
 } from "./repository";
-import { CreateRoomPayload } from "./types";
+import { CreateRoomPayload, Room } from "./types";
 
 export const createRoom = async (payload: CreateRoomPayload) => {
   const data = await createRoomApi(payload);
@@ -51,3 +55,21 @@ export const getManagerRooms = async (lineUid: string) => {
   const res = await getManagerRoomsApi(lineUid);
   return res.data || [];
 };
+
+export const getRoomMembers = async (roomId: string) => {
+  const res = await getRoomMembersApi(roomId);
+  return res.data || [];
+};
+
+export const removeRoomMember = async (roomId: string, userId: string) => {
+  return removeRoomMemberApi(roomId, userId);
+};
+
+export const updateRoom = async (roomId: string, payload: Partial<Room>) => {
+  return updateRoomApi(roomId, payload);
+};
+
+export const deleteRoom = async (roomId: string) => {
+  return deleteRoomApi(roomId);
+};
+
