@@ -133,27 +133,8 @@ export default function CreateRoomForm() {
         </p>
       </header>
 
-      {profile && (
-        <div className="mb-10 flex items-center gap-4 p-5 bg-bg rounded-2xl border border-border shadow-inner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={profile.pictureUrl}
-            alt="profile"
-            className="w-16 h-16 rounded-full ring-4 ring-white"
-          />
-          <div>
-            <p className="text-xs text-text-secondary font-medium tracking-wide">
-              ผู้สร้าง
-            </p>
-            <p className="text-xl font-bold text-text-primary">
-              {profile.displayName}
-            </p>
-          </div>
-        </div>
-      )}
-
       {!groupDetected && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800 space-y-2">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800 space-y-2 my-4">
           <p className="font-bold">⚠️ ไม่พบข้อมูลกลุ่ม LINE</p>
           <p>
             ห้องนี้จะถูกสร้างโดยไม่เชื่อมกับกลุ่ม LINE
@@ -212,7 +193,7 @@ export default function CreateRoomForm() {
         />
 
         <div className="pt-6">
-          <Button type="primary" borderRadius={10} padding={10}>
+          <Button type="primary" borderRadius={10} padding={15}>
             ยืนยันการสร้างห้อง
           </Button>
         </div>
