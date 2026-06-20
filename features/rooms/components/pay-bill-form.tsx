@@ -42,22 +42,35 @@ export default function PayBillForm() {
   return (
     <>
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-extrabold text-primary tracking-tight">ชำระเงิน</h1>
+        <h1 className="text-3xl font-extrabold text-primary tracking-tight">
+          ชำระเงิน
+        </h1>
         <p className="mt-2 text-neutral-500">{room.name}</p>
       </header>
 
       {profile && (
         <div className="mb-6 flex items-center gap-4 p-4 bg-neutral-100 rounded-2xl border border-neutral-200 shadow-inner">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={profile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full ring-4 ring-white" />
+          <img
+            src={profile.pictureUrl}
+            alt="profile"
+            className="w-12 h-12 rounded-full ring-4 ring-white"
+          />
           <div>
             <p className="text-xs text-neutral-500">ผู้โอน</p>
-            <p className="text-lg font-bold text-neutral-900">{profile.displayName}</p>
+            <p className="text-lg font-bold text-neutral-900">
+              {profile.displayName}
+            </p>
           </div>
         </div>
       )}
 
-      <PayBillQR room={room} amount={amount} submitting={submitting} onConfirm={handleConfirm} />
+      <PayBillQR
+        room={room}
+        amount={amount}
+        submitting={submitting}
+        onConfirm={handleConfirm}
+      />
     </>
   );
 }

@@ -10,12 +10,23 @@ import Select from "@/components/ui/select";
 import Button from "@/components/ui/button";
 
 const formSchema = z.object({
-  name: z.string().min(1, "กรุณากรอกชื่อห้อง").max(50, "ชื่อห้องต้องไม่เกิน 50 ตัวอักษร"),
+  name: z
+    .string()
+    .min(1, "กรุณากรอกชื่อห้อง")
+    .max(50, "ชื่อห้องต้องไม่เกิน 50 ตัวอักษร"),
   collection_type: z.string(),
-  amount: z.string().min(1, "กรุณากรอกยอดเงิน").refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "ยอดเงินต้องมากกว่า 0",
-  }),
-  promptpay_no: z.string().regex(/^(0[689]\d{8}|\d{13})$/, "กรุณากรอกเบอร์โทรศัพท์ 10 หลัก หรือ เลขบัตรประชาชน 13 หลัก โดยไม่ต้องมีขีด"),
+  amount: z
+    .string()
+    .min(1, "กรุณากรอกยอดเงิน")
+    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "ยอดเงินต้องมากกว่า 0",
+    }),
+  promptpay_no: z
+    .string()
+    .regex(
+      /^(0[689]\d{8}|\d{13})$/,
+      "กรุณากรอกเบอร์โทรศัพท์ 10 หลัก หรือ เลขบัตรประชาชน 13 หลัก โดยไม่ต้องมีขีด"
+    ),
 });
 
 export default function CreateRoomForm() {

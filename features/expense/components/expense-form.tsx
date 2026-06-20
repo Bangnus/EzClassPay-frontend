@@ -18,7 +18,9 @@ export default function ExpenseForm() {
   useEffect(() => {
     const initLiff = async () => {
       try {
-        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_EXPENSE as string });
+        await liff.init({
+          liffId: process.env.NEXT_PUBLIC_LIFF_ID_EXPENSE as string,
+        });
         if (liff.isLoggedIn()) {
           const userProfile = await liff.getProfile();
           setProfile(userProfile);
@@ -64,7 +66,9 @@ export default function ExpenseForm() {
     } catch (err) {
       console.error(err);
 
-      const errorObj = err as Error & { response?: { status?: number; data?: { message?: string } } };
+      const errorObj = err as Error & {
+        response?: { status?: number; data?: { message?: string } };
+      };
 
       if (errorObj?.response?.status === 400) {
         alert("ข้อมูลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");

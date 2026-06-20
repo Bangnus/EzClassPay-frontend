@@ -71,7 +71,10 @@ export default function RoomOverviewCard({
           </div>
 
           {room.collectionType === "MONTHLY" && (
-            <ManualBillGenerator roomId={room.id} isAutoBilling={room.autoBillingEnabled} />
+            <ManualBillGenerator
+              roomId={room.id}
+              isAutoBilling={room.autoBillingEnabled}
+            />
           )}
         </div>
       )}

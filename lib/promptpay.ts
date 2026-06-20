@@ -1,4 +1,8 @@
-export function generatePromptPayPayload(phoneOrId: string, amount: number, type: "mobile" | "nationalId" = "mobile"): string {
+export function generatePromptPayPayload(
+  phoneOrId: string,
+  amount: number,
+  type: "mobile" | "nationalId" = "mobile"
+): string {
   let idValue: string;
   let idType: string;
   if (type === "mobile") {
@@ -18,7 +22,10 @@ export function generatePromptPayPayload(phoneOrId: string, amount: number, type
   const amountLen = String(amountStr.length).padStart(2, "0");
 
   const payloadWithoutCrc = `00020101021129${merchantLen}${merchantAccountInfo}530376454${amountLen}${amountStr}5802TH6304`;
-  const crc = crc16(payloadWithoutCrc).toString(16).toUpperCase().padStart(4, "0");
+  const crc = crc16(payloadWithoutCrc)
+    .toString(16)
+    .toUpperCase()
+    .padStart(4, "0");
   return `${payloadWithoutCrc}${crc}`;
 }
 

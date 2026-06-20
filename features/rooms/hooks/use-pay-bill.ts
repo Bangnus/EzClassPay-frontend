@@ -23,11 +23,15 @@ export function usePayBill() {
   useEffect(() => {
     const initLiff = async () => {
       try {
-        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_PAY_BILL as string });
+        await liff.init({
+          liffId: process.env.NEXT_PUBLIC_LIFF_ID_PAY_BILL as string,
+        });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const liffQuery = (liff as any).getQuery?.() || {};
         const qRoomId = liffQuery.roomId;
-        const urlRoomId = new URLSearchParams(window.location.search).get("roomId");
+        const urlRoomId = new URLSearchParams(window.location.search).get(
+          "roomId"
+        );
         const ssRoomId = sessionStorage.getItem("pay_bill_roomId");
 
         const rid = qRoomId || urlRoomId || ssRoomId;
@@ -56,10 +60,14 @@ export function usePayBill() {
           const roomData = await res.json();
           if (roomData.success) setRoom(roomData.data);
 
-          const billRes = await apiFetch(`/api/bills/room/${rid}?limit=1&lineUid=${userProfile.userId}`);
+          const billRes = await apiFetch(
+            `/api/bills/room/${rid}?limit=1&lineUid=${userProfile.userId}`
+          );
           const billData = await billRes.json();
           if (billData.success && billData.data.length > 0) {
-            const unpaid = billData.data.find((b: { status: string }) => b.status === "UNPAID");
+            const unpaid = billData.data.find(
+              (b: { status: string }) => b.status === "UNPAID"
+            );
             if (unpaid) setBill(unpaid);
           }
         }

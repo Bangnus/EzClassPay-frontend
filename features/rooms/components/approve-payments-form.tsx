@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getPendingPayments, approvePayment, rejectPayment, getRoom } from "../services";
+import {
+  getPendingPayments,
+  approvePayment,
+  rejectPayment,
+  getRoom,
+} from "../services";
 import Spinner from "@/components/ui/spinner";
 import type { Payment } from "../types";
 
@@ -24,10 +29,16 @@ export default function ApprovePaymentsForm() {
     if (rid) setRoomId(rid);
 
     const init = async () => {
-      console.log('[LIFF_OPEN] ApprovePayments URL:', window.location.href);
+      console.log("[LIFF_OPEN] ApprovePayments URL:", window.location.href);
       try {
-        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_APPROVE as string });
-        let userProfile: { userId: string; displayName: string; pictureUrl?: string } | null = null;
+        await liff.init({
+          liffId: process.env.NEXT_PUBLIC_LIFF_ID_APPROVE as string,
+        });
+        let userProfile: {
+          userId: string;
+          displayName: string;
+          pictureUrl?: string;
+        } | null = null;
 
         if (liff.isLoggedIn()) {
           userProfile = await liff.getProfile();
@@ -45,7 +56,7 @@ export default function ApprovePaymentsForm() {
 
         if (rid) {
           const [roomData, pendingData] = await Promise.all([
-            fetch(`${API_URL}/api/rooms/${rid}`).then(r => r.json()),
+            fetch(`${API_URL}/api/rooms/${rid}`).then((r) => r.json()),
             getPendingPayments(rid),
           ]);
           if (roomData.success) setRoom(roomData.data);
@@ -63,7 +74,7 @@ export default function ApprovePaymentsForm() {
   const handleApprove = async (paymentId: string) => {
     try {
       await approvePayment(paymentId);
-      setPayments(prev => prev.filter(p => p.id !== paymentId));
+      setPayments((prev) => prev.filter((p) => p.id !== paymentId));
     } catch {
       alert("เกิดข้อผิดพลาดในการอนุมัติ");
     }
@@ -72,7 +83,7 @@ export default function ApprovePaymentsForm() {
   const handleReject = async (paymentId: string) => {
     try {
       await rejectPayment(paymentId);
-      setPayments(prev => prev.filter(p => p.id !== paymentId));
+      setPayments((prev) => prev.filter((p) => p.id !== paymentId));
     } catch {
       alert("เกิดข้อผิดพลาดในการปฏิเสธ");
     }
@@ -131,7 +142,7 @@ export default function ApprovePaymentsForm() {
         </div>
       ) : (
         <div className="space-y-4">
-          {payments.map(payment => (
+          {payments.map((payment) => (
             <div
               key={payment.id}
               className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm"

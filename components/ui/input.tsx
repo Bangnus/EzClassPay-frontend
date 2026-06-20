@@ -1,5 +1,9 @@
 import React from "react";
-import { Input as AntInput, InputProps as AntInputProps, ConfigProvider } from "antd";
+import {
+  Input as AntInput,
+  InputProps as AntInputProps,
+  ConfigProvider,
+} from "antd";
 
 interface CustomInputProps extends AntInputProps {
   label?: string;
@@ -36,7 +40,9 @@ export default function Input({
           {...props}
         />
       </ConfigProvider>
-      {error && <span className="text-red-500 text-xs ml-1 font-medium">{error}</span>}
+      {error && (
+        <span className="text-red-500 text-xs ml-1 font-medium">{error}</span>
+      )}
     </div>
   );
 }

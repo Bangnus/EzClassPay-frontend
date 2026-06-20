@@ -1,14 +1,15 @@
 import React from "react";
-import { Modal as AntModal, ModalProps as AntModalProps, ConfigProvider } from "antd";
+import {
+  Modal as AntModal,
+  ModalProps as AntModalProps,
+  ConfigProvider,
+} from "antd";
 
 interface CustomModalProps extends AntModalProps {
   children: React.ReactNode;
 }
 
-export default function Modal({
-  children,
-  ...props
-}: CustomModalProps) {
+export default function Modal({ children, ...props }: CustomModalProps) {
   return (
     <ConfigProvider
       theme={{

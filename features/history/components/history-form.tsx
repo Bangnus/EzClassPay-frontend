@@ -28,13 +28,15 @@ export default function HistoryForm() {
   useEffect(() => {
     const init = async () => {
       try {
-        console.log('[LIFF_OPEN] History URL:', window.location.href);
+        console.log("[LIFF_OPEN] History URL:", window.location.href);
 
         const params = new URLSearchParams(window.location.search);
         const ridFromUrl = params.get("roomId");
 
         try {
-          await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_HISTORY as string });
+          await liff.init({
+            liffId: process.env.NEXT_PUBLIC_LIFF_ID_HISTORY as string,
+          });
           if (liff.isLoggedIn()) {
             const userProfile = await liff.getProfile();
             setProfile(userProfile);
@@ -74,9 +76,12 @@ export default function HistoryForm() {
         getRoomPayments(roomId),
       ]);
       if (roomData) setRoomName((roomData as { name: string }).name || "");
-      
+
       const p = paymentsData as Payment[];
-      p.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      p.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
       setPayments(p);
     } catch {
       setRoomName("");
@@ -111,10 +116,16 @@ export default function HistoryForm() {
       {profile && (
         <div className="flex items-center gap-4 p-4 bg-bg rounded-2xl border border-border shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={profile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full border border-border" />
+          <img
+            src={profile.pictureUrl}
+            alt="profile"
+            className="w-12 h-12 rounded-full border border-border"
+          />
           <div>
             <p className="text-xs text-text-secondary">ผู้จัดการ</p>
-            <p className="text-lg font-bold text-text-primary">{profile.displayName}</p>
+            <p className="text-lg font-bold text-text-primary">
+              {profile.displayName}
+            </p>
           </div>
         </div>
       )}
@@ -128,8 +139,10 @@ export default function HistoryForm() {
                 label="Room ID"
                 type="text"
                 value={roomInput}
-                onChange={e => setRoomInput(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter") loadByRoomId(); }}
+                onChange={(e) => setRoomInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") loadByRoomId();
+                }}
                 placeholder="กรอกรหัสห้อง"
               />
             </div>
@@ -149,7 +162,11 @@ export default function HistoryForm() {
             <p className="font-bold text-text-primary">{roomName}</p>
           </div>
           <button
-            onClick={() => { setRoomId(""); setRoomName(""); setPayments([]); }}
+            onClick={() => {
+              setRoomId("");
+              setRoomName("");
+              setPayments([]);
+            }}
             className="text-sm text-primary font-bold"
           >
             เปลี่ยนห้อง
@@ -167,45 +184,74 @@ export default function HistoryForm() {
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm font-bold text-text-secondary">ทั้งหมด {payments.length} รายการ</p>
-              {payments.map(payment => {
-                const st = STATUS_LABEL[payment.status] || { label: payment.status, color: "text-text-secondary bg-border" };
+              <p className="text-sm font-bold text-text-secondary">
+                ทั้งหมด {payments.length} รายการ
+              </p>
+              {payments.map((payment) => {
+                const st = STATUS_LABEL[payment.status] || {
+                  label: payment.status,
+                  color: "text-text-secondary bg-border",
+                };
                 return (
-                  <div key={payment.id} className="bg-bg border border-border rounded-2xl p-4 shadow-sm">
+                  <div
+                    key={payment.id}
+                    className="bg-bg border border-border rounded-2xl p-4 shadow-sm"
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
                         {payment.user.pictureUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={payment.user.pictureUrl} alt="profile" className="w-10 h-10 rounded-full border border-border" />
+                          <img
+                            src={payment.user.pictureUrl}
+                            alt="profile"
+                            className="w-10 h-10 rounded-full border border-border"
+                          />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                             {payment.user.displayName.charAt(0)}
                           </div>
                         )}
                         <div>
-                          <p className="font-bold text-text-primary">{payment.user.displayName}</p>
+                          <p className="font-bold text-text-primary">
+                            {payment.user.displayName}
+                          </p>
                           <p className="text-xs text-text-secondary">
-                            {new Date(payment.createdAt).toLocaleString("th-TH")}
+                            {new Date(payment.createdAt).toLocaleString(
+                              "th-TH"
+                            )}
                           </p>
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${st.color}`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-bold ${st.color}`}
+                      >
                         {st.label}
                       </span>
                     </div>
 
                     {payment.period && (
                       <div className="mt-2 flex justify-between items-center bg-bg/50 rounded-lg p-2 border border-border">
-                        <p className="text-sm font-bold text-text-primary">ยอดเงิน: ฿{Number(payment.period.amount).toLocaleString()}</p>
-                        <p className="text-xs text-text-secondary">{payment.period.name}</p>
+                        <p className="text-sm font-bold text-text-primary">
+                          ยอดเงิน: ฿
+                          {Number(payment.period.amount).toLocaleString()}
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                          {payment.period.name}
+                        </p>
                       </div>
                     )}
 
                     {payment.slipUrl && (
                       <details className="mt-2">
-                        <summary className="text-sm text-primary font-bold cursor-pointer">ดูสลิป</summary>
+                        <summary className="text-sm text-primary font-bold cursor-pointer">
+                          ดูสลิป
+                        </summary>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={payment.slipUrl} alt="สลิป" className="mt-2 w-full rounded-xl border border-border" />
+                        <img
+                          src={payment.slipUrl}
+                          alt="สลิป"
+                          className="mt-2 w-full rounded-xl border border-border"
+                        />
                       </details>
                     )}
                   </div>

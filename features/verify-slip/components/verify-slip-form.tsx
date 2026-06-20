@@ -38,14 +38,16 @@ export default function VerifySlipForm() {
   useEffect(() => {
     const init = async () => {
       try {
-        console.log('[LIFF_OPEN] VerifySlip URL:', window.location.href);
+        console.log("[LIFF_OPEN] VerifySlip URL:", window.location.href);
 
         const params = new URLSearchParams(window.location.search);
         const ridFromUrl = params.get("roomId");
 
         // Try LIFF init (might be in LINE)
         try {
-          await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_VERIFY_SLIP as string });
+          await liff.init({
+            liffId: process.env.NEXT_PUBLIC_LIFF_ID_VERIFY_SLIP as string,
+          });
           if (liff.isLoggedIn()) {
             const userProfile = await liff.getProfile();
             setProfile(userProfile);
@@ -84,10 +86,10 @@ export default function VerifySlipForm() {
       const [roomRes, paymentsRes] = await Promise.all([
         fetch(`${API_URL}/api/rooms/${roomId}`, {
           headers: { "ngrok-skip-browser-warning": "true" },
-        }).then(r => r.json()),
+        }).then((r) => r.json()),
         fetch(`${API_URL}/api/payments/room/${roomId}/pending`, {
           headers: { "ngrok-skip-browser-warning": "true" },
-        }).then(r => r.json()),
+        }).then((r) => r.json()),
       ]);
 
       if (roomRes.success) {
@@ -107,7 +109,7 @@ export default function VerifySlipForm() {
   const handleApprove = async (paymentId: string) => {
     try {
       await approvePayment(paymentId);
-      setPayments(prev => prev.filter(p => p.id !== paymentId));
+      setPayments((prev) => prev.filter((p) => p.id !== paymentId));
     } catch {
       alert("เกิดข้อผิดพลาดในการอนุมัติ");
     }
@@ -117,7 +119,7 @@ export default function VerifySlipForm() {
     if (!confirm("ปฏิเสธสลิปนี้ ใช่หรือไม่?")) return;
     try {
       await rejectPayment(paymentId);
-      setPayments(prev => prev.filter(p => p.id !== paymentId));
+      setPayments((prev) => prev.filter((p) => p.id !== paymentId));
     } catch {
       alert("เกิดข้อผิดพลาดในการปฏิเสธ");
     }
@@ -156,7 +158,9 @@ export default function VerifySlipForm() {
           />
           <div>
             <p className="text-xs text-neutral-500">ผู้ตรวจสอบ</p>
-            <p className="text-lg font-bold text-neutral-900">{profile.displayName}</p>
+            <p className="text-lg font-bold text-neutral-900">
+              {profile.displayName}
+            </p>
           </div>
         </div>
       )}
@@ -165,13 +169,17 @@ export default function VerifySlipForm() {
       {!roomId && (
         <div className="bg-white rounded-2xl p-6 border border-neutral-200 space-y-3">
           <p className="font-bold text-neutral-800">เลือกรหัสห้อง</p>
-          <p className="text-sm text-neutral-400">ใส่รหัสห้องที่ต้องการตรวจสอบสลิป</p>
+          <p className="text-sm text-neutral-400">
+            ใส่รหัสห้องที่ต้องการตรวจสอบสลิป
+          </p>
           <div className="flex gap-2">
             <input
               type="text"
               value={roomInput}
-              onChange={e => setRoomInput(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") loadRoomById(); }}
+              onChange={(e) => setRoomInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") loadRoomById();
+              }}
               placeholder="Room ID"
               className="flex-1 rounded-xl border border-neutral-300 px-4 py-3 text-base"
             />
@@ -216,15 +224,19 @@ export default function VerifySlipForm() {
           ) : payments.length === 0 ? (
             <div className="bg-white rounded-2xl p-10 text-center border border-neutral-200 space-y-3">
               <div className="text-5xl">✅</div>
-              <p className="text-lg font-medium text-neutral-700">ไม่มีสลิปรอตรวจสอบ</p>
-              <p className="text-sm text-neutral-400">ทุกคนชำระเงินเรียบร้อยแล้ว</p>
+              <p className="text-lg font-medium text-neutral-700">
+                ไม่มีสลิปรอตรวจสอบ
+              </p>
+              <p className="text-sm text-neutral-400">
+                ทุกคนชำระเงินเรียบร้อยแล้ว
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
               <p className="text-sm font-bold text-neutral-500">
                 รอตรวจสอบ {payments.length} รายการ
               </p>
-              {payments.map(payment => (
+              {payments.map((payment) => (
                 <div
                   key={payment.id}
                   className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm"

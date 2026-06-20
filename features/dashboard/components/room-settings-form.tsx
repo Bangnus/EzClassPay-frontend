@@ -11,7 +11,11 @@ interface RoomSettingsFormProps {
   onCancel: () => void;
 }
 
-export default function RoomSettingsForm({ room, onSave, onCancel }: RoomSettingsFormProps) {
+export default function RoomSettingsForm({
+  room,
+  onSave,
+  onCancel,
+}: RoomSettingsFormProps) {
   const [loading, setLoading] = useState(false);
 
   const [amount, setAmount] = useState(
@@ -98,10 +102,24 @@ export default function RoomSettingsForm({ room, onSave, onCancel }: RoomSetting
       )}
 
       <div className="flex gap-2 pt-2">
-        <Button type="default" onClick={onCancel} disabled={loading} padding={10} borderRadius={12} fontSize={15}>
+        <Button
+          type="default"
+          onClick={onCancel}
+          disabled={loading}
+          padding={10}
+          borderRadius={12}
+          fontSize={15}
+        >
           ยกเลิก
         </Button>
-        <Button type="primary" onClick={handleSave} loading={loading} padding={10} borderRadius={12} fontSize={15}>
+        <Button
+          type="primary"
+          onClick={handleSave}
+          loading={loading}
+          padding={10}
+          borderRadius={12}
+          fontSize={15}
+        >
           บันทึก
         </Button>
       </div>

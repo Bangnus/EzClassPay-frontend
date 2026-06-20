@@ -27,9 +27,16 @@ export default function MemberHistoryForm() {
   useEffect(() => {
     const init = async () => {
       try {
-        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID_MEMBER_HISTORY as string });
+        await liff.init({
+          liffId: process.env.NEXT_PUBLIC_LIFF_ID_MEMBER_HISTORY as string,
+        });
 
-        console.log('[LIFF_OPEN] MemberHistory URL:', window.location.href, 'context:', JSON.stringify(liff.getContext()));
+        console.log(
+          "[LIFF_OPEN] MemberHistory URL:",
+          window.location.href,
+          "context:",
+          JSON.stringify(liff.getContext())
+        );
 
         if (!liff.isLoggedIn()) {
           liff.login();
@@ -87,11 +94,16 @@ export default function MemberHistoryForm() {
         getRoomPayments(roomId, fetchUserId),
       ]);
       if (roomData) setRoomName((roomData as { name: string }).name || "");
-      
-      const filteredPayments = (paymentsData as Payment[]).filter(p => p.lineUid === fetchUserId);
+
+      const filteredPayments = (paymentsData as Payment[]).filter(
+        (p) => p.lineUid === fetchUserId
+      );
       // Sort payments descending by date
-      filteredPayments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      
+      filteredPayments.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
       setPayments(filteredPayments);
     } catch {
       setPayments([]);
@@ -113,9 +125,8 @@ export default function MemberHistoryForm() {
   }
 
   // Determine which profile info to display
-  const displayProfile = payments.length > 0 && payments[0].user 
-    ? payments[0].user 
-    : profile;
+  const displayProfile =
+    payments.length > 0 && payments[0].user ? payments[0].user : profile;
 
   return (
     <div className="space-y-6">
@@ -129,10 +140,16 @@ export default function MemberHistoryForm() {
       {displayProfile && (
         <div className="flex items-center gap-4 p-4 bg-bg rounded-2xl border border-border shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={displayProfile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full border border-border" />
+          <img
+            src={displayProfile.pictureUrl}
+            alt="profile"
+            className="w-12 h-12 rounded-full border border-border"
+          />
           <div>
             <p className="text-xs text-text-secondary">สมาชิก</p>
-            <p className="text-lg font-bold text-text-primary">{displayProfile.displayName}</p>
+            <p className="text-lg font-bold text-text-primary">
+              {displayProfile.displayName}
+            </p>
           </div>
         </div>
       )}
@@ -143,31 +160,51 @@ export default function MemberHistoryForm() {
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm font-bold text-text-secondary">ทั้งหมด {payments.length} รายการ</p>
-          {payments.map(payment => {
-            const st = STATUS_LABEL[payment.status] || { label: payment.status, color: "text-text-secondary bg-border" };
+          <p className="text-sm font-bold text-text-secondary">
+            ทั้งหมด {payments.length} รายการ
+          </p>
+          {payments.map((payment) => {
+            const st = STATUS_LABEL[payment.status] || {
+              label: payment.status,
+              color: "text-text-secondary bg-border",
+            };
             return (
-              <div key={payment.id} className="bg-bg border border-border rounded-2xl p-4 shadow-sm">
+              <div
+                key={payment.id}
+                className="bg-bg border border-border rounded-2xl p-4 shadow-sm"
+              >
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-text-secondary">
                     {new Date(payment.createdAt).toLocaleString("th-TH")}
                   </p>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${st.color}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${st.color}`}
+                  >
                     {st.label}
                   </span>
                 </div>
                 {payment.period && (
                   <div className="mt-2 flex justify-between items-center">
-                    <p className="text-sm font-bold text-text-primary">ยอดเงิน: ฿{Number(payment.period.amount).toLocaleString()}</p>
-                    <p className="text-xs text-text-secondary">{payment.period.name}</p>
+                    <p className="text-sm font-bold text-text-primary">
+                      ยอดเงิน: ฿{Number(payment.period.amount).toLocaleString()}
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                      {payment.period.name}
+                    </p>
                   </div>
                 )}
 
                 {payment.slipUrl && (
                   <details className="mt-2">
-                    <summary className="text-sm text-primary font-bold cursor-pointer">ดูสลิป</summary>
+                    <summary className="text-sm text-primary font-bold cursor-pointer">
+                      ดูสลิป
+                    </summary>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={payment.slipUrl} alt="สลิป" className="mt-2 w-full rounded-xl border border-border" />
+                    <img
+                      src={payment.slipUrl}
+                      alt="สลิป"
+                      className="mt-2 w-full rounded-xl border border-border"
+                    />
                   </details>
                 )}
               </div>

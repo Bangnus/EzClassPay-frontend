@@ -1,5 +1,9 @@
 import React from "react";
-import { Select as AntSelect, SelectProps as AntSelectProps, ConfigProvider } from "antd";
+import {
+  Select as AntSelect,
+  SelectProps as AntSelectProps,
+  ConfigProvider,
+} from "antd";
 
 interface Option {
   value: string | number;

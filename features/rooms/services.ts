@@ -74,12 +74,19 @@ export const deleteRoom = async (roomId: string) => {
   return deleteRoomApi(roomId);
 };
 
-export const generateBills = async (roomId: string, month: number, year: number) => {
+export const generateBills = async (
+  roomId: string,
+  month: number,
+  year: number
+) => {
   try {
     const data = await generateBillsApi(roomId, month, year);
     return data;
   } catch (error: any) {
     console.error("Error generating bills:", error);
-    return { success: false, message: error?.response?.data?.message || "เกิดข้อผิดพลาดในการสร้างบิล" };
+    return {
+      success: false,
+      message: error?.response?.data?.message || "เกิดข้อผิดพลาดในการสร้างบิล",
+    };
   }
 };
