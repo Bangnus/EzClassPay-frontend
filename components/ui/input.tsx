@@ -1,11 +1,17 @@
-import React, { InputHTMLAttributes } from "react";
+import React from "react";
+import { Input as AntInput, InputProps as AntInputProps, ConfigProvider } from "antd";
 
-interface CustomInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface CustomInputProps extends AntInputProps {
   label?: string;
   wrapperClassName?: string;
 }
 
-export default function Input({ label, wrapperClassName, className, ...props }: CustomInputProps) {
+export default function Input({
+  label,
+  wrapperClassName,
+  className,
+  ...props
+}: CustomInputProps) {
   return (
     <div className={`w-full flex flex-col gap-1.5 ${wrapperClassName || ""}`}>
       {label && (
@@ -13,10 +19,20 @@ export default function Input({ label, wrapperClassName, className, ...props }: 
           {label}
         </label>
       )}
-      <input
-        {...props}
-        className={`w-full outline-none min-h-[46px] rounded-xl px-4 py-2.5 text-[15px] text-text-primary bg-white border border-border hover:border-primary hover:bg-white focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/20 transition-all duration-300 placeholder:text-text-secondary disabled:opacity-50 disabled:bg-bg disabled:cursor-not-allowed ${className || ""}`}
-      />
+      <ConfigProvider
+        theme={{
+          token: {
+            borderRadius: 12,
+            controlHeight: 46,
+            fontSize: 15,
+          },
+        }}
+      >
+        <AntInput
+          className={`w-full ${className || ""}`}
+          {...props}
+        />
+      </ConfigProvider>
     </div>
   );
 }

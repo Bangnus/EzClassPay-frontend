@@ -26,7 +26,7 @@ export default function RoomOverviewCard({
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="text-primary text-sm font-bold bg-bg px-3 py-1.5 rounded-lg hover:bg-secondary-light transition-colors"
+            className="text-primary text-sm font-bold bg-gray-200 px-3 py-1.5 rounded-lg hover:bg-secondary-light transition-colors"
           >
             ตั้งค่า
           </button>

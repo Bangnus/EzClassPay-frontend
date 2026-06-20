@@ -88,10 +88,10 @@ export default function RoomSettingsForm({ room, onSave, onCancel }: RoomSetting
       )}
 
       <div className="flex gap-2 pt-2">
-        <Button type="default" onClick={onCancel} disabled={loading}>
+        <Button type="default" onClick={onCancel} disabled={loading} padding={10} borderRadius={12} fontSize={15}>
           ยกเลิก
         </Button>
-        <Button type="primary" onClick={handleSave} loading={loading}>
+        <Button type="primary" onClick={handleSave} loading={loading} padding={10} borderRadius={12} fontSize={15}>
           บันทึก
         </Button>
       </div>

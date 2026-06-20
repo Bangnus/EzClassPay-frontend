@@ -53,7 +53,7 @@ export default function ManualBillGenerator({ roomId }: ManualBillGeneratorProps
           />
         </div>
         <div>
-          <Button type="primary" onClick={handleGenerateBills} loading={generating} padding={10} borderRadius={12} fontSize={15}>
+          <Button type="primary" onClick={handleGenerateBills} loading={generating} className="!h-[46px] px-6" borderRadius={12} fontSize={15}>
             สร้างบิล
           </Button>
         </div>

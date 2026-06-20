@@ -104,7 +104,6 @@ export default function MembersTable({ roomId }: MembersTableProps) {
                         className="flex items-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors"
                       >
                         <Trash2 size={14} />
-                        ลบ
                       </button>
                     </div>
                   </td>
