@@ -94,14 +94,6 @@ export default function DashboardView() {
     window.location.href = new URL(path, window.location.origin).toString();
   };
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-neutral-50 p-4">
-        <Spinner />
-      </main>
-    );
-  }
-
   // Auto-select first room if available
   const activeRoomId = selectedRoomId || (rooms.length > 0 ? rooms[0].id : null);
   const activeRoom = rooms.find(r => r.id === activeRoomId);
@@ -138,6 +130,14 @@ export default function DashboardView() {
     };
     fetchStats();
   }, [activeRoomId]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-neutral-50 p-4">
+        <Spinner />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-800 pb-20">
