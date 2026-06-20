@@ -7,7 +7,7 @@ import { message } from "antd";
 
 interface ManualBillGeneratorProps {
   roomId: string;
-  isAutoBilling: boolean;
+  isAutoBilling?: boolean;
 }
 
 export default function ManualBillGenerator({ roomId, isAutoBilling }: ManualBillGeneratorProps) {
