@@ -17,6 +17,7 @@ export default function MemberHistoryForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [profile, setProfile] = useState<any>(null);
   const [roomId, setRoomId] = useState("");
+  const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,8 +46,13 @@ export default function MemberHistoryForm() {
 
         const params = new URLSearchParams(window.location.search);
         const rid = params.get("roomId");
+        const uid = params.get("userId");
         const context = liff.getContext();
         const groupId = params.get("groupId") || context?.groupId || null;
+
+        if (uid) {
+          setTargetUserId(uid);
+        }
 
         if (rid) {
           setRoomId(rid);
@@ -74,12 +80,18 @@ export default function MemberHistoryForm() {
   const loadHistory = async () => {
     setLoading(true);
     try {
+      const fetchUserId = targetUserId || profile?.userId;
       const [roomData, paymentsData] = await Promise.all([
         getRoom(roomId).catch(() => null),
-        getRoomPayments(roomId, profile?.userId),
+        getRoomPayments(roomId, fetchUserId),
       ]);
       if (roomData) setRoomName((roomData as { name: string }).name || "");
-      setPayments((paymentsData as Payment[]).filter(p => p.lineUid === profile?.userId));
+      
+      const filteredPayments = (paymentsData as Payment[]).filter(p => p.lineUid === fetchUserId);
+      // Sort payments descending by date
+      filteredPayments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      setPayments(filteredPayments);
     } catch {
       setPayments([]);
     } finally {
@@ -88,61 +100,73 @@ export default function MemberHistoryForm() {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-neutral-400">กำลังโหลด...</div>;
+    return <div className="text-center py-20 text-text-secondary">กำลังโหลด...</div>;
   }
 
   if (error) {
     return (
       <div className="text-center py-20 space-y-4">
-        <p className="text-neutral-500">{error}</p>
+        <p className="text-text-secondary">{error}</p>
       </div>
     );
   }
 
+  // Determine which profile info to display
+  const displayProfile = payments.length > 0 && payments[0].user 
+    ? payments[0].user 
+    : profile;
+
   return (
     <div className="space-y-6">
       <header className="text-center">
-        <h1 className="text-3xl font-extrabold text-purple-600 tracking-tight">
-          ประวัติของฉัน
+        <h1 className="text-3xl font-extrabold text-primary tracking-tight">
+          ประวัติการจ่ายเงิน
         </h1>
-        {roomName && <p className="mt-2 text-neutral-500">{roomName}</p>}
+        {roomName && <p className="mt-2 text-text-secondary">{roomName}</p>}
       </header>
 
-      {profile && (
-        <div className="flex items-center gap-4 p-4 bg-neutral-100 rounded-2xl border border-neutral-200 shadow-inner">
+      {displayProfile && (
+        <div className="flex items-center gap-4 p-4 bg-bg rounded-2xl border border-border shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={profile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full ring-4 ring-white" />
+          <img src={displayProfile.pictureUrl} alt="profile" className="w-12 h-12 rounded-full border border-border" />
           <div>
-            <p className="text-xs text-neutral-500">สมาชิก</p>
-            <p className="text-lg font-bold text-neutral-900">{profile.displayName}</p>
+            <p className="text-xs text-text-secondary">สมาชิก</p>
+            <p className="text-lg font-bold text-text-primary">{displayProfile.displayName}</p>
           </div>
         </div>
       )}
 
       {payments.length === 0 ? (
-        <div className="bg-white rounded-2xl p-10 text-center border border-neutral-200">
-          <p className="text-neutral-400">ไม่มีประวัติการชำระเงิน</p>
+        <div className="bg-bg rounded-2xl p-10 text-center border border-border">
+          <p className="text-text-secondary">ไม่มีประวัติการชำระเงิน</p>
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm font-bold text-neutral-500">ทั้งหมด {payments.length} รายการ</p>
+          <p className="text-sm font-bold text-text-secondary">ทั้งหมด {payments.length} รายการ</p>
           {payments.map(payment => {
-            const st = STATUS_LABEL[payment.status] || { label: payment.status, color: "text-neutral-600 bg-neutral-50" };
+            const st = STATUS_LABEL[payment.status] || { label: payment.status, color: "text-text-secondary bg-border" };
             return (
-              <div key={payment.id} className="bg-white border border-neutral-200 rounded-2xl p-4 shadow-sm">
+              <div key={payment.id} className="bg-bg border border-border rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-text-secondary">
                     {new Date(payment.createdAt).toLocaleString("th-TH")}
                   </p>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${st.color}`}>
                     {st.label}
                   </span>
                 </div>
+                {payment.period && (
+                  <div className="mt-2 flex justify-between items-center">
+                    <p className="text-sm font-bold text-text-primary">ยอดเงิน: ฿{Number(payment.period.amount).toLocaleString()}</p>
+                    <p className="text-xs text-text-secondary">{payment.period.name}</p>
+                  </div>
+                )}
+
                 {payment.slipUrl && (
                   <details className="mt-2">
-                    <summary className="text-sm text-purple-600 cursor-pointer">ดูสลิป</summary>
+                    <summary className="text-sm text-primary font-bold cursor-pointer">ดูสลิป</summary>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={payment.slipUrl} alt="สลิป" className="mt-2 w-full rounded-xl border" />
+                    <img src={payment.slipUrl} alt="สลิป" className="mt-2 w-full rounded-xl border border-border" />
                   </details>
                 )}
               </div>

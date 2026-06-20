@@ -231,7 +231,7 @@ function RoomManagementView({
           />
           <ActionCard 
             icon="📊" 
-            label="ประวัติ" 
+            label="ประวัติรับ-จ่าย" 
             onClick={() => {
                const url = new URL(window.location.origin + "/history");
                url.searchParams.set("roomId", roomId);

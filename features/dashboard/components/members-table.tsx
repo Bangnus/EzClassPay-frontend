@@ -38,7 +38,7 @@ export default function MembersTable({ roomId }: MembersTableProps) {
   };
 
   const handleView = (userId: string) => {
-    const url = new URL(`${window.location.origin}/history`);
+    const url = new URL(`${window.location.origin}/member-history`);
     url.searchParams.set("roomId", roomId);
     url.searchParams.set("userId", userId);
     window.location.href = url.toString();

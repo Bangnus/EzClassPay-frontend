@@ -37,9 +37,14 @@ export interface Payment {
     id: string;
     displayName: string;
     lineUid: string;
+    pictureUrl?: string;
   };
   room: {
     name: string;
     lineGroupId: string;
+  };
+  period?: {
+    name: string;
+    amount: number;
   };
 }
