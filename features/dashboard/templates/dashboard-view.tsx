@@ -26,6 +26,8 @@ export default function DashboardView() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [profile, setProfile] = useState<any>(null);
   const [error, setError] = useState("");
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
   
   const { rooms, loading, setLoading, selectedRoomId, setSelectedRoomId } = useDashboardStore();
 
@@ -102,6 +104,40 @@ export default function DashboardView() {
 
   // Auto-select first room if available
   const activeRoomId = selectedRoomId || (rooms.length > 0 ? rooms[0].id : null);
+  const activeRoom = rooms.find(r => r.id === activeRoomId);
+
+  useEffect(() => {
+    if (!activeRoomId) return;
+    const fetchStats = async () => {
+      try {
+        const [paymentsRes, expensesRes] = await Promise.all([
+          fetch(`${API_URL}/api/payments/room/${activeRoomId}/history`, { headers: { "ngrok-skip-browser-warning": "true" } }).then(r => r.json()),
+          fetch(`${API_URL}/api/expenses/room/${activeRoomId}`, { headers: { "ngrok-skip-browser-warning": "true" } }).then(r => r.json())
+        ]);
+        
+        if (paymentsRes.success) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const approved = paymentsRes.data.filter((p: any) => p.status === "APPROVED");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const income = approved.reduce((sum: number, p: any) => sum + (p.period?.amount || 0), 0);
+          setTotalIncome(income);
+        } else {
+          setTotalIncome(0);
+        }
+
+        if (expensesRes.success) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const expense = expensesRes.data.reduce((sum: number, e: any) => sum + (e.amount || 0), 0);
+          setTotalExpense(expense);
+        } else {
+          setTotalExpense(0);
+        }
+      } catch (err) {
+        console.error("Error fetching room stats:", err);
+      }
+    };
+    fetchStats();
+  }, [activeRoomId]);
 
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-800 pb-20">
@@ -117,18 +153,22 @@ export default function DashboardView() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-linear-to-br from-primary to-primary/80 rounded-2xl p-4 shadow-sm border border-primary/20">
-            <p className="text-2xl font-extrabold text-white">{rooms.length}</p>
-            <p className="text-xs font-medium text-white/90">ห้องทั้งหมด</p>
+        {activeRoomId && (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-linear-to-br from-primary to-primary/80 rounded-2xl p-4 shadow-sm border border-primary/20">
+              <p className="text-2xl font-extrabold text-white">
+                ฿{totalIncome.toLocaleString()}
+              </p>
+              <p className="text-xs font-medium text-white/90">ยอดเงินทั้งหมด (เฉพาะห้องนี้)</p>
+            </div>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
+              <p className="text-2xl font-extrabold text-primary">
+                ฿{totalExpense.toLocaleString()}
+              </p>
+              <p className="text-xs font-medium text-text-secondary">เงินที่ออก (เฉพาะห้องนี้)</p>
+            </div>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
-            <p className="text-2xl font-extrabold text-primary">
-              {rooms.reduce((acc, room) => acc + (room.members?.length || 0), 0)}
-            </p>
-            <p className="text-xs font-medium text-text-secondary">ผู้ใช้ทั้งหมดในห้อง</p>
-          </div>
-        </div>
+        )}
 
         {activeRoomId ? (
           <RoomManagementView

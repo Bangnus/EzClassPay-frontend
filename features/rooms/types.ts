@@ -14,6 +14,8 @@ export interface Room {
   members: { userId: string; joinedAt: string; user: { displayName: string; pictureUrl?: string } }[];
   manager: { displayName: string; pictureUrl?: string; lineUid: string };
   periods: unknown[];
+  payments?: { period?: { amount: number } }[];
+  expenses?: { amount: number }[];
 }
 
 export interface CreateRoomPayload {
