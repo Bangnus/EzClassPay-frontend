@@ -70,28 +70,30 @@ export default function ManualBillGenerator({ roomId, isAutoBilling }: ManualBil
         <div className="flex flex-col gap-4">
           <p className="text-sm text-text-secondary text-center">
             {isAutoBilling 
-              ? "เลือกเดือนและปีที่ต้องการส่งบิลแจ้งเตือน ระบบจะส่งแจ้งเตือนไปยังสมาชิกที่ยังไม่ชำระเงินในเดือนนั้น" 
+              ? "ระบบจะส่งแจ้งเตือนบิลของเดือนปัจจุบันไปยังกลุ่มไลน์" 
               : "เลือกเดือนและปีที่ต้องการสร้างบิล ระบบจะสร้างบิลให้กับสมาชิกทุกคนในห้อง"}
           </p>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Select
-                value={billMonth}
-                onChange={(v) => setBillMonth(v as string)}
-                options={Array.from({ length: 12 }, (_, i) => ({ value: (i + 1).toString(), label: `เดือน ${i + 1}` }))}
-              />
+          {!isAutoBilling && (
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Select
+                  value={billMonth}
+                  onChange={(v) => setBillMonth(v as string)}
+                  options={Array.from({ length: 12 }, (_, i) => ({ value: (i + 1).toString(), label: `เดือน ${i + 1}` }))}
+                />
+              </div>
+              <div className="flex-1">
+                <Select
+                  value={billYear}
+                  onChange={(v) => setBillYear(v as string)}
+                  options={[
+                    { value: currentYear.toString(), label: `ปี ${currentYear}` },
+                    { value: (currentYear + 1).toString(), label: `ปี ${currentYear + 1}` }
+                  ]}
+                />
+              </div>
             </div>
-            <div className="flex-1">
-              <Select
-                value={billYear}
-                onChange={(v) => setBillYear(v as string)}
-                options={[
-                  { value: currentYear.toString(), label: `ปี ${currentYear}` },
-                  { value: (currentYear + 1).toString(), label: `ปี ${currentYear + 1}` }
-                ]}
-              />
-            </div>
-          </div>
+          )}
           <div className="flex gap-2 mt-4">
             <div className="flex-1">
               <Button 
