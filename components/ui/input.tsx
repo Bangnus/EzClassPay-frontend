@@ -4,12 +4,14 @@ import { Input as AntInput, InputProps as AntInputProps, ConfigProvider } from "
 interface CustomInputProps extends AntInputProps {
   label?: string;
   wrapperClassName?: string;
+  error?: string;
 }
 
 export default function Input({
   label,
   wrapperClassName,
   className,
+  error,
   ...props
 }: CustomInputProps) {
   return (
@@ -29,10 +31,12 @@ export default function Input({
         }}
       >
         <AntInput
+          status={error ? "error" : undefined}
           className={`w-full ${className || ""}`}
           {...props}
         />
       </ConfigProvider>
+      {error && <span className="text-red-500 text-xs ml-1 font-medium">{error}</span>}
     </div>
   );
 }

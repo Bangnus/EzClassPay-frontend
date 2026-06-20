@@ -26,6 +26,7 @@ export default function RoomSettingsForm({ room, onSave, onCancel }: RoomSetting
   const [billingDay, setBillingDay] = useState(
     room.billingDayOfMonth?.toString() || "1"
   );
+  const [promptpayNo, setPromptpayNo] = useState(room.promptpayNo || "");
 
   const handleSave = async () => {
     setLoading(true);
@@ -33,6 +34,7 @@ export default function RoomSettingsForm({ room, onSave, onCancel }: RoomSetting
       const payload: Partial<Room> = {
         autoBillingEnabled: autoBilling === "AUTO",
         billingDayOfMonth: autoBilling === "AUTO" ? Number(billingDay) : null,
+        promptpayNo,
       };
 
       if (room.collectionType === "TARGET") {
@@ -57,6 +59,14 @@ export default function RoomSettingsForm({ room, onSave, onCancel }: RoomSetting
 
   return (
     <div className="space-y-4 pt-2 border-t border-border mt-2">
+      <Input
+        label="เลขบัญชีพร้อมเพย์"
+        type="text"
+        value={promptpayNo}
+        onChange={(e) => setPromptpayNo(e.target.value)}
+        placeholder="เบอร์โทรศัพท์ หรือ เลขบัตรประชาชน"
+      />
+
       <Input
         label={
           room.collectionType === "TARGET"

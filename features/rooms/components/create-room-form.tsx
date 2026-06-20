@@ -2,11 +2,21 @@
 
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
+import { z } from "zod";
 import { createRoom } from "../services";
 import { syncUserWithBackend } from "@/services/auth";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/select";
 import Button from "@/components/ui/button";
+
+const formSchema = z.object({
+  name: z.string().min(1, "กรุณากรอกชื่อห้อง").max(50, "ชื่อห้องต้องไม่เกิน 50 ตัวอักษร"),
+  collection_type: z.string(),
+  amount: z.string().min(1, "กรุณากรอกยอดเงิน").refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+    message: "ยอดเงินต้องมากกว่า 0",
+  }),
+  promptpay_no: z.string().regex(/^(0[689]\d{8}|\d{13})$/, "กรุณากรอกเบอร์โทรศัพท์ 10 หลัก หรือ เลขบัตรประชาชน 13 หลัก โดยไม่ต้องมีขีด"),
+});
 
 export default function CreateRoomForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,6 +30,7 @@ export default function CreateRoomForm() {
     amount: "",
     promptpay_no: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const initLiff = async () => {
@@ -44,15 +55,6 @@ export default function CreateRoomForm() {
           const urlParams = new URLSearchParams(window.location.search);
           const groupId = urlParams.get("groupId") || context?.groupId || null;
 
-          console.log("🔍 LIFF Debug:", {
-            url: window.location.href,
-            search: window.location.search,
-            contextType: context?.type,
-            groupIdFromUrl: urlParams.get("groupId"),
-            groupIdFromContext: context?.groupId,
-            finalGroupId: groupId,
-          });
-
           if (groupId) {
             setLineGroupId(groupId);
           } else {
@@ -72,6 +74,10 @@ export default function CreateRoomForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear error when typing
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: "" });
+    }
   };
 
   const handleSelectChange = (value: string, name: string) => {
@@ -82,6 +88,20 @@ export default function CreateRoomForm() {
     e.preventDefault();
     if (!profile) return;
 
+    const validationResult = formSchema.safeParse(formData);
+    if (!validationResult.success) {
+      const fieldErrors = validationResult.error.flatten().fieldErrors;
+      const formattedErrors: Record<string, string> = {};
+      Object.entries(fieldErrors).forEach(([key, messages]) => {
+        if (messages && messages.length > 0) {
+          formattedErrors[key] = messages[0];
+        }
+      });
+      setErrors(formattedErrors);
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
     try {
       const payload = {
@@ -152,6 +172,7 @@ export default function CreateRoomForm() {
           onChange={handleChange}
           maxLength={50}
           placeholder="เช่น กองกลางห้อง 6/1, ค่าเสื้อรุ่น"
+          error={errors.name}
         />
 
         <Select
@@ -180,6 +201,7 @@ export default function CreateRoomForm() {
           required
           onChange={handleChange}
           placeholder="0.00"
+          error={errors.amount}
         />
 
         <Input
@@ -190,6 +212,7 @@ export default function CreateRoomForm() {
           onChange={handleChange}
           maxLength={13}
           placeholder="08X-XXX-XXXX หรือ เลขบัตรฯ"
+          error={errors.promptpay_no}
         />
 
         <div className="pt-6">
