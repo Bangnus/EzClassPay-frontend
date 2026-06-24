@@ -41,32 +41,48 @@ export default function VerifySlipForm() {
         console.log("[LIFF_OPEN] VerifySlip URL:", window.location.href);
 
         const params = new URLSearchParams(window.location.search);
-        const ridFromUrl = params.get("roomId");
+        const urlRoomId = params.get("roomId");
 
         // Try LIFF init (might be in LINE)
         try {
           await liff.init({
             liffId: process.env.NEXT_PUBLIC_LIFF_ID_VERIFY_SLIP as string,
           });
-          if (liff.isLoggedIn()) {
-            const userProfile = await liff.getProfile();
-            setProfile(userProfile);
-            await syncUserWithBackend({
-              line_uid: userProfile.userId,
-              name: userProfile.displayName,
-              profile_url: userProfile.pictureUrl,
-              action: "pay_bill",
-            });
-          }
-        } catch {
-          // Not in LINE or LIFF unavailable — standalone mode
-        }
 
-        if (ridFromUrl) {
-          setRoomId(ridFromUrl);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const liffQuery = (liff as any).getQuery?.() || {};
+          const qRoomId = liffQuery.roomId;
+          const ssRoomId = sessionStorage.getItem("verify_slip_roomId");
+
+          const rid = qRoomId || urlRoomId || ssRoomId;
+          if (rid) {
+            setRoomId(rid);
+            sessionStorage.setItem("verify_slip_roomId", rid);
+          }
+
+          if (!liff.isLoggedIn()) {
+            sessionStorage.setItem("verify_slip_roomId", rid || "");
+            liff.login();
+            return;
+          }
+
+          const userProfile = await liff.getProfile();
+          setProfile(userProfile);
+          await syncUserWithBackend({
+            line_uid: userProfile.userId,
+            name: userProfile.displayName,
+            profile_url: userProfile.pictureUrl,
+            action: "verify_slip",
+          });
+        } catch (e) {
+          console.error("LIFF error:", e);
+          // Not in LINE or LIFF unavailable — standalone mode
+          if (urlRoomId) {
+            setRoomId(urlRoomId);
+          }
         }
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error("Init error:", e);
       } finally {
         setLoading(false);
         setInitialized(true);
