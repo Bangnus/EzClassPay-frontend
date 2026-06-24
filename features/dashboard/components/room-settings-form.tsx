@@ -82,23 +82,27 @@ export default function RoomSettingsForm({
         onChange={(e) => setAmount(e.target.value)}
       />
 
-      <Select
-        label="ระบบส่งบิลเรียกเก็บเงิน"
-        value={autoBilling}
-        onChange={(v) => setAutoBilling(v as string)}
-        options={[
-          { value: "AUTO", label: "อัตโนมัติ (ระบบส่งบิลให้ทุกเดือน)" },
-          { value: "MANUAL", label: "กำหนดเอง (ผู้จัดการกดส่งเอง)" },
-        ]}
-      />
+      {room.collectionType === "MONTHLY" && (
+        <>
+          <Select
+            label="ระบบส่งบิลเรียกเก็บเงิน"
+            value={autoBilling}
+            onChange={(v) => setAutoBilling(v as string)}
+            options={[
+              { value: "AUTO", label: "อัตโนมัติ (ระบบส่งบิลให้ทุกเดือน)" },
+              { value: "MANUAL", label: "กำหนดเอง (ผู้จัดการกดส่งเอง)" },
+            ]}
+          />
 
-      {autoBilling === "AUTO" && (
-        <Select
-          label="กำหนดวันส่งบิล"
-          value={billingDay}
-          onChange={(v) => setBillingDay(v as string)}
-          options={daysOptions}
-        />
+          {autoBilling === "AUTO" && (
+            <Select
+              label="กำหนดวันส่งบิล"
+              value={billingDay}
+              onChange={(v) => setBillingDay(v as string)}
+              options={daysOptions}
+            />
+          )}
+        </>
       )}
 
       <div className="flex gap-2 pt-2">

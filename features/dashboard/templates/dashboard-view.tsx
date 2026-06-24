@@ -175,7 +175,32 @@ export default function DashboardView() {
           </div>
         )}
 
-        {activeRoomId && (
+        {activeRoomId && activeRoom?.collectionType === "TARGET" && activeRoom.totalTargetAmount ? (
+          <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
+            <div className="flex justify-between items-end mb-3">
+              <div>
+                <p className="text-xs text-text-secondary font-medium">เป้าหมายรวม</p>
+                <p className="text-2xl font-extrabold text-primary">
+                  ฿{totalIncome.toLocaleString()}
+                  <span className="text-sm font-normal text-text-secondary">
+                    {" "}/ ฿{activeRoom.totalTargetAmount.toLocaleString()}
+                  </span>
+                </p>
+              </div>
+              <p className="text-sm font-bold text-primary">
+                {Math.min(Math.round((totalIncome / activeRoom.totalTargetAmount) * 100), 100)}%
+              </p>
+            </div>
+            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-linear-to-r from-primary to-primary/60 rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min((totalIncome / activeRoom.totalTargetAmount) * 100, 100)}%`,
+                }}
+              />
+            </div>
+          </div>
+        ) : activeRoomId && (
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-linear-to-br from-primary to-primary/80 rounded-2xl p-4 shadow-sm border border-primary/20">
               <p className="text-2xl font-extrabold text-white">

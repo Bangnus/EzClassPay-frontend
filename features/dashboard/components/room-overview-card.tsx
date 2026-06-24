@@ -61,14 +61,16 @@ export default function RoomOverviewCard({
                 : Number(room.periodicAmount || 0).toLocaleString()}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-text-secondary">การส่งบิล:</span>
-            <span className="font-medium text-text-primary">
-              {room.autoBillingEnabled
-                ? `อัตโนมัติ (ทุกวันที่ ${room.billingDayOfMonth || 1})`
-                : "กำหนดเอง"}
-            </span>
-          </div>
+          {room.collectionType === "MONTHLY" && (
+            <div className="flex justify-between">
+              <span className="text-text-secondary">การส่งบิล:</span>
+              <span className="font-medium text-text-primary">
+                {room.autoBillingEnabled
+                  ? `อัตโนมัติ (ทุกวันที่ ${room.billingDayOfMonth || 1})`
+                  : "กำหนดเอง"}
+              </span>
+            </div>
+          )}
 
           {room.collectionType === "MONTHLY" && (
             <ManualBillGenerator
