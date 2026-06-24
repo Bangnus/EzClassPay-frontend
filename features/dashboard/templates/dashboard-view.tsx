@@ -54,7 +54,7 @@ export default function DashboardView() {
 
         const userProfile = await liff.getProfile();
         setProfile(userProfile);
-        await syncUserWithBackend({
+        const syncResult = await syncUserWithBackend({
           line_uid: userProfile.userId,
           name: userProfile.displayName,
           profile_url: userProfile.pictureUrl,
@@ -66,6 +66,8 @@ export default function DashboardView() {
 
         if (roomIdFromUrl) {
           await fetchRoomById(roomIdFromUrl);
+        } else if (syncResult?.data?.activeRoomId) {
+          await fetchRoomById(syncResult.data.activeRoomId);
         } else {
           const ctx = liff.getContext();
           await fetchRooms(userProfile.userId, ctx?.groupId);

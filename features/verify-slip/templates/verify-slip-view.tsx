@@ -51,10 +51,6 @@ export default function VerifySlipView() {
           const ssRoomId = sessionStorage.getItem("verify_slip_roomId");
 
           const rid = qRoomId || urlRoomId || ssRoomId;
-          if (rid) {
-            setRoomId(rid);
-            sessionStorage.setItem("verify_slip_roomId", rid);
-          }
 
           if (!liff.isLoggedIn()) {
             sessionStorage.setItem("verify_slip_roomId", rid || "");
@@ -63,12 +59,18 @@ export default function VerifySlipView() {
           }
 
           const userProfile = await liff.getProfile();
-          await syncUserWithBackend({
+          const syncResult = await syncUserWithBackend({
             line_uid: userProfile.userId,
             name: userProfile.displayName,
             profile_url: userProfile.pictureUrl,
             action: "verify_slip",
           });
+
+          const finalRid = rid || syncResult?.data?.activeRoomId || "";
+          if (finalRid) {
+            setRoomId(finalRid);
+            sessionStorage.setItem("verify_slip_roomId", finalRid);
+          }
         } catch (e) {
           console.error("LIFF error:", e);
           if (urlRoomId) {
