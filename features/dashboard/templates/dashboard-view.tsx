@@ -66,8 +66,10 @@ export default function DashboardView() {
 
         if (roomIdFromUrl) {
           await fetchRoomById(roomIdFromUrl);
+          setSelectedRoomId(roomIdFromUrl);
         } else if (syncResult?.data?.activeRoomId) {
           await fetchRoomById(syncResult.data.activeRoomId);
+          setSelectedRoomId(syncResult.data.activeRoomId);
         } else {
           const ctx = liff.getContext();
           await fetchRooms(userProfile.userId, ctx?.groupId);
