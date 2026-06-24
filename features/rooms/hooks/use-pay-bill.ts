@@ -19,6 +19,7 @@ export function usePayBill() {
   const [bill, setBill] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [roomId, setRoomId] = useState("");
+  const [periodId, setPeriodId] = useState("");
 
   useEffect(() => {
     const initLiff = async () => {
@@ -29,16 +30,19 @@ export function usePayBill() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const liffQuery = (liff as any).getQuery?.() || {};
         const qRoomId = liffQuery.roomId;
-        const urlRoomId = new URLSearchParams(window.location.search).get(
-          "roomId"
-        );
+        const qPeriodId = liffQuery.periodId;
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlRoomId = urlParams.get("roomId");
+        const urlPeriodId = urlParams.get("periodId");
         const ssRoomId = sessionStorage.getItem("pay_bill_roomId");
 
         const rid = qRoomId || urlRoomId || ssRoomId;
+        const pid = qPeriodId || urlPeriodId || "";
         if (rid) {
           setRoomId(rid);
           sessionStorage.setItem("pay_bill_roomId", rid);
         }
+        if (pid) setPeriodId(pid);
 
         if (!liff.isLoggedIn()) {
           sessionStorage.setItem("pay_bill_roomId", rid || "");
@@ -80,5 +84,5 @@ export function usePayBill() {
     initLiff();
   }, []);
 
-  return { profile, room, bill, loading, roomId, apiFetch };
+  return { profile, room, bill, loading, roomId, periodId, apiFetch };
 }
