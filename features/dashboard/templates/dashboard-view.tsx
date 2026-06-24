@@ -129,7 +129,7 @@ export default function DashboardView() {
           );
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const income = approved.reduce(
-            (sum: number, p: any) => sum + (p.period?.amount || 0),
+            (sum: number, p: any) => sum + (p.amount || 0),
             0
           );
           setTotalIncome(income);
@@ -271,7 +271,7 @@ function RoomCard({
           <p className="font-bold text-text-primary">{room.name}</p>
           <p className="text-sm text-text-secondary">
             {room.members?.length || 0} สมาชิก · ฿
-            {Number(room.periodicAmount).toLocaleString()}
+            {Number(room.collectionType === "TARGET" ? room.totalTargetAmount : room.periodicAmount).toLocaleString()}
           </p>
         </div>
         <div className="text-text-secondary text-xl">›</div>

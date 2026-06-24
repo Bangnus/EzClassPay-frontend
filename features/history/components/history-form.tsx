@@ -229,14 +229,11 @@ export default function HistoryForm() {
                       </span>
                     </div>
 
-                    {payment.period && (
+                    {payment.amount > 0 && (
                       <div className="mt-2 flex justify-between items-center bg-bg/50 rounded-lg p-2 border border-border">
                         <p className="text-sm font-bold text-text-primary">
                           ยอดเงิน: ฿
-                          {Number(payment.period.amount).toLocaleString()}
-                        </p>
-                        <p className="text-xs text-text-secondary">
-                          {payment.period.name}
+                          {Number(payment.amount).toLocaleString()}
                         </p>
                       </div>
                     )}

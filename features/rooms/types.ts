@@ -17,8 +17,7 @@ export interface Room {
     user: { displayName: string; pictureUrl?: string };
   }[];
   manager: { displayName: string; pictureUrl?: string; lineUid: string };
-  periods: unknown[];
-  payments?: { period?: { amount: number } }[];
+  payments?: { amount: number; createdAt: string }[];
   expenses?: { amount: number }[];
 }
 
@@ -37,6 +36,7 @@ export interface Payment {
   roomId: string;
   lineUid: string;
   slipUrl: string | null;
+  amount: number;
   status: "AWAITING_SLIP" | "PENDING" | "APPROVED" | "REJECTED";
   createdAt: string;
   user: {
@@ -48,9 +48,5 @@ export interface Payment {
   room: {
     name: string;
     lineGroupId: string;
-  };
-  period?: {
-    name: string;
-    amount: number;
   };
 }

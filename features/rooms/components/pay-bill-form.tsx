@@ -9,11 +9,11 @@ import Spinner from "@/components/ui/spinner";
 import { usePayBill } from "../hooks/use-pay-bill";
 
 export default function PayBillForm() {
-  const { profile, room, bill, loading, roomId, periodId, apiFetch } = usePayBill();
+  const { profile, room, bill, loading, roomId, apiFetch } = usePayBill();
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
-  const amount = bill?.amount || room?.periodicAmount || 0;
+  const amount = bill?.amount || room?.totalTargetAmount || 0;
 
   const handleConfirm = async () => {
     if (!profile || !roomId) return;
@@ -22,7 +22,7 @@ export default function PayBillForm() {
       await apiFetch("/api/payments/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lineUid: profile.userId, roomId, periodId: periodId || undefined }),
+        body: JSON.stringify({ lineUid: profile.userId, roomId, amount }),
       });
       setDone(true);
     } catch (err) {
