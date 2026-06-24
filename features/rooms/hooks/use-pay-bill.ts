@@ -35,17 +35,23 @@ export function usePayBill() {
         const urlRoomId = urlParams.get("roomId");
         const urlPeriodId = urlParams.get("periodId");
         const ssRoomId = sessionStorage.getItem("pay_bill_roomId");
+        const ssPeriodId = sessionStorage.getItem("pay_bill_periodId");
 
         const rid = qRoomId || urlRoomId || ssRoomId;
-        const pid = qPeriodId || urlPeriodId || "";
+        const pid = qPeriodId || urlPeriodId || ssPeriodId || "";
+        
         if (rid) {
           setRoomId(rid);
           sessionStorage.setItem("pay_bill_roomId", rid);
         }
-        if (pid) setPeriodId(pid);
+        if (pid) {
+          setPeriodId(pid);
+          sessionStorage.setItem("pay_bill_periodId", pid);
+        }
 
         if (!liff.isLoggedIn()) {
           sessionStorage.setItem("pay_bill_roomId", rid || "");
+          sessionStorage.setItem("pay_bill_periodId", pid || "");
           liff.login();
           return;
         }
@@ -65,14 +71,26 @@ export function usePayBill() {
           if (roomData.success) setRoom(roomData.data);
 
           const billRes = await apiFetch(
-            `/api/bills/room/${rid}?limit=1&lineUid=${userProfile.userId}`
+            `/api/bills/room/${rid}?limit=10&lineUid=${userProfile.userId}`
           );
           const billData = await billRes.json();
           if (billData.success && billData.data.length > 0) {
-            const unpaid = billData.data.find(
-              (b: { status: string }) => b.status === "UNPAID"
-            );
-            if (unpaid) setBill(unpaid);
+            let targetBill;
+            if (pid) {
+              targetBill = billData.data.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (b: any) => b.status === "UNPAID" && (b.id === pid || b.periodId === pid)
+              );
+            }
+            
+            if (!targetBill) {
+              targetBill = billData.data.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (b: any) => b.status === "UNPAID"
+              );
+            }
+
+            if (targetBill) setBill(targetBill);
           }
         }
       } catch (error) {
