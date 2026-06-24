@@ -1,143 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import liff from "@line/liff";
-import { syncUserWithBackend } from "@/services/auth";
-import { approvePayment, rejectPayment } from "@/features/rooms/services";
+import React from "react";
 import Spinner from "@/components/ui/spinner";
 import Button from "@/components/ui/button";
+import type { PaymentSlip } from "../templates/verify-slip-view";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-interface PaymentSlip {
-  id: string;
-  slipUrl: string | null;
-  status: string;
-  amount?: number;
-  createdAt: string;
-  user: {
-    id: string;
-    displayName: string;
-    lineUid: string;
-    pictureUrl?: string;
-  };
-  room?: {
-    name: string;
-  };
+interface VerifySlipFormProps {
+  roomId: string;
+  roomName: string;
+  payments: PaymentSlip[];
+  loading: boolean;
+  initialized: boolean;
+  onApprove: (id: string) => void;
+  onReject: (id: string) => void;
+  onClearRoom?: () => void;
 }
 
-export default function VerifySlipForm() {
-  const [roomId, setRoomId] = useState("");
-  const [roomName, setRoomName] = useState("");
-  const [payments, setPayments] = useState<PaymentSlip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    const init = async () => {
-      try {
-        console.log("[LIFF_OPEN] VerifySlip URL:", window.location.href);
-
-        const params = new URLSearchParams(window.location.search);
-        const urlRoomId = params.get("roomId");
-
-        // Try LIFF init (might be in LINE)
-        try {
-          await liff.init({
-            liffId: process.env.NEXT_PUBLIC_LIFF_ID_VERIFY_SLIP as string,
-          });
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const liffQuery = (liff as any).getQuery?.() || {};
-          const qRoomId = liffQuery.roomId;
-          const ssRoomId = sessionStorage.getItem("verify_slip_roomId");
-
-          const rid = qRoomId || urlRoomId || ssRoomId;
-          if (rid) {
-            setRoomId(rid);
-            sessionStorage.setItem("verify_slip_roomId", rid);
-          }
-
-          if (!liff.isLoggedIn()) {
-            sessionStorage.setItem("verify_slip_roomId", rid || "");
-            liff.login();
-            return;
-          }
-
-          const userProfile = await liff.getProfile();
-          await syncUserWithBackend({
-            line_uid: userProfile.userId,
-            name: userProfile.displayName,
-            profile_url: userProfile.pictureUrl,
-            action: "verify_slip",
-          });
-        } catch (e) {
-          console.error("LIFF error:", e);
-          // Not in LINE or LIFF unavailable — standalone mode
-          if (urlRoomId) {
-            setRoomId(urlRoomId);
-          }
-        }
-      } catch (e) {
-        console.error("Init error:", e);
-      } finally {
-        setLoading(false);
-        setInitialized(true);
-      }
-    };
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (!roomId) return;
-    loadRoomAndPayments();
-  }, [roomId]);
-
-  const loadRoomAndPayments = async () => {
-    setLoading(true);
-    try {
-      const [roomRes, paymentsRes] = await Promise.all([
-        fetch(`${API_URL}/api/rooms/${roomId}`, {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }).then((r) => r.json()),
-        fetch(`${API_URL}/api/payments/room/${roomId}/pending`, {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }).then((r) => r.json()),
-      ]);
-
-      if (roomRes.success) {
-        setRoomName(roomRes.data.name || "");
-      }
-      if (paymentsRes.success) {
-        setPayments(paymentsRes.data || []);
-      }
-    } catch {
-      setRoomName("");
-      setPayments([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleApprove = async (paymentId: string) => {
-    try {
-      await approvePayment(paymentId);
-      setPayments((prev) => prev.filter((p) => p.id !== paymentId));
-    } catch {
-      alert("เกิดข้อผิดพลาดในการอนุมัติ");
-    }
-  };
-
-  const handleReject = async (paymentId: string) => {
-    if (!confirm("ปฏิเสธสลิปนี้ ใช่หรือไม่?")) return;
-    try {
-      await rejectPayment(paymentId);
-      setPayments((prev) => prev.filter((p) => p.id !== paymentId));
-    } catch {
-      alert("เกิดข้อผิดพลาดในการปฏิเสธ");
-    }
-  };
-
+export default function VerifySlipForm({
+  roomId,
+  roomName,
+  payments,
+  loading,
+  initialized,
+  onApprove,
+  onReject,
+}: VerifySlipFormProps) {
   if (!initialized) {
     return <Spinner text="กำลังเตรียมข้อมูลการตรวจสอบ..." />;
   }
@@ -243,7 +130,7 @@ export default function VerifySlipForm() {
                     <div className="flex gap-3 pt-2">
                       <div className="flex-1">
                         <Button
-                          onClick={() => handleApprove(payment.id)}
+                          onClick={() => onApprove(payment.id)}
                           type="primary"
                           padding={12}
                           color="#00c6ae"
@@ -254,7 +141,7 @@ export default function VerifySlipForm() {
                       </div>
                       <div className="flex-1">
                         <Button
-                          onClick={() => handleReject(payment.id)}
+                          onClick={() => onReject(payment.id)}
                           type="default"
                           padding={12}
                           className="w-full border-red-200 text-red-600 bg-red-50 hover:bg-red-100"
