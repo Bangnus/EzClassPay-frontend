@@ -5,6 +5,7 @@ import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
 import { approvePayment, rejectPayment } from "@/features/rooms/services";
 import Spinner from "@/components/ui/spinner";
+import Button from "@/components/ui/button";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -26,13 +27,10 @@ interface PaymentSlip {
 }
 
 export default function VerifySlipForm() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [profile, setProfile] = useState<any>(null);
   const [roomId, setRoomId] = useState("");
   const [roomName, setRoomName] = useState("");
   const [payments, setPayments] = useState<PaymentSlip[]>([]);
   const [loading, setLoading] = useState(true);
-  const [roomInput, setRoomInput] = useState("");
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -67,7 +65,6 @@ export default function VerifySlipForm() {
           }
 
           const userProfile = await liff.getProfile();
-          setProfile(userProfile);
           await syncUserWithBackend({
             line_uid: userProfile.userId,
             name: userProfile.displayName,
@@ -141,159 +138,130 @@ export default function VerifySlipForm() {
     }
   };
 
-  const loadRoomById = () => {
-    const rid = roomInput.trim();
-    if (!rid) return;
-    setRoomId(rid);
-    // Update URL without reload
-    const url = new URL(window.location.href);
-    url.searchParams.set("roomId", rid);
-    window.history.replaceState({}, "", url.toString());
-  };
-
   if (!initialized) {
-    return <Spinner />;
+    return <Spinner text="กำลังเตรียมข้อมูลการตรวจสอบ..." />;
   }
 
   return (
-    <div className="space-y-6">
-      <header className="text-center">
-        <h1 className="text-3xl font-extrabold text-orange-600 tracking-tight">
+    <div className="animate-[fadeInUp_0.4s_ease-out] space-y-6">
+      <header className="mb-8 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-primary to-primary-dark shadow-button mb-4">
+          <span className="text-3xl">🔎</span>
+        </div>
+        <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
           ตรวจสอบสลิป
         </h1>
-        <p className="mt-2 text-neutral-500">ตรวจสอบและยืนยันสลิปการโอนเงิน</p>
+        <p className="mt-1.5 text-sm text-text-secondary font-medium">
+          ตรวจสอบและยืนยันสลิปการโอนเงิน
+        </p>
       </header>
 
-      {profile && (
-        <div className="flex items-center gap-4 p-4 bg-neutral-100 rounded-2xl border border-neutral-200 shadow-inner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={profile.pictureUrl}
-            alt="profile"
-            className="w-12 h-12 rounded-full ring-4 ring-white"
-          />
-          <div>
-            <p className="text-xs text-neutral-500">ผู้ตรวจสอบ</p>
-            <p className="text-lg font-bold text-neutral-900">
-              {profile.displayName}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Room selector */}
       {!roomId && (
-        <div className="bg-white rounded-2xl p-6 border border-neutral-200 space-y-3">
-          <p className="font-bold text-neutral-800">เลือกรหัสห้อง</p>
-          <p className="text-sm text-neutral-400">
-            ใส่รหัสห้องที่ต้องการตรวจสอบสลิป
+        <div className="rounded-2xl bg-white border border-border p-8 text-center space-y-3 shadow-soft">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 mb-1">
+            <span className="text-4xl">🔍</span>
+          </div>
+          <p className="text-base font-semibold text-text-primary">
+            ไม่พบข้อมูลห้อง
           </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={roomInput}
-              onChange={(e) => setRoomInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") loadRoomById();
-              }}
-              placeholder="Room ID"
-              className="flex-1 rounded-xl border border-neutral-300 px-4 py-3 text-base"
-            />
-            <button
-              onClick={loadRoomById}
-              className="px-6 py-3 rounded-xl font-bold text-white bg-orange-500"
-            >
-              ยืนยัน
-            </button>
-          </div>
+          <p className="text-sm text-text-secondary">
+            กรุณาเข้าใช้งานผ่านลิงก์ห้องที่ถูกต้อง
+          </p>
         </div>
       )}
 
-      {/* Room info */}
       {roomId && roomName && (
-        <div className="bg-white rounded-2xl p-4 border border-neutral-200 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-neutral-400">ห้อง</p>
-            <p className="font-bold text-neutral-900">{roomName}</p>
+        <div className="relative overflow-hidden bg-linear-to-br from-secondary-light to-white rounded-2xl p-5 border border-secondary/40 flex items-center justify-between shadow-soft">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,198,174,0.06),transparent_70%)]" />
+          <div className="relative">
+            <p className="text-xs text-text-secondary font-medium mb-1">ห้องปัจจุบัน</p>
+            <p className="font-bold text-primary-dark text-lg">{roomName}</p>
           </div>
-          <button
-            onClick={() => {
-              setRoomId("");
-              setRoomName("");
-              setPayments([]);
-              const url = new URL(window.location.href);
-              url.searchParams.delete("roomId");
-              window.history.replaceState({}, "", url.toString());
-            }}
-            className="text-sm text-orange-600 font-bold"
-          >
-            เปลี่ยนห้อง
-          </button>
         </div>
       )}
 
-      {/* Pending payments */}
       {roomId && (
         <>
           {loading ? (
-            <Spinner />
+            <Spinner text="กำลังโหลดข้อมูล..." />
           ) : payments.length === 0 ? (
-            <div className="bg-white rounded-2xl p-10 text-center border border-neutral-200 space-y-3">
-              <div className="text-5xl">✅</div>
-              <p className="text-lg font-medium text-neutral-700">
-                ไม่มีสลิปรอตรวจสอบ
-              </p>
-              <p className="text-sm text-neutral-400">
-                ทุกคนชำระเงินเรียบร้อยแล้ว
-              </p>
+            <div className="rounded-2xl bg-white border border-border p-10 text-center space-y-4 shadow-soft mt-6">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-2">
+                <span className="text-5xl">✅</span>
+              </div>
+              <div>
+                <p className="text-lg font-bold text-primary-dark">
+                  ไม่มีสลิปรอตรวจสอบ
+                </p>
+                <p className="text-sm text-text-secondary mt-1">
+                  ทุกคนชำระเงินเรียบร้อยแล้ว
+                </p>
+              </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <p className="text-sm font-bold text-neutral-500">
-                รอตรวจสอบ {payments.length} รายการ
-              </p>
+            <div className="space-y-4 mt-6">
+              <div className="flex items-center justify-between px-2 pb-2">
+                <p className="text-sm font-bold text-text-secondary">
+                  รอตรวจสอบทั้งหมด
+                </p>
+                <span className="bg-primary/10 text-primary-dark px-3 py-1 rounded-full text-xs font-bold">
+                  {payments.length} รายการ
+                </span>
+              </div>
+
               {payments.map((payment) => (
                 <div
                   key={payment.id}
-                  className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm"
+                  className="bg-white border border-border rounded-2xl overflow-hidden shadow-soft hover:shadow-card transition-shadow duration-300"
                 >
-                  <div className="p-4 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-lg">
+                  <div className="p-5 space-y-4">
+                    <div className="flex items-center gap-3 border-b border-border/50 pb-4">
+                      <div className="w-12 h-12 rounded-full bg-secondary-light flex items-center justify-center text-primary-dark font-bold text-xl border border-secondary/30">
                         {payment.user.displayName.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-bold text-neutral-900">
+                        <p className="font-bold text-text-primary text-lg">
                           {payment.user.displayName}
                         </p>
-                        <p className="text-xs text-neutral-400">
+                        <p className="text-xs text-text-secondary font-medium">
                           {new Date(payment.createdAt).toLocaleString("th-TH")}
                         </p>
                       </div>
                     </div>
 
                     {payment.slipUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={payment.slipUrl}
-                        alt="สลิป"
-                        className="w-full rounded-xl border border-neutral-100"
-                      />
+                      <div className="rounded-xl bg-neutral-50 p-3 border border-border/50">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={payment.slipUrl}
+                          alt="สลิป"
+                          className="w-full rounded-lg object-contain max-h-[60vh]"
+                        />
+                      </div>
                     )}
 
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleApprove(payment.id)}
-                        className="flex-1 py-3 rounded-xl text-base font-bold text-white bg-green-600 hover:bg-green-700"
-                      >
-                        ✅ อนุมัติ
-                      </button>
-                      <button
-                        onClick={() => handleReject(payment.id)}
-                        className="flex-1 py-3 rounded-xl text-base font-bold text-white bg-red-500 hover:bg-red-600"
-                      >
-                        ❌ ปฏิเสธ
-                      </button>
+                    <div className="flex gap-3 pt-2">
+                      <div className="flex-1">
+                        <Button
+                          onClick={() => handleApprove(payment.id)}
+                          type="primary"
+                          padding={12}
+                          color="#00c6ae"
+                          className="w-full shadow-button hover:shadow-floating transition-shadow duration-300"
+                        >
+                          ✅ อนุมัติ
+                        </Button>
+                      </div>
+                      <div className="flex-1">
+                        <Button
+                          onClick={() => handleReject(payment.id)}
+                          type="default"
+                          padding={12}
+                          className="w-full border-red-200 text-red-600 bg-red-50 hover:bg-red-100"
+                        >
+                          ❌ ปฏิเสธ
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
