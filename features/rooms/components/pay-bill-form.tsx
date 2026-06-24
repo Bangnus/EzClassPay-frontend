@@ -35,35 +35,24 @@ export default function PayBillForm() {
 
   const goBack = () => liff.isInClient() && liff.closeWindow();
 
-  if (loading) return <Spinner />;
+  if (loading) return <Spinner text="กำลังโหลดข้อมูลการชำระเงิน..." />;
   if (!room) return <PayBillNotFound onGoBack={goBack} />;
   if (done) return <PayBillSuccess onGoBack={goBack} />;
 
   return (
-    <>
-      <header className="mb-6 text-center">
-        <h1 className="text-3xl font-extrabold text-primary tracking-tight">
+    <div className="animate-[fadeInUp_0.4s_ease-out]">
+      {/* Header with gradient accent */}
+      <header className="mb-8 text-center relative">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-primary to-primary-dark shadow-button mb-4">
+          <span className="text-3xl">💳</span>
+        </div>
+        <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
           ชำระเงิน
         </h1>
-        <p className="mt-2 text-neutral-500">{room.name}</p>
+        <p className="mt-1.5 text-sm text-text-secondary font-medium">
+          {room.name}
+        </p>
       </header>
-
-      {profile && (
-        <div className="mb-6 flex items-center gap-4 p-4 bg-neutral-100 rounded-2xl border border-neutral-200 shadow-inner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={profile.pictureUrl}
-            alt="profile"
-            className="w-12 h-12 rounded-full ring-4 ring-white"
-          />
-          <div>
-            <p className="text-xs text-neutral-500">ผู้โอน</p>
-            <p className="text-lg font-bold text-neutral-900">
-              {profile.displayName}
-            </p>
-          </div>
-        </div>
-      )}
 
       <PayBillQR
         room={room}
@@ -71,6 +60,6 @@ export default function PayBillForm() {
         submitting={submitting}
         onConfirm={handleConfirm}
       />
-    </>
+    </div>
   );
 }

@@ -24,47 +24,60 @@ export default function PayBillQR({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
-        <p className="text-neutral-500 mb-2">ยอดที่ต้องชำระ</p>
-        <p className="text-5xl font-extrabold text-amber-600">
+    <div className="space-y-5">
+      {/* Amount display */}
+      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-secondary-light to-white border border-secondary/40 p-6 text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,198,174,0.06),transparent_70%)]" />
+        <p className="relative text-sm text-text-secondary font-medium mb-1.5">
+          ยอดที่ต้องชำระ
+        </p>
+        <p className="relative text-4xl font-extrabold text-primary-dark tracking-tight">
           ฿{Number(amount).toLocaleString()}
         </p>
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`https://promptpay.io/${room.promptpayNo}/${Number(amount)}.png`}
-          alt="PromptPay QR"
-          className="mx-auto w-64 h-64"
-        />
-        <p className="text-sm text-neutral-500">
-          สแกน QR Code เพื่อชำระเงินผ่าน PromptPay
+      {/* QR Code card */}
+      <div className="rounded-2xl bg-white border border-border p-6 text-center space-y-4 shadow-soft">
+        <div className="rounded-xl bg-neutral-50 p-4 inline-block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`https://promptpay.io/${room.promptpayNo}/${Number(amount)}.png`}
+            alt="PromptPay QR"
+            className="mx-auto w-56 h-56"
+          />
+        </div>
+        <p className="text-sm text-text-secondary leading-relaxed">
+          สแกน QR Code เพื่อชำระเงินผ่าน{" "}
+          <span className="font-semibold text-primary-dark">PromptPay</span>
         </p>
         <Button
           onClick={handleDownloadQR}
           type="default"
-          padding={12}
-          className="border-orange-200 text-orange-700 hover:text-orange-800 bg-orange-50 hover:bg-orange-100"
+          padding={10}
+          className="border-border text-text-secondary hover:text-primary-dark hover:border-primary transition-colors"
         >
           💾 บันทึก QR Code
         </Button>
       </div>
 
-      <Button
-        onClick={onConfirm}
-        disabled={submitting}
-        loading={submitting}
-        type="primary"
-        padding={16}
-        fontSize={18}
-        borderRadius={16}
-      >
-        ✅ ยืนยันการโอน
-      </Button>
+      {/* Confirm button */}
+      <div className="pt-1">
+        <Button
+          onClick={onConfirm}
+          disabled={submitting}
+          loading={submitting}
+          type="primary"
+          padding={16}
+          fontSize={17}
+          borderRadius={16}
+          color="#00c6ae"
+          className="shadow-button hover:shadow-floating transition-shadow duration-300"
+        >
+          ✅ ยืนยันการโอน
+        </Button>
+      </div>
 
-      <p className="text-xs text-neutral-400 text-center">
+      <p className="text-xs text-text-secondary text-center leading-relaxed opacity-70">
         กดยืนยันหลังจากโอนเงินแล้ว จากนั้นส่งสลิปในแชทบอท
       </p>
     </div>
