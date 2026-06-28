@@ -150,9 +150,18 @@ export default function ApprovePaymentsForm() {
             >
               <div className="p-4 space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
-                    {payment.user.displayName.charAt(0)}
-                  </div>
+                  {payment.user.pictureUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={payment.user.pictureUrl}
+                      alt="profile"
+                      className="w-10 h-10 rounded-full border border-neutral-200"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
+                      {payment.user.displayName.charAt(0)}
+                    </div>
+                  )}
                   <div>
                     <p className="font-bold text-neutral-900">
                       {payment.user.displayName}

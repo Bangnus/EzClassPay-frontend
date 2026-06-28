@@ -104,9 +104,18 @@ export default function VerifySlipForm({
                 >
                   <div className="p-5 space-y-4">
                     <div className="flex items-center gap-3 border-b border-border/50 pb-4">
-                      <div className="w-12 h-12 rounded-full bg-secondary-light flex items-center justify-center text-primary-dark font-bold text-xl border border-secondary/30">
-                        {payment.user.displayName.charAt(0)}
-                      </div>
+                      {payment.user.pictureUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={payment.user.pictureUrl}
+                          alt="profile"
+                          className="w-12 h-12 rounded-full border border-secondary/30"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-secondary-light flex items-center justify-center text-primary-dark font-bold text-xl border border-secondary/30">
+                          {payment.user.displayName.charAt(0)}
+                        </div>
+                      )}
                       <div>
                         <p className="font-bold text-text-primary text-lg">
                           {payment.user.displayName}
