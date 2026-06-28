@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { approvePayment, rejectPayment } from "@/features/rooms/services";
+import {
+  approvePayment,
+  rejectPayment,
+  getRoom,
+  getPendingPayments,
+} from "@/features/rooms/services";
 import VerifySlipForm from "../components/verify-slip-form";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface PaymentSlip {
   id: string;
@@ -95,21 +98,15 @@ export default function VerifySlipView() {
   const loadRoomAndPayments = async () => {
     setLoading(true);
     try {
-      const [roomRes, paymentsRes] = await Promise.all([
-        fetch(`${API_URL}/api/rooms/${roomId}`, {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }).then((r) => r.json()),
-        fetch(`${API_URL}/api/payments/room/${roomId}/pending`, {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }).then((r) => r.json()),
+      const [roomData, pendingData] = await Promise.all([
+        getRoom(roomId),
+        getPendingPayments(roomId),
       ]);
 
-      if (roomRes.success) {
-        setRoomName(roomRes.data.name || "");
+      if (roomData) {
+        setRoomName((roomData as { name: string }).name || "");
       }
-      if (paymentsRes.success) {
-        setPayments(paymentsRes.data || []);
-      }
+      setPayments((pendingData as PaymentSlip[]) || []);
     } catch {
       setRoomName("");
       setPayments([]);

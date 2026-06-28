@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const apiFetch = (url: string, init?: RequestInit) =>
-  fetch(`${API_URL}${url}`, {
-    ...init,
-    headers: { ...init?.headers, "ngrok-skip-browser-warning": "true" },
-  });
+import { getRoom, getRoomBills } from "../services";
 
 export function usePayBill() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,27 +56,24 @@ export function usePayBill() {
         });
 
         if (rid) {
-          const res = await apiFetch(`/api/rooms/${rid}`);
-          const roomData = await res.json();
-          if (roomData.success) setRoom(roomData.data);
+          const roomData = await getRoom(rid);
+          if (roomData) setRoom(roomData);
 
           if (qType === "target") {
             setPaymentType("target");
             setBill(null);
           } else {
             setPaymentType("bill");
-            const billRes = await apiFetch(
-              `/api/bills/room/${rid}?limit=10&lineUid=${userProfile.userId}`
-            );
-            const billData = await billRes.json();
-            if (billData.success && billData.data.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const billsData = (await getRoomBills(rid, userProfile.userId)) as any[];
+            if (billsData && billsData.length > 0) {
               let targetBill;
               if (qBillId) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                targetBill = billData.data.find((b: any) => b.id === qBillId);
+                targetBill = billsData.find((b: any) => b.id === qBillId);
               }
               if (!targetBill) {
-                targetBill = billData.data.find(
+                targetBill = billsData.find(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (b: any) => b.status === "UNPAID"
                 );
@@ -101,5 +91,5 @@ export function usePayBill() {
     initLiff();
   }, []);
 
-  return { profile, room, bill, paymentType, loading, roomId, apiFetch };
+  return { profile, room, bill, paymentType, loading, roomId };
 }

@@ -5,6 +5,8 @@ import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
 import { useDashboardStore } from "../store";
 import { fetchDashboardRooms, fetchRoomById } from "../services";
+import { getRoomPaymentHistory } from "@/features/rooms/services";
+import { getRoomExpenses } from "@/features/expense/services";
 import type { Room } from "@/features/rooms/types";
 import RoomOverviewCard from "../components/room-overview-card";
 import MembersTable from "../components/members-table";
@@ -13,7 +15,6 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface PaymentSummary {
   id: string;
@@ -113,40 +114,25 @@ export default function DashboardView() {
     if (!activeRoomId) return;
     const fetchStats = async () => {
       try {
-        const [paymentsRes, expensesRes] = await Promise.all([
-          fetch(`${API_URL}/api/payments/room/${activeRoomId}/history`, {
-            headers: { "ngrok-skip-browser-warning": "true" },
-          }).then((r) => r.json()),
-          fetch(`${API_URL}/api/expenses/room/${activeRoomId}`, {
-            headers: { "ngrok-skip-browser-warning": "true" },
-          }).then((r) => r.json()),
+        const [paymentsData, expensesData] = await Promise.all([
+          getRoomPaymentHistory(activeRoomId),
+          getRoomExpenses(activeRoomId),
         ]);
 
-        if (paymentsRes.success) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const approved = paymentsRes.data.filter(
-            (p: any) => p.status === "APPROVED"
-          );
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const income = approved.reduce(
-            (sum: number, p: any) => sum + (p.amount || 0),
-            0
-          );
-          setTotalIncome(income);
-        } else {
-          setTotalIncome(0);
-        }
+        const approved = paymentsData.filter(
+          (p) => p.status === "APPROVED"
+        );
+        const income = approved.reduce(
+          (sum, p) => sum + (p.amount || 0),
+          0
+        );
+        setTotalIncome(income);
 
-        if (expensesRes.success) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const expense = expensesRes.data.reduce(
-            (sum: number, e: any) => sum + (e.amount || 0),
-            0
-          );
-          setTotalExpense(expense);
-        } else {
-          setTotalExpense(0);
-        }
+        const expense = expensesData.reduce(
+          (sum, e) => sum + (e.amount || 0),
+          0
+        );
+        setTotalExpense(expense);
       } catch (err) {
         console.error("Error fetching room stats:", err);
       }

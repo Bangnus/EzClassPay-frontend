@@ -48,6 +48,7 @@ export default function SlipImage({
           setImgSrc(finalUrl); // Fallback
         });
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setImgSrc(finalUrl);
     }
   }, [url]);

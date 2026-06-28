@@ -93,3 +93,31 @@ export const generateBillsApi = async (
   );
   return response.data;
 };
+
+export const initiatePaymentApi = async (payload: {
+  lineUid: string;
+  roomId: string;
+  amount: number;
+  billId?: string | null;
+}) => {
+  const response = await axiosInstance.post("/api/payments/initiate", payload);
+  return response.data;
+};
+
+export const getRoomPaymentHistoryApi = async (roomId: string) => {
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: Payment[];
+  }>(`/api/payments/room/${roomId}/history`);
+  return response.data;
+};
+
+export const getRoomBillsApi = async (roomId: string, lineUid?: string) => {
+  const params = new URLSearchParams();
+  params.set("limit", "10");
+  if (lineUid) params.set("lineUid", lineUid);
+  const response = await axiosInstance.get(
+    `/api/bills/room/${roomId}?${params.toString()}`
+  );
+  return response.data;
+};

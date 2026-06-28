@@ -13,8 +13,6 @@ import Spinner from "@/components/ui/spinner";
 import SlipImage from "@/components/ui/slip-image";
 import type { Payment } from "../types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export default function ApprovePaymentsForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [profile, setProfile] = useState<any>(null);
@@ -57,10 +55,10 @@ export default function ApprovePaymentsForm() {
 
         if (rid) {
           const [roomData, pendingData] = await Promise.all([
-            fetch(`${API_URL}/api/rooms/${rid}`).then((r) => r.json()),
+            getRoom(rid),
             getPendingPayments(rid),
           ]);
-          if (roomData.success) setRoom(roomData.data);
+          if (roomData) setRoom(roomData);
           setPayments(pendingData);
         }
       } catch (error) {

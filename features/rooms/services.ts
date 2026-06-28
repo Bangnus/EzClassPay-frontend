@@ -12,6 +12,9 @@ import {
   updateRoomApi,
   deleteRoomApi,
   generateBillsApi,
+  initiatePaymentApi,
+  getRoomPaymentHistoryApi,
+  getRoomBillsApi,
 } from "./repository";
 import { CreateRoomPayload, Room } from "./types";
 
@@ -82,11 +85,30 @@ export const generateBills = async (
   try {
     const data = await generateBillsApi(roomId, month, year);
     return data;
-  } catch (error: any) {
+  } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     console.error("Error generating bills:", error);
     return {
       success: false,
       message: error?.response?.data?.message || "เกิดข้อผิดพลาดในการสร้างบิล",
     };
   }
+};
+
+export const initiatePayment = async (payload: {
+  lineUid: string;
+  roomId: string;
+  amount: number;
+  billId?: string | null;
+}) => {
+  return initiatePaymentApi(payload);
+};
+
+export const getRoomPaymentHistory = async (roomId: string) => {
+  const res = await getRoomPaymentHistoryApi(roomId);
+  return res.data || [];
+};
+
+export const getRoomBills = async (roomId: string, lineUid?: string) => {
+  const res = await getRoomBillsApi(roomId, lineUid);
+  return res.data || [];
 };

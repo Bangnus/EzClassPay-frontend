@@ -7,9 +7,10 @@ import PayBillNotFound from "./pay-bill-not-found";
 import PayBillQR from "./pay-bill-qr";
 import Spinner from "@/components/ui/spinner";
 import { usePayBill } from "../hooks/use-pay-bill";
+import { initiatePayment } from "../services";
 
 export default function PayBillForm() {
-  const { profile, room, bill, loading, roomId, apiFetch } = usePayBill();
+  const { profile, room, bill, loading, roomId } = usePayBill();
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -19,10 +20,11 @@ export default function PayBillForm() {
     if (!profile || !roomId) return;
     setSubmitting(true);
     try {
-      await apiFetch("/api/payments/initiate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lineUid: profile.userId, roomId, amount }),
+      await initiatePayment({
+        lineUid: profile.userId,
+        roomId,
+        amount,
+        billId: bill?.id || null,
       });
       setDone(true);
     } catch (err) {
