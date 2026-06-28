@@ -10,6 +10,7 @@ import {
   getRoom,
 } from "../services";
 import Spinner from "@/components/ui/spinner";
+import SlipImage from "@/components/ui/slip-image";
 import type { Payment } from "../types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -161,12 +162,7 @@ export default function ApprovePaymentsForm() {
                 </div>
 
                 {payment.slipUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={payment.slipUrl}
-                    alt="สลิป"
-                    className="w-full rounded-xl border border-neutral-100"
-                  />
+                  <SlipImage url={payment.slipUrl} className="w-full rounded-xl border border-neutral-100" />
                 )}
 
                 <div className="flex gap-2">

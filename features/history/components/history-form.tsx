@@ -7,6 +7,7 @@ import { getRoomPayments, getRoom } from "@/features/rooms/services";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
+import SlipImage from "@/components/ui/slip-image";
 import type { Payment } from "@/features/rooms/types";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -243,10 +244,8 @@ export default function HistoryForm() {
                         <summary className="text-sm text-primary font-bold cursor-pointer">
                           ดูสลิป
                         </summary>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={payment.slipUrl}
-                          alt="สลิป"
+                        <SlipImage
+                          url={payment.slipUrl}
                           className="mt-2 w-full rounded-xl border border-border"
                         />
                       </details>

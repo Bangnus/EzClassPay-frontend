@@ -3,6 +3,7 @@
 import React from "react";
 import Spinner from "@/components/ui/spinner";
 import Button from "@/components/ui/button";
+import SlipImage from "@/components/ui/slip-image";
 import type { PaymentSlip } from "../templates/verify-slip-view";
 
 interface VerifySlipFormProps {
@@ -118,12 +119,7 @@ export default function VerifySlipForm({
 
                     {payment.slipUrl && (
                       <div className="rounded-xl bg-neutral-50 p-3 border border-border/50">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={payment.slipUrl}
-                          alt="สลิป"
-                          className="w-full rounded-lg object-contain max-h-[60vh]"
-                        />
+                        <SlipImage url={payment.slipUrl} />
                       </div>
                     )}
 

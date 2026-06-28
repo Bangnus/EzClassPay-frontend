@@ -6,6 +6,7 @@ import { syncUserWithBackend } from "@/services/auth";
 import { getRoomPayments, getRoom } from "@/features/rooms/services";
 import type { Payment } from "@/features/rooms/types";
 import Spinner from "@/components/ui/spinner";
+import SlipImage from "@/components/ui/slip-image";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   AWAITING_SLIP: { label: "รอสลิป", color: "text-yellow-600 bg-yellow-50" },
@@ -196,10 +197,8 @@ export default function MemberHistoryForm() {
                     <summary className="text-sm text-primary font-bold cursor-pointer">
                       ดูสลิป
                     </summary>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={payment.slipUrl}
-                      alt="สลิป"
+                    <SlipImage
+                      url={payment.slipUrl}
                       className="mt-2 w-full rounded-xl border border-border"
                     />
                   </details>
