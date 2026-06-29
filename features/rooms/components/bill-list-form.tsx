@@ -106,7 +106,7 @@ export default function BillListForm() {
                 {isUnpaid && (
                   <Button
                     type="primary"
-                    padding="20"
+                    padding="50"
                     onClick={() => {
                       // Navigate to pay specific bill
                       const url = new URL(window.location.href);
