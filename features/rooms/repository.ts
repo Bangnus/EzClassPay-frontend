@@ -121,3 +121,13 @@ export const getRoomBillsApi = async (roomId: string, lineUid?: string) => {
   );
   return response.data;
 };
+
+export const getAllRoomBillsApi = async (roomId: string, lineUid?: string) => {
+  const params = new URLSearchParams();
+  params.set("limit", "100"); // Use a high limit to get all periods
+  if (lineUid) params.set("lineUid", lineUid);
+  const response = await axiosInstance.get(
+    `/api/bills/room/${roomId}?${params.toString()}`
+  );
+  return response.data;
+};

@@ -62,7 +62,9 @@ export default function VerifySlipForm({
         <div className="relative overflow-hidden bg-linear-to-br from-secondary-light to-white rounded-2xl p-5 border border-secondary/40 flex items-center justify-between shadow-soft">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,198,174,0.06),transparent_70%)]" />
           <div className="relative">
-            <p className="text-xs text-text-secondary font-medium mb-1">ห้องปัจจุบัน</p>
+            <p className="text-xs text-text-secondary font-medium mb-1">
+              ห้องปัจจุบัน
+            </p>
             <p className="font-bold text-primary-dark text-lg">{roomName}</p>
           </div>
         </div>

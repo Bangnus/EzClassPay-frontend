@@ -15,6 +15,7 @@ import {
   initiatePaymentApi,
   getRoomPaymentHistoryApi,
   getRoomBillsApi,
+  getAllRoomBillsApi,
 } from "./repository";
 import { CreateRoomPayload, Room } from "./types";
 
@@ -85,7 +86,9 @@ export const generateBills = async (
   try {
     const data = await generateBillsApi(roomId, month, year);
     return data;
-  } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const error = err as any;
     console.error("Error generating bills:", error);
     return {
       success: false,
@@ -110,5 +113,10 @@ export const getRoomPaymentHistory = async (roomId: string) => {
 
 export const getRoomBills = async (roomId: string, lineUid?: string) => {
   const res = await getRoomBillsApi(roomId, lineUid);
+  return res.data || [];
+};
+
+export const getAllRoomBills = async (roomId: string, lineUid?: string) => {
+  const res = await getAllRoomBillsApi(roomId, lineUid);
   return res.data || [];
 };

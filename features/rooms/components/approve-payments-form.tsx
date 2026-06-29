@@ -169,7 +169,10 @@ export default function ApprovePaymentsForm() {
                 </div>
 
                 {payment.slipUrl && (
-                  <SlipImage url={payment.slipUrl} className="w-full rounded-xl border border-neutral-100" />
+                  <SlipImage
+                    url={payment.slipUrl}
+                    className="w-full rounded-xl border border-neutral-100"
+                  />
                 )}
 
                 <div className="flex gap-2">

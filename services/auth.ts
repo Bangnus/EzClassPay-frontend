@@ -4,7 +4,7 @@ export async function syncUserWithBackend(params: {
   line_uid: string;
   name: string;
   profile_url?: string;
-  action: "create_room" | "pay_bill" | "verify_slip";
+  action: "create_room" | "pay_bill" | "verify_slip" | "bill_list";
 }) {
   try {
     const res = await fetch(`${API_URL}/api/auth/sync`, {

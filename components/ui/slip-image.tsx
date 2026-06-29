@@ -59,7 +59,10 @@ export default function SlipImage({
 
   if (!imgSrc) {
     return (
-      <div className={`flex items-center justify-center bg-gray-100 animate-pulse text-gray-400 ${className}`} style={{ minHeight: '160px' }}>
+      <div
+        className={`flex items-center justify-center bg-gray-100 animate-pulse text-gray-400 ${className}`}
+        style={{ minHeight: "160px" }}
+      >
         กำลังโหลดรูปภาพ...
       </div>
     );
@@ -67,10 +70,6 @@ export default function SlipImage({
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={imgSrc}
-      alt={alt}
-      className={className}
-    />
+    <img src={imgSrc} alt={alt} className={className} />
   );
 }
