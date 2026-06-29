@@ -46,28 +46,11 @@ export default function BillListForm() {
         <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
           งวดชำระทั้งหมด
         </h1>
-        <p className="mt-1.5 text-sm text-text-secondary font-medium">
+        <p className="mt-1.5 text-md text-text-secondary font-medium">
           {room.name}
         </p>
       </header>
 
-      {/* User Profile */}
-      {profile && (
-        <div className="flex items-center gap-4 p-4 bg-bg rounded-2xl border border-border shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={profile.pictureUrl}
-            alt="profile"
-            className="w-12 h-12 rounded-full border border-border"
-          />
-          <div>
-            <p className="text-xs text-text-secondary">ลูกบ้าน</p>
-            <p className="text-lg font-bold text-text-primary">
-              {profile.displayName}
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Bills List */}
       <div className="space-y-4">
@@ -86,7 +69,7 @@ export default function BillListForm() {
             return (
               <div
                 key={bill.id}
-                className="bg-bg border border-border rounded-2xl p-4 shadow-sm flex flex-col gap-3"
+                className="bg-gray-50 border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col gap-3"
               >
                 <div className="flex justify-between items-center">
                   <div>
@@ -123,7 +106,7 @@ export default function BillListForm() {
                 {isUnpaid && (
                   <Button
                     type="primary"
-                    className="w-full mt-2"
+                    padding="20"
                     onClick={() => {
                       // Navigate to pay specific bill
                       const url = new URL(window.location.href);
