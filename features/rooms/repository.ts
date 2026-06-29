@@ -131,3 +131,8 @@ export const getAllRoomBillsApi = async (roomId: string, lineUid?: string) => {
   );
   return response.data;
 };
+
+export const notifyRoomApi = async (roomId: string, payload: { title: string; message: string; type: string }) => {
+  const response = await axiosInstance.post(`/api/rooms/${roomId}/notify`, payload);
+  return response.data;
+};

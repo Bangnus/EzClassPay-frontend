@@ -16,6 +16,7 @@ import {
   getRoomPaymentHistoryApi,
   getRoomBillsApi,
   getAllRoomBillsApi,
+  notifyRoomApi,
 } from "./repository";
 import { CreateRoomPayload, Room } from "./types";
 
@@ -119,4 +120,8 @@ export const getRoomBills = async (roomId: string, lineUid?: string) => {
 export const getAllRoomBills = async (roomId: string, lineUid?: string) => {
   const res = await getAllRoomBillsApi(roomId, lineUid);
   return res.data || [];
+};
+
+export const notifyRoom = async (roomId: string, payload: { title: string; message: string; type: string }) => {
+  return notifyRoomApi(roomId, payload);
 };

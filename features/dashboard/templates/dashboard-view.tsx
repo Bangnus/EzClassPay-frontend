@@ -327,6 +327,15 @@ function RoomManagementView({
         <h3 className="font-bold text-text-primary mb-3">เมนูจัดการ</h3>
         <div className="grid grid-cols-2 gap-3">
           <ActionCard
+            icon="📢"
+            label="แจ้งเตือนกลุ่ม"
+            onClick={() => {
+              const url = new URL(window.location.origin + "/notify");
+              url.searchParams.set("roomId", roomId);
+              window.location.href = url.toString();
+            }}
+          />
+          <ActionCard
             icon="📋"
             label="บันทึกค่าใช้จ่าย"
             onClick={() => {
