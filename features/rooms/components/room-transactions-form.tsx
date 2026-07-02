@@ -131,59 +131,63 @@ export default function RoomTransactionsForm() {
               <div className="bg-bg rounded-xl p-10 text-center border border-border mt-4">
                 <p className="text-text-secondary">ไม่มีประวัติรับ-จ่ายในเดือนนี้</p>
               </div>
-            ) : (
-              transactions.map((tx) => {
-                const isIncome = tx.type === "INCOME";
-                const pictureUrl = tx.user?.pictureUrl || tx.pictureUrl;
-                const displayName = tx.user?.displayName || tx.displayName;
-                return (
-                  <div
-                    key={tx.id}
-                    className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-center gap-3"
-                  >
-                    {pictureUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={pictureUrl}
-                        alt="profile"
-                        className="w-9 h-9 rounded-full border border-neutral-200 shrink-0"
-                      />
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                        {displayName?.charAt(0) || "?"}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-text-primary text-sm truncate">
-                        {tx.title}
-                      </p>
-                      <p className="text-xs text-text-secondary mt-0.5">
-                        {displayName && `${displayName} · `}
-                        {new Date(tx.createdAt).toLocaleString("th-TH")}
-                      </p>
+            ) : [
+              <div key="debug" className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800">
+                <p className="font-bold">DEBUG keys: {Object.keys(transactions[0]).join(", ")}</p>
+                <p className="mt-1">pictureUrl={transactions[0].pictureUrl} | user?.pictureUrl={transactions[0].user?.pictureUrl}</p>
+              </div>,
+              ...transactions.map((tx) => {
+              const isIncome = tx.type === "INCOME";
+              const pictureUrl = tx.user?.pictureUrl || tx.pictureUrl;
+              const displayName = tx.user?.displayName || tx.displayName;
+              return (
+                <div
+                  key={tx.id}
+                  className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-center gap-3"
+                >
+                  {pictureUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={pictureUrl}
+                      alt="profile"
+                      className="w-9 h-9 rounded-full border border-neutral-200 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                      {displayName?.charAt(0) || "?"}
                     </div>
-                    <div className="text-right shrink-0">
-                      <p
-                        className={`text-base font-extrabold ${
-                          isIncome ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        {isIncome ? "+" : "-"}฿{Number(tx.amount).toLocaleString()}
-                      </p>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          isIncome
-                            ? "bg-green-50 text-green-700"
-                            : "bg-red-50 text-red-700"
-                        }`}
-                      >
-                        {isIncome ? "INCOME" : "EXPENSE"}
-                      </span>
-                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-text-primary text-sm truncate">
+                      {tx.title}
+                    </p>
+                    <p className="text-xs text-text-secondary mt-0.5">
+                      {displayName && `${displayName} · `}
+                      {new Date(tx.createdAt).toLocaleString("th-TH")}
+                    </p>
                   </div>
-                );
-              })
-            )}
+                  <div className="text-right shrink-0">
+                    <p
+                      className={`text-base font-extrabold ${
+                        isIncome ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {isIncome ? "+" : "-"}฿{Number(tx.amount).toLocaleString()}
+                    </p>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        isIncome
+                          ? "bg-green-50 text-green-700"
+                          : "bg-red-50 text-red-700"
+                      }`}
+                    >
+                      {isIncome ? "INCOME" : "EXPENSE"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+            ]}
           </div>
         </>
       )}
