@@ -131,15 +131,11 @@ export default function RoomTransactionsForm() {
               <div className="bg-bg rounded-xl p-10 text-center border border-border mt-4">
                 <p className="text-text-secondary">ไม่มีประวัติรับ-จ่ายในเดือนนี้</p>
               </div>
-            ) : [
-              <div key="debug" className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800">
-                <p className="font-bold">DEBUG keys: {Object.keys(transactions[0]).join(", ")}</p>
-                <p className="mt-1">pictureUrl={transactions[0].pictureUrl} | user?.pictureUrl={transactions[0].user?.pictureUrl}</p>
-              </div>,
-              ...transactions.map((tx) => {
+            ) : (
+              transactions.map((tx) => {
               const isIncome = tx.type === "INCOME";
-              const pictureUrl = tx.user?.pictureUrl || tx.pictureUrl;
-              const displayName = tx.user?.displayName || tx.displayName;
+              const pictureUrl = tx.user?.pictureUrl;
+              const displayName = tx.user?.displayName;
               return (
                 <div
                   key={tx.id}
@@ -187,7 +183,7 @@ export default function RoomTransactionsForm() {
                 </div>
               );
             })
-            ]}
+            )}
           </div>
         </>
       )}
