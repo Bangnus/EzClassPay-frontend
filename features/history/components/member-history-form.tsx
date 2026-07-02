@@ -133,10 +133,6 @@ export default function MemberHistoryForm() {
     );
   }
 
-  // Determine which profile info to display
-  const displayProfile =
-    payments.length > 0 && payments[0].user ? payments[0].user : profile;
-
   return (
     <div className="space-y-6">
       <header className="text-center">
@@ -145,23 +141,6 @@ export default function MemberHistoryForm() {
         </h1>
         {roomName && <p className="mt-2 text-text-secondary">{roomName}</p>}
       </header>
-
-      {displayProfile && (
-        <div className="flex items-center gap-4 p-4 bg-bg rounded-2xl border border-border shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={displayProfile.pictureUrl}
-            alt="profile"
-            className="w-12 h-12 rounded-full border border-border"
-          />
-          <div>
-            <p className="text-xs text-text-secondary">สมาชิก</p>
-            <p className="text-lg font-bold text-text-primary">
-              {displayProfile.displayName}
-            </p>
-          </div>
-        </div>
-      )}
 
       {payments.length === 0 ? (
         <div className="bg-bg rounded-2xl p-10 text-center border border-border">
@@ -180,20 +159,20 @@ export default function MemberHistoryForm() {
             return (
               <div
                 key={payment.id}
-                className="bg-bg border border-border rounded-2xl p-4 shadow-sm"
+                className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-text-secondary">
                     {new Date(payment.createdAt).toLocaleString("th-TH")}
                   </p>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${st.color}`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold ${st.color}`}
                   >
                     {st.label}
                   </span>
                 </div>
                 {payment.amount > 0 && (
-                  <div className="mt-2 flex justify-between items-center">
+                  <div className="mt-4 flex justify-between items-center bg-bg/50 rounded-lg p-3 border border-border">
                     <p className="text-sm font-bold text-text-primary">
                       ยอดเงิน: ฿{Number(payment.amount).toLocaleString()}
                     </p>
@@ -201,14 +180,19 @@ export default function MemberHistoryForm() {
                 )}
 
                 {payment.slipUrl && (
-                  <details className="mt-2">
-                    <summary className="text-sm text-primary font-bold cursor-pointer">
-                      ดูสลิป
+                  <details className="mt-4 group">
+                    <summary className="text-sm text-primary font-bold cursor-pointer list-none flex items-center justify-between bg-primary/5 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                      ดูสลิปโอนเงิน
+                      <span className="text-primary group-open:rotate-180 transition-transform">
+                        ▼
+                      </span>
                     </summary>
-                    <SlipImage
-                      url={payment.slipUrl}
-                      className="mt-2 w-full rounded-xl border border-border"
-                    />
+                    <div className="pt-3">
+                      <SlipImage
+                        url={payment.slipUrl}
+                        className="w-full rounded-2xl border-2 border-neutral-100 shadow-sm"
+                      />
+                    </div>
                   </details>
                 )}
               </div>

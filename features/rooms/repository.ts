@@ -38,7 +38,7 @@ export const getRoomPaymentsApi = async (roomId: string, lineUid?: string) => {
   const response = await axiosInstance.get<{
     success: boolean;
     data: Payment[];
-  }>(`/api/payments/room/${roomId}${params}`);
+  }>(`/api/payments/room/${roomId}/history${params}`);
   return response.data;
 };
 
