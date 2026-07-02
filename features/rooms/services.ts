@@ -47,8 +47,8 @@ export const getRoom = async (roomId: string) => {
   return res.data || null;
 };
 
-export const getRoomPayments = async (roomId: string, lineUid?: string) => {
-  const res = await getRoomPaymentsApi(roomId, lineUid);
+export const getRoomPayments = async (roomId: string, filter?: { userId?: string; lineUid?: string }) => {
+  const res = await getRoomPaymentsApi(roomId, filter);
   return res.data || [];
 };
 

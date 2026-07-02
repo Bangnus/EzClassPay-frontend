@@ -33,12 +33,15 @@ export const getRoomApi = async (roomId: string) => {
   return response.data;
 };
 
-export const getRoomPaymentsApi = async (roomId: string, lineUid?: string) => {
-  const params = lineUid ? `?lineUid=${lineUid}` : "";
+export const getRoomPaymentsApi = async (roomId: string, filter?: { userId?: string; lineUid?: string }) => {
+  const qp = new URLSearchParams();
+  if (filter?.userId) qp.set("userId", filter.userId);
+  if (filter?.lineUid) qp.set("lineUid", filter.lineUid);
+  const qs = qp.toString();
   const response = await axiosInstance.get<{
     success: boolean;
     data: Payment[];
-  }>(`/api/payments/room/${roomId}/history${params}`);
+  }>(`/api/payments/room/${roomId}/history${qs ? `?${qs}` : ""}`);
   return response.data;
 };
 

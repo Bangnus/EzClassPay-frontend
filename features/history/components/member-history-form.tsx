@@ -98,23 +98,20 @@ export default function MemberHistoryForm() {
   const loadHistory = async () => {
     setLoading(true);
     try {
-      const fetchUserId = targetUserId || profile?.userId;
+      const filter: { userId?: string; lineUid?: string } = {};
+      if (targetUserId) {
+        filter.userId = targetUserId;
+      } else if (profile?.userId) {
+        filter.lineUid = profile.userId;
+      }
+
       const [roomData, paymentsData] = await Promise.all([
         getRoom(roomId).catch(() => null),
-        getRoomPayments(roomId, fetchUserId),
+        getRoomPayments(roomId, filter),
       ]);
       if (roomData) setRoomName((roomData as { name: string }).name || "");
 
-      const filteredPayments = (paymentsData as Payment[]).filter(
-        (p) => p.lineUid === fetchUserId
-      );
-      // Sort payments descending by date
-      filteredPayments.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      setPayments(filteredPayments);
+      setPayments(paymentsData as Payment[]);
     } catch {
       setPayments([]);
     } finally {
