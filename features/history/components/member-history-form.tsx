@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getRoomPayments, getRoom } from "@/features/rooms/services";
+import { getRoomPayments, getRoom, getRoomByGroup } from "@/features/rooms/services";
 import type { Payment } from "@/features/rooms/types";
 import Spinner from "@/components/ui/spinner";
 import SlipImage from "@/components/ui/slip-image";
@@ -46,7 +46,7 @@ export default function MemberHistoryForm() {
 
         const userProfile = await liff.getProfile();
         setProfile(userProfile);
-        await syncUserWithBackend({
+        const syncResult = await syncUserWithBackend({
           line_uid: userProfile.userId,
           name: userProfile.displayName,
           profile_url: userProfile.pictureUrl,
@@ -63,14 +63,22 @@ export default function MemberHistoryForm() {
           setTargetUserId(uid);
         }
 
-        if (rid) {
-          setRoomId(rid);
-        } else if (groupId) {
-          // Try to find room by groupId via API
-          setRoomId(groupId);
-          setError("ไม่พบรหัสห้อง กรุณาเปิดจากเมนูของห้อง");
+        let finalRoomId = rid;
+        if (!finalRoomId && syncResult?.data?.activeRoomId) {
+          finalRoomId = syncResult.data.activeRoomId;
+        }
+
+        if (!finalRoomId && groupId) {
+          const roomByGroup = await getRoomByGroup(groupId) as { id: string } | null;
+          if (roomByGroup && roomByGroup.id) {
+            finalRoomId = roomByGroup.id;
+          }
+        }
+
+        if (finalRoomId) {
+          setRoomId(finalRoomId);
         } else {
-          setError("กรุณาเปิดจากเมนูของห้องที่ต้องการดูประวัติ");
+          setError("ไม่พบรหัสห้อง กรุณาเปิดจากเมนูของห้องที่ต้องการดูประวัติ");
         }
       } catch {
         setError("กรุณาเปิดผ่าน LINE");
