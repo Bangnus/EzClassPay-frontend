@@ -134,21 +134,23 @@ export default function RoomTransactionsForm() {
             ) : (
               transactions.map((tx) => {
                 const isIncome = tx.type === "INCOME";
+                const pictureUrl = tx.user?.pictureUrl || tx.pictureUrl;
+                const displayName = tx.user?.displayName || tx.displayName;
                 return (
                   <div
                     key={tx.id}
                     className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-center gap-3"
                   >
-                    {tx.user?.pictureUrl ? (
+                    {pictureUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={tx.user.pictureUrl}
+                        src={pictureUrl}
                         alt="profile"
                         className="w-9 h-9 rounded-full border border-neutral-200 shrink-0"
                       />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                        {tx.user?.displayName?.charAt(0) || "?"}
+                        {displayName?.charAt(0) || "?"}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -156,7 +158,7 @@ export default function RoomTransactionsForm() {
                         {tx.title}
                       </p>
                       <p className="text-xs text-text-secondary mt-0.5">
-                        {tx.user?.displayName && `${tx.user.displayName} · `}
+                        {displayName && `${displayName} · `}
                         {new Date(tx.createdAt).toLocaleString("th-TH")}
                       </p>
                     </div>
