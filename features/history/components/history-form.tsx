@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getRoomPayments, getRoom, getAllRoomBills, getRoomMembers } from "@/features/rooms/services";
-import Input from "@/components/ui/input";
-import Button from "@/components/ui/button";
+import { getUserPayments, getUserBills } from "@/features/rooms/services";
 import Spinner from "@/components/ui/spinner";
 import SlipImage from "@/components/ui/slip-image";
 import type { Payment } from "@/features/rooms/types";
@@ -20,67 +18,49 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 export default function HistoryForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [profile, setProfile] = useState<any>(null);
-  const [roomId, setRoomId] = useState("");
-  const [roomName, setRoomName] = useState("");
   const [payments, setPayments] = useState<Payment[]>([]);
   const [bills, setBills] = useState<any[]>([]);
-  const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [roomInput, setRoomInput] = useState("");
 
   useEffect(() => {
     const init = async () => {
       try {
         console.log("[LIFF_OPEN] History URL:", window.location.href);
 
-        const params = new URLSearchParams(window.location.search);
-        const ridFromUrl = params.get("roomId");
-
-        try {
-          await liff.init({
-            liffId: process.env.NEXT_PUBLIC_LIFF_ID_HISTORY as string,
+        await liff.init({
+          liffId: process.env.NEXT_PUBLIC_LIFF_ID_HISTORY as string,
+        });
+        if (liff.isLoggedIn()) {
+          const userProfile = await liff.getProfile();
+          setProfile(userProfile);
+          const syncResult = await syncUserWithBackend({
+            line_uid: userProfile.userId,
+            name: userProfile.displayName,
+            profile_url: userProfile.pictureUrl,
+            action: "bill_list",
           });
-          if (liff.isLoggedIn()) {
-            const userProfile = await liff.getProfile();
-            setProfile(userProfile);
-            await syncUserWithBackend({
-              line_uid: userProfile.userId,
-              name: userProfile.displayName,
-              profile_url: userProfile.pictureUrl,
-              action: "pay_bill",
-            });
-          }
-        } catch {
-          // standalone mode
-        }
 
-        if (ridFromUrl) {
-          setRoomId(ridFromUrl);
+          if (syncResult && syncResult.data && syncResult.data.id) {
+            await loadData(syncResult.data.id, userProfile.userId);
+          } else {
+            setLoading(false);
+          }
+        } else {
+          setLoading(false);
         }
       } catch {
-        // ignore
-      } finally {
         setLoading(false);
       }
     };
     init();
   }, []);
 
-  useEffect(() => {
-    if (!roomId) return;
-    loadData();
-  }, [roomId]);
-
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (dbUserId: string, lineUid: string) => {
     try {
-      const [roomData, paymentsData, billsData, membersData] = await Promise.all([
-        getRoom(roomId).catch(() => null),
-        getRoomPayments(roomId).catch(() => []),
-        getAllRoomBills(roomId).catch(() => []),
-        getRoomMembers(roomId).catch(() => []),
+      const [paymentsData, billsData] = await Promise.all([
+        getUserPayments(lineUid).catch(() => []),
+        getUserBills(dbUserId).catch(() => []),
       ]);
-      if (roomData) setRoomName((roomData as { name: string }).name || "");
 
       const p = paymentsData as Payment[];
       p.sort(
@@ -89,12 +69,9 @@ export default function HistoryForm() {
       );
       setPayments(p);
       setBills(billsData as any[]);
-      setMembers(membersData as any[]);
     } catch {
-      setRoomName("");
       setPayments([]);
       setBills([]);
-      setMembers([]);
     } finally {
       setLoading(false);
     }
@@ -111,33 +88,39 @@ export default function HistoryForm() {
 
     const totalMissing = totalBilled > totalPaid ? totalBilled - totalPaid : 0;
 
-    const memberStats: Record<
+    // Group by room
+    const roomStats: Record<
       string,
-      { user: any; billed: number; paid: number; missing: number }
+      { roomName: string; billed: number; paid: number; missing: number }
     > = {};
 
-    members.forEach((m) => {
-      memberStats[m.userId] = {
-        user: m.user,
-        billed: 0,
-        paid: 0,
-        missing: 0,
-      };
-    });
-
     bills.forEach((b) => {
-      if (memberStats[b.userId]) {
-        memberStats[b.userId].billed += b.amount || 0;
+      if (!roomStats[b.roomId]) {
+        roomStats[b.roomId] = {
+          roomName: b.room.name,
+          billed: 0,
+          paid: 0,
+          missing: 0,
+        };
       }
+      roomStats[b.roomId].billed += b.amount || 0;
     });
 
     payments.forEach((p) => {
-      if (p.status === "APPROVED" && memberStats[p.user.id]) {
-        memberStats[p.user.id].paid += p.amount || 0;
+      if (p.status === "APPROVED" && p.roomId) {
+        if (!roomStats[p.roomId]) {
+          roomStats[p.roomId] = {
+            roomName: p.room?.name || "ห้อง",
+            billed: 0,
+            paid: 0,
+            missing: 0,
+          };
+        }
+        roomStats[p.roomId].paid += p.amount || 0;
       }
     });
 
-    Object.values(memberStats).forEach((stat) => {
+    Object.values(roomStats).forEach((stat) => {
       stat.missing = stat.billed > stat.paid ? stat.billed - stat.paid : 0;
     });
 
@@ -145,20 +128,9 @@ export default function HistoryForm() {
       totalBilled,
       totalPaid,
       totalMissing,
-      memberStats: Object.values(memberStats).sort(
-        (a, b) => b.missing - a.missing
-      ),
+      roomStats: Object.values(roomStats).sort((a, b) => b.missing - a.missing),
     };
   })();
-
-  const loadByRoomId = () => {
-    const rid = roomInput.trim();
-    if (!rid) return;
-    setRoomId(rid);
-    const url = new URL(window.location.href);
-    url.searchParams.set("roomId", rid);
-    window.history.replaceState({}, "", url.toString());
-  };
 
   if (loading) {
     return <Spinner />;
@@ -168,9 +140,9 @@ export default function HistoryForm() {
     <div className="space-y-6">
       <header className="text-center">
         <h1 className="text-3xl font-extrabold text-primary tracking-tight">
-          ประวัติการชำระเงิน
+          สรุปยอดค่าใช้จ่ายส่วนตัว
         </h1>
-        <p className="mt-2 text-text-secondary">ประวัติทั้งหมดของห้อง</p>
+        <p className="mt-2 text-text-secondary">รวมจากทุกห้องทั้งหมด</p>
       </header>
 
       {profile && (
@@ -182,7 +154,7 @@ export default function HistoryForm() {
             className="w-12 h-12 rounded-full border border-border"
           />
           <div>
-            <p className="text-xs text-text-secondary">ผู้จัดการ</p>
+            <p className="text-xs text-text-secondary">ผู้ใช้งาน</p>
             <p className="text-lg font-bold text-text-primary">
               {profile.displayName}
             </p>
@@ -190,153 +162,144 @@ export default function HistoryForm() {
         </div>
       )}
 
-      {!roomId && (
-        <div className="bg-bg rounded-2xl p-6 border border-border space-y-3">
-          <p className="font-bold text-text-primary">เลือกรหัสห้อง</p>
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
-              <Input
-                label="Room ID"
-                type="text"
-                value={roomInput}
-                onChange={(e) => setRoomInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") loadByRoomId();
-                }}
-                placeholder="กรอกรหัสห้อง"
-              />
-            </div>
-            <div>
-              <Button type="primary" onClick={loadByRoomId}>
-                ยืนยัน
-              </Button>
-            </div>
-          </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white rounded-3xl p-5 border border-neutral-100 shadow-sm col-span-2">
+          <p className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+            ยอดที่ถูกเรียกเก็บรวมทั้งหมด
+          </p>
+          <p className="text-3xl font-black text-text-primary">
+            ฿{summary.totalBilled.toLocaleString()}
+          </p>
         </div>
-      )}
-
-      {roomId && roomName && (
-        <div className="bg-bg rounded-2xl p-4 border border-border flex items-center justify-between">
-          <div>
-            <p className="text-xs text-text-secondary">ห้อง</p>
-            <p className="font-bold text-text-primary">{roomName}</p>
-          </div>
-          <button
-            onClick={() => {
-              setRoomId("");
-              setRoomName("");
-              setPayments([]);
-            }}
-            className="text-sm text-primary font-bold"
-          >
-            เปลี่ยนห้อง
-          </button>
+        <div className="bg-green-50 rounded-3xl p-4 border border-green-100 shadow-sm">
+          <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">
+            จ่ายไปแล้ว
+          </p>
+          <p className="text-xl font-black text-green-700">
+            ฿{summary.totalPaid.toLocaleString()}
+          </p>
         </div>
-      )}
+        <div className="bg-red-50 rounded-3xl p-4 border border-red-100 shadow-sm">
+          <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">
+            ยอดค้างจ่าย
+          </p>
+          <p className="text-xl font-black text-red-700">
+            ฿{summary.totalMissing.toLocaleString()}
+          </p>
+        </div>
+      </div>
 
-      {roomId && (
-        <>
-          {loading ? (
-            <Spinner />
-          ) : (
-            <div className="space-y-6">
-              {/* Summary Cards */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-3xl p-5 border border-neutral-100 shadow-sm col-span-2">
-                  <p className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
-                    ยอดเรียกเก็บทั้งหมด
-                  </p>
-                  <p className="text-3xl font-black text-text-primary">
-                    ฿{summary.totalBilled.toLocaleString()}
-                  </p>
-                </div>
-                <div className="bg-green-50 rounded-3xl p-4 border border-green-100 shadow-sm">
-                  <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">
-                    รับชำระแล้ว
-                  </p>
-                  <p className="text-xl font-black text-green-700">
-                    ฿{summary.totalPaid.toLocaleString()}
-                  </p>
-                </div>
-                <div className="bg-red-50 rounded-3xl p-4 border border-red-100 shadow-sm">
-                  <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">
-                    ยอดค้างชำระ
-                  </p>
-                  <p className="text-xl font-black text-red-700">
-                    ฿{summary.totalMissing.toLocaleString()}
-                  </p>
-                </div>
-              </div>
+      {/* Room Summary List */}
+      <div className="space-y-3">
+        <p className="text-sm font-bold text-text-secondary">
+          สรุปแยกตามห้อง ({summary.roomStats.length} ห้อง)
+        </p>
 
-              {/* Member Summary List */}
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-text-secondary">
-                  สถานะการจ่ายเงินแยกตามบุคคล ({summary.memberStats.length} คน)
+        {summary.roomStats.length === 0 ? (
+          <div className="bg-white rounded-3xl p-10 text-center border border-neutral-100 shadow-sm">
+            <p className="text-text-secondary">ยังไม่มีข้อมูลจากห้องใดๆ</p>
+          </div>
+        ) : (
+          summary.roomStats.map((stat, idx) => (
+            <div
+              key={idx}
+              className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <p className="font-bold text-text-primary text-md">
+                  {stat.roomName}
                 </p>
-
-                {summary.memberStats.length === 0 ? (
-                  <div className="bg-white rounded-3xl p-10 text-center border border-neutral-100 shadow-sm">
-                    <p className="text-text-secondary">ยังไม่มีลูกบ้านในห้องนี้</p>
-                  </div>
+                {stat.missing === 0 ? (
+                  <span className="px-3 py-1.5 rounded-full text-xs font-bold text-green-700 bg-green-50">
+                    ครบแล้ว
+                  </span>
                 ) : (
-                  summary.memberStats.map((stat, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {stat.user.pictureUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={stat.user.pictureUrl}
-                              alt="profile"
-                              className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shadow-sm">
-                              {stat.user.displayName.charAt(0)}
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-bold text-text-primary text-sm">
-                              {stat.user.displayName}
-                            </p>
-                          </div>
-                        </div>
-
-                        {stat.missing === 0 ? (
-                          <span className="px-3 py-1.5 rounded-full text-xs font-bold text-green-700 bg-green-50">
-                            จ่ายครบแล้ว
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1.5 rounded-full text-xs font-bold text-red-700 bg-red-50">
-                            ค้าง ฿{stat.missing.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mt-4 flex justify-between items-center bg-bg/50 rounded-lg p-3 border border-border">
-                        <div>
-                          <p className="text-xs text-text-secondary">ยอดเรียกเก็บ</p>
-                          <p className="text-sm font-bold text-text-primary">
-                            ฿{stat.billed.toLocaleString()}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-text-secondary">จ่ายแล้ว</p>
-                          <p className="text-sm font-bold text-green-600">
-                            ฿{stat.paid.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                  <span className="px-3 py-1.5 rounded-full text-xs font-bold text-red-700 bg-red-50">
+                    ค้าง ฿{stat.missing.toLocaleString()}
+                  </span>
                 )}
               </div>
+
+              <div className="flex justify-between items-center bg-bg/50 rounded-lg p-3 border border-border">
+                <div>
+                  <p className="text-xs text-text-secondary">เรียกเก็บ</p>
+                  <p className="text-sm font-bold text-text-primary">
+                    ฿{stat.billed.toLocaleString()}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-text-secondary">จ่ายแล้ว</p>
+                  <p className="text-sm font-bold text-green-600">
+                    ฿{stat.paid.toLocaleString()}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
-        </>
+          ))
+        )}
+      </div>
+
+      {/* Recent Payments List */}
+      {payments.length > 0 && (
+        <div className="space-y-3 mt-6">
+          <p className="text-sm font-bold text-text-secondary">
+            ประวัติการจ่ายเงินล่าสุด ({payments.length} รายการ)
+          </p>
+          {payments.map((payment) => {
+            const st = STATUS_LABEL[payment.status] || {
+              label: payment.status,
+              color: "text-text-secondary bg-border",
+            };
+            return (
+              <div
+                key={payment.id}
+                className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="font-bold text-text-primary text-sm">
+                      {payment.room?.name || "ห้อง"}
+                    </p>
+                    <p className="text-xs text-text-secondary mt-0.5">
+                      {new Date(payment.createdAt).toLocaleString("th-TH")}
+                    </p>
+                  </div>
+                  <span
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold ${st.color}`}
+                  >
+                    {st.label}
+                  </span>
+                </div>
+
+                {payment.amount > 0 && (
+                  <div className="mt-4 flex justify-between items-center bg-bg/50 rounded-lg p-3 border border-border">
+                    <p className="text-sm font-bold text-text-primary">
+                      ยอดเงิน: ฿{Number(payment.amount).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+
+                {payment.slipUrl && (
+                  <details className="mt-4 group">
+                    <summary className="text-sm text-primary font-bold cursor-pointer list-none flex items-center justify-between bg-primary/5 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                      ดูสลิปโอนเงิน
+                      <span className="text-primary group-open:rotate-180 transition-transform">
+                        ▼
+                      </span>
+                    </summary>
+                    <div className="pt-3">
+                      <SlipImage
+                        url={payment.slipUrl}
+                        className="w-full rounded-2xl border-2 border-neutral-100 shadow-sm"
+                      />
+                    </div>
+                  </details>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

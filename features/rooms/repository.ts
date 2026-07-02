@@ -136,3 +136,18 @@ export const notifyRoomApi = async (roomId: string, payload: { title: string; me
   const response = await axiosInstance.post(`/api/rooms/${roomId}/notify`, payload);
   return response.data;
 };
+
+export const getUserPaymentsApi = async (lineUid: string) => {
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: Payment[];
+  }>(`/api/payments/user/${lineUid}`);
+  return response.data;
+};
+
+export const getUserBillsApi = async (userId: string) => {
+  const response = await axiosInstance.get(
+    `/api/bills/user/${userId}`
+  );
+  return response.data;
+};
