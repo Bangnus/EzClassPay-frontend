@@ -19,10 +19,27 @@ const THAI_MONTHS = [
   "ธ.ค.",
 ];
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 export default function BillListForm() {
   const { profile, room, bills, loading, roomId } = useBillList();
 
-  if (loading) return <Spinner text="กำลังโหลดรายการบิล..." />;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <header className="text-center relative">
+          <Skeleton className="w-16 h-16 rounded-2xl mx-auto mb-4" />
+          <Skeleton className="h-8 w-1/2 mx-auto mb-2" />
+          <Skeleton className="h-5 w-1/3 mx-auto" />
+        </header>
+        <div className="space-y-4">
+          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
 
   if (!room) {
     return (

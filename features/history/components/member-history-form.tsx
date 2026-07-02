@@ -7,6 +7,7 @@ import { getRoomPayments, getRoom, getRoomByGroup } from "@/features/rooms/servi
 import type { Payment } from "@/features/rooms/types";
 import Spinner from "@/components/ui/spinner";
 import SlipImage from "@/components/ui/slip-image";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   AWAITING_SLIP: { label: "รอสลิป", color: "text-yellow-600 bg-yellow-50" },
@@ -122,7 +123,18 @@ export default function MemberHistoryForm() {
   };
 
   if (loading) {
-    return <Spinner />;
+    return (
+      <div className="space-y-6">
+        <header className="text-center">
+          <Skeleton className="h-10 w-3/4 mx-auto mb-2" />
+        </header>
+        <div className="space-y-4 mt-6">
+          <Skeleton className="h-28 rounded-3xl" />
+          <Skeleton className="h-28 rounded-3xl" />
+          <Skeleton className="h-28 rounded-3xl" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {

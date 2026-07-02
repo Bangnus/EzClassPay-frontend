@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
 import { syncUserWithBackend } from "@/services/auth";
-import { getUserPayments, getUserBills } from "@/features/rooms/services";
+import { getUserPayments, getUserSummary } from "@/features/rooms/services";
 import Spinner from "@/components/ui/spinner";
 import SlipImage from "@/components/ui/slip-image";
 import Accordion from "@/components/ui/accordion";
+import Button from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Payment } from "@/features/rooms/types";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -17,11 +19,15 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 };
 
 export default function HistoryForm() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [profile, setProfile] = useState<any>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [bills, setBills] = useState<any[]>([]);
+  const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [lineUid, setLineUid] = useState<string>("");
 
   useEffect(() => {
     const init = async () => {
@@ -33,7 +39,6 @@ export default function HistoryForm() {
         });
         if (liff.isLoggedIn()) {
           const userProfile = await liff.getProfile();
-          setProfile(userProfile);
           const syncResult = await syncUserWithBackend({
             line_uid: userProfile.userId,
             name: userProfile.displayName,
@@ -42,7 +47,8 @@ export default function HistoryForm() {
           });
 
           if (syncResult && syncResult.data && syncResult.data.id) {
-            await loadData(syncResult.data.id, userProfile.userId);
+            setLineUid(userProfile.userId);
+            await loadInitialData(userProfile.userId);
           } else {
             setLoading(false);
           }
@@ -56,85 +62,69 @@ export default function HistoryForm() {
     init();
   }, []);
 
-  const loadData = async (dbUserId: string, lineUid: string) => {
+  const loadInitialData = async (uid: string) => {
     try {
-      const [paymentsData, billsData] = await Promise.all([
-        getUserPayments(lineUid).catch(() => []),
-        getUserBills(dbUserId).catch(() => []),
+      const [paymentsRes, summaryData] = await Promise.all([
+        getUserPayments(uid, 1, 10).catch(() => ({ data: [], page: 1, totalPages: 0 })),
+        getUserSummary(uid).catch(() => null),
       ]);
 
-      const p = paymentsData as Payment[];
-      p.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      const p = (paymentsRes.data || []) as Payment[];
       setPayments(p);
-      setBills(billsData as any[]);
+      setHasMore(paymentsRes.page < paymentsRes.totalPages);
+      
+      if (summaryData) {
+        setSummary(summaryData);
+      } else {
+        setSummary({ totalBilled: 0, totalPaid: 0, totalMissing: 0, roomStats: [] });
+      }
     } catch {
       setPayments([]);
-      setBills([]);
+      setSummary({ totalBilled: 0, totalPaid: 0, totalMissing: 0, roomStats: [] });
     } finally {
       setLoading(false);
     }
   };
 
-  const summary = (() => {
-    let totalBilled = 0;
-    let totalPaid = 0;
+  const loadMore = async () => {
+    if (!lineUid || loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const paymentsRes = await getUserPayments(lineUid, nextPage, 10);
+      const newPayments = (paymentsRes.data || []) as Payment[];
+      
+      setPayments((prev) => [...prev, ...newPayments]);
+      setPage(nextPage);
+      setHasMore(paymentsRes.page < paymentsRes.totalPages);
+    } catch {
+      // Handle error gracefully
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
-    bills.forEach((b) => (totalBilled += b.amount || 0));
-    payments.forEach((p) => {
-      if (p.status === "APPROVED") totalPaid += p.amount || 0;
-    });
+  if (loading || !summary) {
+    return (
+      <div className="space-y-6 pb-10">
+        <header className="text-center">
+          <Skeleton className="h-10 w-3/4 mx-auto mb-2" />
+          <Skeleton className="h-8 w-1/2 mx-auto rounded-full" />
+        </header>
 
-    const totalMissing = totalBilled > totalPaid ? totalBilled - totalPaid : 0;
+        <div className="grid grid-cols-2 gap-3">
+          <Skeleton className="col-span-2 h-32 rounded-3xl" />
+          <Skeleton className="h-24 rounded-3xl" />
+          <Skeleton className="h-24 rounded-3xl" />
+        </div>
 
-    // Group by room
-    const roomStats: Record<
-      string,
-      { roomName: string; billed: number; paid: number; missing: number }
-    > = {};
-
-    bills.forEach((b) => {
-      if (!roomStats[b.roomId]) {
-        roomStats[b.roomId] = {
-          roomName: b.room.name,
-          billed: 0,
-          paid: 0,
-          missing: 0,
-        };
-      }
-      roomStats[b.roomId].billed += b.amount || 0;
-    });
-
-    payments.forEach((p) => {
-      if (p.status === "APPROVED" && p.roomId) {
-        if (!roomStats[p.roomId]) {
-          roomStats[p.roomId] = {
-            roomName: p.room?.name || "ห้อง",
-            billed: 0,
-            paid: 0,
-            missing: 0,
-          };
-        }
-        roomStats[p.roomId].paid += p.amount || 0;
-      }
-    });
-
-    Object.values(roomStats).forEach((stat) => {
-      stat.missing = stat.billed > stat.paid ? stat.billed - stat.paid : 0;
-    });
-
-    return {
-      totalBilled,
-      totalPaid,
-      totalMissing,
-      roomStats: Object.values(roomStats).sort((a, b) => b.missing - a.missing),
-    };
-  })();
-
-  if (loading) {
-    return <Spinner />;
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-1/3 mb-4" />
+          <Skeleton className="h-28 rounded-3xl" />
+          <Skeleton className="h-28 rounded-3xl" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -192,7 +182,7 @@ export default function HistoryForm() {
             <p className="text-text-secondary">ยังไม่มีข้อมูลจากห้องใดๆ</p>
           </div>
         ) : (
-          summary.roomStats.map((stat, idx) => (
+          summary.roomStats.map((stat: any, idx: number) => (
             <div
               key={idx}
               className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
@@ -232,62 +222,81 @@ export default function HistoryForm() {
       </div>
 
       {/* Recent Payments List */}
-      {payments.length > 0 && (
-        <div className="space-y-3 mt-6">
-          <p className="text-sm font-bold text-text-secondary">
-            ประวัติการจ่ายเงินล่าสุด ({payments.length} รายการ)
-          </p>
-          {payments.map((payment) => {
-            const st = STATUS_LABEL[payment.status] || {
-              label: payment.status,
-              color: "text-text-secondary bg-border",
-            };
-            return (
-              <div
-                key={payment.id}
-                className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="font-bold text-text-primary text-sm">
-                      {payment.room?.name || "ห้อง"}
-                    </p>
-                    <p className="text-xs text-text-secondary mt-0.5">
-                      {new Date(payment.createdAt).toLocaleString("th-TH")}
-                    </p>
+      <div className="space-y-3 mt-6">
+        <p className="text-sm font-bold text-text-secondary">
+          ประวัติการจ่ายเงินล่าสุด
+        </p>
+        
+        {payments.length === 0 ? (
+          <div className="bg-white rounded-3xl p-10 text-center border border-neutral-100 shadow-sm">
+            <p className="text-text-secondary">ไม่มีประวัติการจ่ายเงิน</p>
+          </div>
+        ) : (
+          <>
+            {payments.map((payment) => {
+              const st = STATUS_LABEL[payment.status] || {
+                label: payment.status,
+                color: "text-text-secondary bg-border",
+              };
+              return (
+                <div
+                  key={payment.id}
+                  className="bg-white border border-neutral-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="font-bold text-text-primary text-sm">
+                        {payment.room?.name || "ห้อง"}
+                      </p>
+                      <p className="text-xs text-text-secondary mt-0.5">
+                        {new Date(payment.createdAt).toLocaleString("th-TH")}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold ${st.color}`}
+                    >
+                      {st.label}
+                    </span>
                   </div>
-                  <span
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold ${st.color}`}
-                  >
-                    {st.label}
-                  </span>
+
+                  {payment.amount > 0 && (
+                    <div className="mt-4 flex justify-between items-center bg-bg/50 rounded-lg p-3 border border-border">
+                      <p className="text-sm font-bold text-text-primary">
+                        ยอดเงิน: ฿{Number(payment.amount).toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+
+                  {payment.slipUrl && (
+                    <div className="mt-4">
+                      <Accordion title="ดูสลิปโอนเงิน">
+                        <div className="py-2">
+                          <SlipImage
+                            url={payment.slipUrl}
+                            className="w-full rounded-2xl border-2 border-neutral-100 shadow-sm"
+                          />
+                        </div>
+                      </Accordion>
+                    </div>
+                  )}
                 </div>
-
-                {payment.amount > 0 && (
-                  <div className="mt-4 flex justify-between items-center bg-bg/50 rounded-lg p-3 border border-border">
-                    <p className="text-sm font-bold text-text-primary">
-                      ยอดเงิน: ฿{Number(payment.amount).toLocaleString()}
-                    </p>
-                  </div>
-                )}
-
-                {payment.slipUrl && (
-                  <div className="mt-4">
-                    <Accordion title="ดูสลิปโอนเงิน">
-                      <div className="py-2">
-                        <SlipImage
-                          url={payment.slipUrl}
-                          className="w-full rounded-2xl border-2 border-neutral-100 shadow-sm"
-                        />
-                      </div>
-                    </Accordion>
-                  </div>
-                )}
+              );
+            })}
+            
+            {hasMore && (
+              <div className="pt-4 flex justify-center">
+                <Button
+                  type="default"
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? "กำลังโหลด..." : "โหลดเพิ่มเติม (Load More)"}
+                </Button>
               </div>
-            );
-          })}
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

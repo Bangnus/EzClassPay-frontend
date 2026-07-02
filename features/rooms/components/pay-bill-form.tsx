@@ -9,6 +9,8 @@ import Spinner from "@/components/ui/spinner";
 import { usePayBill } from "../hooks/use-pay-bill";
 import { initiatePayment } from "../services";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 export default function PayBillForm() {
   const { profile, room, bill, loading, roomId } = usePayBill();
   const [submitting, setSubmitting] = useState(false);
@@ -37,7 +39,24 @@ export default function PayBillForm() {
 
   const goBack = () => liff.isInClient() && liff.closeWindow();
 
-  if (loading) return <Spinner text="กำลังโหลดข้อมูลการชำระเงิน..." />;
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <header className="mb-8 text-center relative flex flex-col items-center">
+          <Skeleton className="w-16 h-16 rounded-2xl mb-4" />
+          <Skeleton className="h-8 w-1/3 mb-2" />
+          <Skeleton className="h-4 w-1/4" />
+        </header>
+        <div className="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm space-y-6">
+          <div className="flex justify-center">
+            <Skeleton className="w-48 h-48 rounded-xl" />
+          </div>
+          <Skeleton className="h-6 w-3/4 mx-auto" />
+          <Skeleton className="h-12 w-full rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
   if (!room) return <PayBillNotFound onGoBack={goBack} />;
   if (done) return <PayBillSuccess onGoBack={goBack} />;
 

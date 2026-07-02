@@ -14,6 +14,7 @@ import DangerZone from "../components/danger-zone";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PaymentSummary {
   id: string;
@@ -137,7 +138,16 @@ export default function DashboardView() {
   if (loading) {
     return (
       <main className="min-h-screen bg-neutral-50 p-4">
-        <Spinner />
+        <div className="max-w-lg mx-auto space-y-6 animate-pulse">
+          <Skeleton className="h-8 w-1/3" />
+          <Skeleton className="h-12 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 gap-4">
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
+          </div>
+        </div>
       </main>
     );
   }

@@ -137,11 +137,35 @@ export const notifyRoomApi = async (roomId: string, payload: { title: string; me
   return response.data;
 };
 
-export const getUserPaymentsApi = async (lineUid: string) => {
+export const getUserPaymentsApi = async (lineUid: string, page = 1, limit = 10) => {
   const response = await axiosInstance.get<{
     success: boolean;
-    data: Payment[];
-  }>(`/api/payments/user/${lineUid}`);
+    data: {
+      data: Payment[];
+      total: number;
+      page: number;
+      totalPages: number;
+    };
+  }>(`/api/payments/user/${lineUid}?page=${page}&limit=${limit}`);
+  return response.data;
+};
+
+export const getUserSummaryApi = async (lineUid: string) => {
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: {
+      totalBilled: number;
+      totalPaid: number;
+      totalMissing: number;
+      roomStats: {
+        roomId: string;
+        roomName: string;
+        billed: number;
+        paid: number;
+        missing: number;
+      }[];
+    };
+  }>(`/api/payments/user/${lineUid}/summary`);
   return response.data;
 };
 
