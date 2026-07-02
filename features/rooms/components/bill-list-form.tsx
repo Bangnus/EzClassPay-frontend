@@ -3,21 +3,7 @@
 import { useBillList } from "../hooks/use-bill-list";
 import Spinner from "@/components/ui/spinner";
 import Button from "@/components/ui/button";
-
-const THAI_MONTHS = [
-  "ม.ค.",
-  "ก.พ.",
-  "มี.ค.",
-  "เม.ย.",
-  "พ.ค.",
-  "มิ.ย.",
-  "ก.ค.",
-  "ส.ค.",
-  "ก.ย.",
-  "ต.ค.",
-  "พ.ย.",
-  "ธ.ค.",
-];
+import { THAI_MONTHS_SHORT, toBuddhistYear } from "@/utils/date";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -80,7 +66,7 @@ export default function BillListForm() {
             const isUnpaid = bill.status === "UNPAID";
             const monthStr =
               bill.month && bill.year
-                ? `${THAI_MONTHS[bill.month - 1]} ${bill.year + 543}`
+                ? `${THAI_MONTHS_SHORT[bill.month - 1]} ${toBuddhistYear(bill.year)}`
                 : "-";
 
             return (

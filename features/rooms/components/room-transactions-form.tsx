@@ -3,22 +3,8 @@
 import { useEffect, useState } from "react";
 import { getRoomTransactions } from "@/features/rooms/services";
 import { Skeleton } from "@/components/ui/skeleton";
+import TransactionFilter from "@/features/rooms/components/transaction-filter";
 import liff from "@line/liff";
-
-const THAI_MONTHS = [
-  "มกราคม",
-  "กุมภาพันธ์",
-  "มีนาคม",
-  "เมษายน",
-  "พฤษภาคม",
-  "มิถุนายน",
-  "กรกฎาคม",
-  "สิงหาคม",
-  "กันยายน",
-  "ตุลาคม",
-  "พฤศจิกายน",
-  "ธันวาคม",
-];
 
 export default function RoomTransactionsForm() {
   const [roomId, setRoomId] = useState<string>("");
@@ -87,54 +73,31 @@ export default function RoomTransactionsForm() {
 
   return (
     <div className="space-y-6 pb-10 animate-in fade-in duration-500">
-      <header className="text-center">
-        <h1 className="text-2xl font-extrabold text-primary tracking-tight mb-2">
-          ประวัติรับ-จ่าย
-        </h1>
-        <div className="flex items-center justify-center gap-2">
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="bg-white border border-border text-text-primary rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            {THAI_MONTHS.map((m, i) => (
-              <option key={i} value={i + 1}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="bg-white border border-border text-text-primary rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
-              <option key={y} value={y}>
-                {y + 543}
-              </option>
-            ))}
-          </select>
-        </div>
-      </header>
+      <TransactionFilter
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        onMonthChange={setSelectedMonth}
+        onYearChange={setSelectedYear}
+      />
 
       {loading ? (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3">
-            <Skeleton className="col-span-2 h-32 rounded-3xl" />
-            <Skeleton className="h-24 rounded-3xl" />
-            <Skeleton className="h-24 rounded-3xl" />
+            <Skeleton className="col-span-2 h-32 rounded-xl" />
+            <Skeleton className="h-24 rounded-xl" />
+            <Skeleton className="h-24 rounded-xl" />
           </div>
           <div className="space-y-4">
-            <Skeleton className="h-20 rounded-2xl" />
-            <Skeleton className="h-20 rounded-2xl" />
-            <Skeleton className="h-20 rounded-2xl" />
+            <Skeleton className="h-20 rounded-xl" />
+            <Skeleton className="h-20 rounded-xl" />
+            <Skeleton className="h-20 rounded-xl" />
           </div>
         </div>
       ) : (
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-2 gap-3">
-            <div className={`rounded-3xl p-5 shadow-sm col-span-2 border ${summary.balance >= 0 ? "bg-white border-primary/20" : "bg-red-50 border-red-200"}`}>
+            <div className={`rounded-2xl p-5 shadow-sm col-span-2 border ${summary.balance >= 0 ? "bg-white border-primary/20" : "bg-red-50 border-red-200"}`}>
               <p className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
                 คงเหลือสุทธิ
               </p>
@@ -143,7 +106,7 @@ export default function RoomTransactionsForm() {
               </p>
             </div>
             
-            <div className="bg-green-50 rounded-3xl p-4 border border-green-100 shadow-sm">
+            <div className="bg-green-50 rounded-2xl p-4 border border-green-100 shadow-sm">
               <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">
                 รับเข้า (Income)
               </p>
@@ -152,7 +115,7 @@ export default function RoomTransactionsForm() {
               </p>
             </div>
             
-            <div className="bg-red-50 rounded-3xl p-4 border border-red-100 shadow-sm">
+            <div className="bg-red-50 rounded-2xl p-4 border border-red-100 shadow-sm">
               <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">
                 จ่ายออก (Expense)
               </p>
@@ -165,7 +128,7 @@ export default function RoomTransactionsForm() {
           {/* Transactions List */}
           <div className="space-y-3">
             {transactions.length === 0 ? (
-              <div className="bg-bg rounded-2xl p-10 text-center border border-border mt-4">
+              <div className="bg-bg rounded-xl p-10 text-center border border-border mt-4">
                 <p className="text-text-secondary">ไม่มีประวัติรับ-จ่ายในเดือนนี้</p>
               </div>
             ) : (
@@ -174,7 +137,7 @@ export default function RoomTransactionsForm() {
                 return (
                   <div
                     key={tx.id}
-                    className="bg-white border border-neutral-100 rounded-3xl p-4 shadow-sm hover:shadow-md transition-shadow flex justify-between items-center"
+                    className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex justify-between items-center"
                   >
                     <div>
                       <p className="text-xs text-text-secondary mb-1">
