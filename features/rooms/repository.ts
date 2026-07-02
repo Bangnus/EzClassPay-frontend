@@ -175,3 +175,18 @@ export const getUserBillsApi = async (userId: string) => {
   );
   return response.data;
 };
+
+export const getRoomTransactionsApi = async (roomId: string, month?: number, year?: number) => {
+  const params = new URLSearchParams();
+  if (month) params.append("month", month.toString());
+  if (year) params.append("year", year.toString());
+  
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: {
+      transactions: any[];
+      summary: { totalIncome: number; totalExpense: number; balance: number };
+    };
+  }>(`/api/rooms/${roomId}/transactions?${params.toString()}`);
+  return response.data;
+};

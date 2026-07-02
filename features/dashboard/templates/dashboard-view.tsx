@@ -358,7 +358,7 @@ function RoomManagementView({
             icon="📊"
             label="ประวัติรับ-จ่าย"
             onClick={() => {
-              const url = new URL(window.location.origin + "/history");
+              const url = new URL(window.location.origin + "/room-transactions");
               url.searchParams.set("roomId", roomId);
               window.location.href = url.toString();
             }}
