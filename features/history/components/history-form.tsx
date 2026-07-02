@@ -130,42 +130,37 @@ export default function HistoryForm() {
   return (
     <div className="space-y-6 pb-10">
       <header className="text-center">
-        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-600 tracking-tight">
+        <h1 className="text-3xl font-extrabold text-primary tracking-tight">
           สรุปยอดค่าใช้จ่ายส่วนตัว
         </h1>
-        <p className="mt-2 text-sm font-medium text-text-secondary bg-primary/5 inline-block px-4 py-1.5 rounded-full">
+        <p className="mt-2 text-text-secondary">
           รวมจากทุกห้องทั้งหมด
         </p>
       </header>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-linear-to-br from-primary to-blue-600 rounded-3xl p-6 shadow-md col-span-2 text-white relative overflow-hidden">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-          <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-black/10 rounded-full blur-xl"></div>
-          
-          <div className="relative z-10">
-            <p className="text-xs font-bold text-white/80 uppercase tracking-wider mb-1">
-              ยอดที่ถูกเรียกเก็บรวมทั้งหมด
-            </p>
-            <p className="text-4xl font-black">
-              ฿{summary.totalBilled.toLocaleString()}
-            </p>
-          </div>
+        <div className="bg-white rounded-3xl p-5 border border-neutral-100 shadow-sm col-span-2">
+          <p className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+            ยอดที่ถูกเรียกเก็บรวมทั้งหมด
+          </p>
+          <p className="text-3xl font-black text-text-primary">
+            ฿{summary.totalBilled.toLocaleString()}
+          </p>
         </div>
-        <div className="bg-linear-to-br from-green-50 to-green-100/50 rounded-3xl p-5 border border-green-200/50 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div className="bg-green-50 rounded-3xl p-4 border border-green-100 shadow-sm">
           <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">
             จ่ายไปแล้ว
           </p>
-          <p className="text-2xl font-black text-green-800">
+          <p className="text-xl font-black text-green-700">
             ฿{summary.totalPaid.toLocaleString()}
           </p>
         </div>
-        <div className="bg-linear-to-br from-red-50 to-red-100/50 rounded-3xl p-5 border border-red-200/50 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div className="bg-red-50 rounded-3xl p-4 border border-red-100 shadow-sm">
           <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">
             ยอดค้างจ่าย
           </p>
-          <p className="text-2xl font-black text-red-800">
+          <p className="text-xl font-black text-red-700">
             ฿{summary.totalMissing.toLocaleString()}
           </p>
         </div>
