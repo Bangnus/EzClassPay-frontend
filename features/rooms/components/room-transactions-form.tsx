@@ -137,19 +137,32 @@ export default function RoomTransactionsForm() {
                 return (
                   <div
                     key={tx.id}
-                    className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex justify-between items-center"
+                    className="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-center gap-3"
                   >
-                    <div>
-                      <p className="text-xs text-text-secondary mb-1">
-                        {new Date(tx.createdAt).toLocaleString("th-TH")}
-                      </p>
-                      <p className="font-bold text-text-primary text-sm truncate max-w-[160px]">
+                    {tx.user?.pictureUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={tx.user.pictureUrl}
+                        alt="profile"
+                        className="w-9 h-9 rounded-full border border-neutral-200 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        {tx.user?.displayName?.charAt(0) || "?"}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-text-primary text-sm truncate">
                         {tx.title}
                       </p>
+                      <p className="text-xs text-text-secondary mt-0.5">
+                        {tx.user?.displayName && `${tx.user.displayName} · `}
+                        {new Date(tx.createdAt).toLocaleString("th-TH")}
+                      </p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p
-                        className={`text-lg font-extrabold ${
+                        className={`text-base font-extrabold ${
                           isIncome ? "text-green-600" : "text-red-600"
                         }`}
                       >
