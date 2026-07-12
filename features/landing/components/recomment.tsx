@@ -36,22 +36,22 @@ export default function Recomment() {
   return (
     <div id="features" className="relative w-full">
       {/* Background Container */}
-      <div className="bg-primary h-[400px] w-full flex justify-center">
-        <div className="flex flex-col items-center mt-20">
-          <p className="text-[36px] font-semibold text-white mb-4">
+      <div className="bg-primary h-[400px] max-md:h-[350px] w-full flex justify-center">
+        <div className="flex flex-col items-center mt-20 max-md:mt-12 max-md:px-6 text-center">
+          <p className="text-[36px] max-md:text-[24px] font-semibold text-white mb-4 max-md:mb-2">
             ตัวช่วยที่ทำให้การเก็บเงินเป็นเรื่องง่าย
           </p>
-          <p className="text-lg text-white/90 font-normal">
+          <p className="text-lg max-md:text-sm text-white/90 font-normal">
             จัดการเงินในแก๊งเพื่อน ห้องเรียน หรือทีมของคุณได้อย่างเป็นระบบ
           </p>
-          <p className="text-lg text-white/90 font-normal">
+          <p className="text-lg max-md:text-sm text-white/90 font-normal">
             ด้วยเครื่องมือที่ใช้งานง่ายและสะดวกที่สุด
           </p>
         </div>
       </div>
 
       {/* Cards Overlapping */}
-      <div className="w-full flex justify-center gap-6 px-20 -mt-[120px] relative z-10 mb-24">
+      <div className="w-full flex max-md:flex-col justify-center gap-6 max-md:gap-4 px-20 max-md:px-6 -mt-[120px] max-md:-mt-[140px] relative z-10 mb-24 max-md:mb-12">
         {RECOMMEND_DATA.map((data, index) => (
           <RecommendCard key={index} {...data} />
         ))}
