@@ -16,7 +16,7 @@ export default function HomeView() {
       <Recomment />
       <HowIsWorks />
       <Security />
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 }

@@ -23,8 +23,7 @@ export default function Header() {
         </div>
         <p className="text-lg text-text-secondary font-normal">
           ระบบจัดการเงินกลุ่มที่มีความโปร่งใส ตรวจสอบได้ทุกยอดโอน ใช้งานง่าย
-          สะดวก และปลอดภัยสำหรับทุกคน ไม่ว่าจะทริปเที่ยว งานเลี้ยง
-          หรือเงินกองกลาง
+          สะดวก และปลอดภัยสำหรับทุกคน ใช้งานผ่าน LINE ได้ทันที ไม่ต้องโหลดแอปเพิ่ม
         </p>
 
         <div className="flex items-center gap-4 w-[380px]">
@@ -33,8 +32,10 @@ export default function Header() {
             borderRadius={20}
             padding={10}
             icon={<Plus size={17} strokeWidth={3} />}
+            href="https://line.me/R/ti/p/@ClassPay"
+            target="_blank"
           >
-            สร้างห้องเก็บเงิน
+            เพิ่มเพื่อนใน LINE
           </Button>
           <Button type="default" borderRadius={20} padding={11}>
             ดูตัวอย่างการใช้งาน

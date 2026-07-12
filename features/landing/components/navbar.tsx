@@ -49,14 +49,15 @@ export default function Navbar() {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="w-[125px]">
-            <Button type="text" borderRadius={20} padding={10}>
-              เข้าสู่ระบบ
-            </Button>
-          </div>
-          <div className="w-[155px]">
-            <Button type="primary" borderRadius={20} padding={10}>
-              สมัครสมาชิก
+          <div className="w-[180px]">
+            <Button
+              type="primary"
+              borderRadius={20}
+              padding={10}
+              href="https://line.me/R/ti/p/@ClassPay"
+              target="_blank"
+            >
+              เพิ่มเพื่อนใน LINE
             </Button>
           </div>
         </div>

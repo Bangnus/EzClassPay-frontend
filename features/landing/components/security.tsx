@@ -61,7 +61,7 @@ export default function Security() {
           <p className="text-base font-normal text-text-secondary leading-relaxed">
             เราออกแบบ EzClassPay โดยยึดความปลอดภัยของข้อมูล
             และความถูกต้องของยอดเงินเป็นอันดับแรก
-            เพื่อให้ทุกคนในห้องใช้งานได้อย่างสบายใจ
+            เพื่อให้ทุกคนใช้งานผ่าน LINE ได้อย่างสบายใจ
           </p>
         </div>
         <div className="flex flex-col gap-4">

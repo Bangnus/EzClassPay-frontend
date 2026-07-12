@@ -9,12 +9,14 @@ const Button = ({
   fontSize = 14,
   padding,
   color,
+  hoverColor,
   ...props
 }: Omit<ButtonProps, "color" | "icon" | "iconPosition"> & {
   borderRadius?: number;
   fontSize?: number;
   padding?: number | string;
   color?: string;
+  hoverColor?: string;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
 }) => {
@@ -26,6 +28,11 @@ const Button = ({
           fontSize: fontSize,
           ...(color ? { colorPrimary: color } : {}),
         },
+        components: {
+          Button: {
+            ...(hoverColor ? { colorPrimaryHover: hoverColor, colorPrimaryActive: hoverColor } : {}),
+          }
+        }
       }}
     >
       <AntButton
