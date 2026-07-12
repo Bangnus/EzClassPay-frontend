@@ -76,7 +76,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-gray-100 flex justify-center items-center">
+        <div className="mt-12 pt-6 border-t border-gray-200 flex justify-center items-center">
           <p className="text-sm text-text-secondary">
             © {new Date().getFullYear()} ClassPay. All rights reserved.
           </p>
