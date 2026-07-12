@@ -7,10 +7,10 @@ import AvatarGroup from "./avatar-group";
 
 export default function Header() {
   return (
-    <div className="flex items-center max-md:flex-col-reverse gap-10 max-md:gap-8 py-5 max-md:py-10 bg-linear-to-b from-[#FFFFFF] to-[#A7E9E5]/60 px-[80px] max-md:px-6">
+    <div className="flex items-center max-md:flex-col-reverse gap-10 max-md:gap-8 py-5 max-md:py-16 bg-linear-to-b from-[#FFFFFF] to-[#A7E9E5]/60 px-[80px] max-md:px-6">
       <div className="w-1/2 max-md:w-full flex flex-col max-md:items-center max-md:text-center gap-8 max-md:gap-6">
         <div className="flex max-md:justify-center relative">
-          <div className="text-6xl max-md:text-4xl font-semibold space-y-2">
+          <div className="text-6xl max-md:text-4xl max-md:leading-tight font-semibold space-y-2 max-md:space-y-3">
             <p>เก็บเงินง่าย</p>
             <p className="text-primary">จัดการได้ครบ</p>
             <p>จบในที่เดี่ยว</p>
@@ -18,15 +18,15 @@ export default function Header() {
           <Image
             src={rafiki}
             alt="rafiki"
-            className="object-cover w-[100px] h-[100px] max-md:w-[60px] max-md:h-[60px] -translate-y-6 max-md:-translate-y-4 max-md:-ml-4"
+            className="object-cover w-[100px] h-[100px] max-md:hidden -translate-y-6"
           />
         </div>
-        <p className="text-lg max-md:text-base text-text-secondary font-normal">
+        <p className="text-lg max-md:text-sm max-md:leading-relaxed max-md:px-2 text-text-secondary font-normal">
           ระบบจัดการเงินกลุ่มที่มีความโปร่งใส ตรวจสอบได้ทุกยอดโอน ใช้งานง่าย
           สะดวก และปลอดภัยสำหรับทุกคน ใช้งานผ่าน LINE ได้ทันที ไม่ต้องโหลดแอปเพิ่ม
         </p>
 
-        <div className="flex max-md:flex-col items-center gap-4 w-[380px] max-md:w-full [&>*]:max-md:w-full">
+        <div className="flex max-md:flex-col items-center gap-4 w-[380px] max-md:w-full [&>*]:max-md:w-full max-md:mt-2">
           <Button
             type="primary"
             borderRadius={15}
@@ -42,15 +42,15 @@ export default function Header() {
           </Button>
         </div>
 
-        <div className="flex max-md:flex-col items-center gap-2 max-md:gap-1 max-md:mt-2">
+        <div className="flex max-md:flex-col items-center gap-2 max-md:gap-2 max-md:mt-4">
           <AvatarGroup />
-          <p className="text-text-secondary text-sm font-normal">
+          <p className="text-text-secondary text-sm max-md:text-xs font-normal">
             ผู้ใช้มากกว่า 2000+ ที่ไว้วางใจ
           </p>
         </div>
       </div>
 
-      <div className="w-1/2 max-md:w-full flex justify-end max-md:justify-center">
+      <div className="w-1/2 max-md:hidden flex justify-end max-md:justify-center">
         <Image
           src={MobilePaymeent}
           alt="MobilePaymeent"
