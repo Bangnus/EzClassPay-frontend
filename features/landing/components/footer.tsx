@@ -4,10 +4,10 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-white border-t border-gray-100 mt-10">
-      <div className="mx-[80px]">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 py-12">
-          <div className="w-full md:w-1/3 space-y-4">
+    <footer className="w-full bg-white border-t border-gray-100 mt-10 max-md:mt-6">
+      <div className="mx-[80px] max-md:mx-6">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 py-12 max-md:py-8">
+          <div className="w-full md:w-1/3 space-y-4 max-md:space-y-3">
             <div className="flex items-end gap-1">
               <Image
                 src={Logo}
@@ -26,8 +26,8 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex gap-20">
-            <div className="space-y-4">
+          <div className="flex gap-20 max-md:gap-10 max-md:flex-col w-full md:w-auto">
+            <div className="space-y-4 max-md:space-y-2">
               <h3 className="font-semibold text-text-primary">เกี่ยวกับเรา</h3>
               <ul className="space-y-3 text-sm text-text-secondary">
                 <li>
@@ -48,7 +48,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 max-md:space-y-2">
               <h3 className="font-semibold text-text-primary">ติดต่อเรา / สนับสนุน</h3>
               <ul className="space-y-3 text-sm text-text-secondary">
                 <li>

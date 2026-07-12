@@ -27,12 +27,12 @@ const FAQ_DATA = [
 
 export default function FAQ() {
   return (
-    <div className="w-full px-[80px] py-20 bg-gray-50/30">
-      <div className="flex flex-col items-center mb-16 text-center">
-        <h2 className="text-4xl font-semibold mb-4">
+    <div className="w-full px-[80px] max-md:px-6 py-20 max-md:py-12 bg-gray-50/30">
+      <div className="flex flex-col items-center mb-16 max-md:mb-10 text-center">
+        <h2 className="text-4xl max-md:text-2xl font-semibold mb-4 max-md:mb-2">
           คำถามที่พบบ่อย (FAQ)
         </h2>
-        <p className="text-lg font-normal text-text-secondary">
+        <p className="text-lg max-md:text-base font-normal text-text-secondary">
           คลายทุกข้อสงสัยก่อนเริ่มใช้งาน
         </p>
       </div>

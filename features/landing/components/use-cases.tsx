@@ -23,17 +23,17 @@ const USE_CASES = [
 
 export default function UseCases() {
   return (
-    <div className="w-full px-[80px] py-20 bg-gray-50/50">
-      <div className="flex flex-col items-center mb-16 text-center">
-        <h2 className="text-4xl font-semibold mb-4">
+    <div className="w-full px-[80px] max-md:px-6 py-20 max-md:py-12 bg-gray-50/50">
+      <div className="flex flex-col items-center mb-16 max-md:mb-10 text-center">
+        <h2 className="text-4xl max-md:text-2xl font-semibold mb-4 max-md:mb-2">
           ตอบโจทย์ทุก <span className="text-primary">กลุ่ม</span> ของคุณ
         </h2>
-        <p className="text-lg font-normal text-text-secondary max-w-2xl">
+        <p className="text-lg max-md:text-base font-normal text-text-secondary max-w-2xl">
           ไม่ว่าคุณจะรวมกลุ่มกันทำกิจกรรมอะไร EzClassPay ก็พร้อมช่วยให้การจัดการเงินเป็นเรื่องง่ายสำหรับทุกคน
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="grid grid-cols-3 max-md:grid-cols-1 gap-6 max-md:gap-4 max-w-5xl mx-auto">
         {USE_CASES.map((item, index) => (
           <div
             key={index}

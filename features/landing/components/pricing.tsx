@@ -3,26 +3,26 @@ import Button from "@/components/ui/button";
 
 export default function Pricing() {
   return (
-    <div className="w-full px-[80px] py-24 bg-white">
-      <div className="flex flex-col items-center mb-16 text-center">
-        <h2 className="text-4xl font-semibold mb-4">
+    <div className="w-full px-[80px] max-md:px-6 py-24 max-md:py-12 bg-white">
+      <div className="flex flex-col items-center mb-16 max-md:mb-10 text-center">
+        <h2 className="text-4xl max-md:text-2xl font-semibold mb-4 max-md:mb-2">
           เลือกแพ็กเกจที่เหมาะกับคุณ
         </h2>
-        <p className="text-lg font-normal text-text-secondary">
+        <p className="text-lg max-md:text-base font-normal text-text-secondary">
           เริ่มต้นใช้งานฟรีสำหรับสมาชิกทุกคน และฟีเจอร์จัดเต็มสำหรับผู้จัดการห้อง
         </p>
       </div>
 
-      <div className="flex justify-center gap-8 max-w-5xl mx-auto">
+      <div className="flex max-md:flex-col justify-center gap-8 max-md:gap-6 max-w-5xl mx-auto">
         {/* Free Plan */}
-        <div className="w-1/2 rounded-3xl border-2 border-gray-200 p-10 shadow-md bg-white hover:border-gray-300 transition-colors">
-          <h3 className="text-2xl font-semibold text-text-primary mb-2">Member (สมาชิก)</h3>
+        <div className="w-1/2 max-md:w-full rounded-3xl border-2 border-gray-200 p-10 max-md:p-6 shadow-md bg-white hover:border-gray-300 transition-colors">
+          <h3 className="text-2xl max-md:text-xl font-semibold text-text-primary mb-2">Member (สมาชิก)</h3>
           <p className="text-text-secondary mb-6">สำหรับผู้ที่ต้องการเข้าร่วมห้องและโอนเงิน</p>
-          <div className="mb-8">
-            <span className="text-5xl font-bold">ฟรี</span>
-            <span className="text-text-secondary ml-2">ตลอดการใช้งาน</span>
+          <div className="mb-8 max-md:mb-6">
+            <span className="text-5xl max-md:text-4xl font-bold">ฟรี</span>
+            <span className="text-text-secondary ml-2 max-md:text-sm">ตลอดการใช้งาน</span>
           </div>
-          <ul className="divide-y divide-gray-100 mb-10">
+          <ul className="divide-y divide-gray-100 mb-10 max-md:mb-8 text-sm md:text-base">
             <li className="flex items-start gap-3 text-text-secondary py-4">
               <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
               <span>เข้าร่วมห้องเก็บเงินได้ไม่จำกัด</span>
@@ -46,17 +46,17 @@ export default function Pricing() {
         </div>
 
         {/* Manager Plan */}
-        <div className="w-1/2 rounded-3xl border-2 border-primary p-10 shadow-lg bg-primary/5 relative">
-          <div className="absolute top-0 right-10 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-medium">
+        <div className="w-1/2 max-md:w-full rounded-3xl border-2 border-primary p-10 max-md:p-6 shadow-lg bg-primary/5 relative">
+          <div className="absolute top-0 right-10 max-md:right-6 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm max-md:text-xs font-medium">
             แนะนำ
           </div>
-          <h3 className="text-2xl font-semibold text-text-primary mb-2">Manager (หัวหน้าห้อง)</h3>
+          <h3 className="text-2xl max-md:text-xl font-semibold text-text-primary mb-2">Manager (หัวหน้าห้อง)</h3>
           <p className="text-text-secondary mb-6">ฟีเจอร์ครบครันเพื่อการจัดการเงินกลุ่มที่ง่ายที่สุด</p>
-          <div className="mb-8">
-            <span className="text-5xl font-bold">฿69</span>
-            <span className="text-text-secondary ml-2">/ เดือน</span>
+          <div className="mb-8 max-md:mb-6">
+            <span className="text-5xl max-md:text-4xl font-bold">฿69</span>
+            <span className="text-text-secondary ml-2 max-md:text-sm">/ เดือน</span>
           </div>
-          <ul className="divide-y divide-gray-200/60 mb-10">
+          <ul className="divide-y divide-gray-200/60 mb-10 max-md:mb-8 text-sm md:text-base">
             <li className="flex items-start gap-3 text-text-secondary py-4">
               <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <span className="font-medium text-text-primary">ทดลองใช้ฟรี 30 วันแรก!</span>

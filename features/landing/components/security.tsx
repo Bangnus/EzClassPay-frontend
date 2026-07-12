@@ -37,8 +37,8 @@ const SECURITY_DATA = [
 
 export default function Security() {
   return (
-    <div id="security" className="w-full flex items-start justify-between px-[80px] py-16">
-      <div className="w-1/2 pr-10">
+    <div id="security" className="w-full flex items-start max-md:flex-col max-md:items-center max-md:gap-8 justify-between px-[80px] max-md:px-6 py-16 max-md:py-10">
+      <div className="w-1/2 max-md:hidden pr-10">
         <Image
           src={Undrawsetup}
           alt="Undrawsetup"
@@ -47,18 +47,18 @@ export default function Security() {
           className="w-full h-auto"
         />
       </div>
-      <div className="w-1/2 ">
-        <div className="flex items-center gap-2 mb-2">
+      <div className="w-1/2 max-md:w-full">
+        <div className="flex items-center gap-2 mb-2 max-md:justify-center">
           <Image src={Shield} alt="shield" width={25} height={25} />
           <p className="text-primary-dark font-semibold text-base">
             Trust & Security
           </p>
         </div>
-        <div className="space-y-4 mb-8">
-          <h1 className="text-4xl font-semibold">
+        <div className="space-y-4 mb-8 max-md:text-center">
+          <h1 className="text-4xl max-md:text-2xl font-semibold">
             ปลอดภัย โปร่งใส มั่นใจทุกยอดเงิน
           </h1>
-          <p className="text-base font-normal text-text-secondary leading-relaxed">
+          <p className="text-base max-md:text-sm font-normal text-text-secondary leading-relaxed">
             เราออกแบบ EzClassPay โดยยึดความปลอดภัยของข้อมูล
             และความถูกต้องของยอดเงินเป็นอันดับแรก
             เพื่อให้ทุกคนใช้งานผ่าน LINE ได้อย่างสบายใจ
