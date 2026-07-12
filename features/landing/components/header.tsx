@@ -1,11 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import MobilePaymeent from "@/public/images/Mobile payments-pana.png";
 import rafiki from "@/public/images/stars-rafiki.png";
 import Button from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import AvatarGroup from "./avatar-group";
+import useSWR from "swr";
+import { getUserSummary } from "../services";
 
 export default function Header() {
+  const { data } = useSWR("/api/users/summary", getUserSummary);
+  
+  // Default fallback to 2000+ if loading or error
+  const totalUsers = data?.data?.totalUsers;
+  const displayCount = totalUsers ? (totalUsers > 2000 ? `${totalUsers}+` : totalUsers) : "2000+";
+
   return (
     <div className="flex items-center max-md:flex-col-reverse gap-10 max-md:gap-8 py-5 max-md:py-16 bg-linear-to-b from-[#FFFFFF] to-[#A7E9E5]/60 px-[80px] max-md:px-6">
       <div className="w-1/2 max-md:w-full flex flex-col max-md:items-center max-md:text-center gap-8 max-md:gap-6">
@@ -13,7 +23,7 @@ export default function Header() {
           <div className="text-6xl max-md:text-4xl max-md:leading-tight font-semibold space-y-2 max-md:space-y-3">
             <p>เก็บเงินง่าย</p>
             <p className="text-primary">จัดการได้ครบ</p>
-            <p>จบในที่เดี่ยว</p>
+            <p>จบในที่เดี่ยว</p>  
           </div>
           <Image
             src={rafiki}
@@ -45,7 +55,7 @@ export default function Header() {
         <div className="flex max-md:flex-col items-center gap-2 max-md:gap-2 max-md:mt-4">
           <AvatarGroup />
           <p className="text-text-secondary text-sm max-md:text-xs font-normal">
-            ผู้ใช้มากกว่า 2000+ ที่ไว้วางใจ
+            ผู้ใช้มากกว่า {displayCount} ที่ไว้วางใจ
           </p>
         </div>
       </div>
