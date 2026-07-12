@@ -35,21 +35,19 @@ export default function Navbar() {
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="mx-[80px] flex justify-between items-center py-5 ">
+      <div className="mx-[80px] max-md:mx-6 flex justify-between items-center py-5 max-md:py-4">
         <div className="flex items-end gap-1">
           <Image
             src={Logo}
             alt="Logo"
-            width={40}
-            height={40}
-            className="object-cover"
+            className="w-[40px] h-[40px] max-md:w-8 max-md:h-8 object-cover"
           />
-          <h1 className="text-[20px] font-extrabold translate-y-[8px] bg-linear-to-r from-[#333333] to-[#555555] bg-clip-text text-transparent">
+          <h1 className="text-[20px] max-md:text-lg font-extrabold translate-y-[8px] max-md:translate-y-[6px] bg-linear-to-r from-[#333333] to-[#555555] bg-clip-text text-transparent">
             ClassPay
           </h1>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="w-[180px]">
+        <div className="flex items-center gap-4 max-md:gap-2">
+          <div className="w-[180px] max-md:w-[130px]">
             <Button
               type="primary"
               borderRadius={15}
@@ -57,7 +55,7 @@ export default function Navbar() {
               href="https://line.me/R/ti/p/@ClassPay"
               target="_blank"
             >
-              เพิ่มเพื่อนใน LINE
+              <span className="max-md:text-sm">เพิ่มเพื่อน</span><span className="max-md:hidden">ใน LINE</span>
             </Button>
           </div>
         </div>
