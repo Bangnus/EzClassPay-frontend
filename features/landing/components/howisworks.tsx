@@ -29,7 +29,7 @@ const STEPS_DATA = [
 
 export default function HowIsWorks() {
   return (
-    <div className="w-full px-[80px] py-16">
+    <div id="how-it-works" className="w-full px-[80px] py-16">
       <div className="flex justify-center flex-col items-center mb-16">
         <h1 className="text-4xl font-semibold mb-4">
           <span className="text-primary">วิธีการใช้งาน</span>{" "}

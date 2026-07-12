@@ -34,7 +34,7 @@ const RECOMMEND_DATA = [
 
 export default function Recomment() {
   return (
-    <div className="relative w-full">
+    <div id="features" className="relative w-full">
       {/* Background Container */}
       <div className="bg-primary h-[400px] w-full flex justify-center">
         <div className="flex flex-col items-center mt-20">

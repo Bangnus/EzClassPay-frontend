@@ -31,17 +31,17 @@ export default function Footer() {
               <h3 className="font-semibold text-text-primary">เกี่ยวกับเรา</h3>
               <ul className="space-y-3 text-sm text-text-secondary">
                 <li>
-                  <Link href="#" className="hover:text-primary transition-colors">
+                  <Link href="/#how-it-works" className="hover:text-primary transition-colors">
                     วิธีการใช้งาน
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary transition-colors">
+                  <Link href="/#features" className="hover:text-primary transition-colors">
                     ฟีเจอร์เด่น
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary transition-colors">
+                  <Link href="/#security" className="hover:text-primary transition-colors">
                     ความปลอดภัย
                   </Link>
                 </li>
@@ -52,22 +52,22 @@ export default function Footer() {
               <h3 className="font-semibold text-text-primary">ติดต่อเรา / สนับสนุน</h3>
               <ul className="space-y-3 text-sm text-text-secondary">
                 <li>
-                  <Link href="#" className="hover:text-[#00B900] transition-colors">
+                  <Link href="https://line.me/R/ti/p/@ClassPay" target="_blank" className="hover:text-[#00B900] transition-colors">
                     LINE Official: @ClassPay
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary transition-colors">
+                  <Link href="/help" className="hover:text-primary transition-colors">
                     ศูนย์ช่วยเหลือ (Help Center)
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary transition-colors">
+                  <Link href="/terms" className="hover:text-primary transition-colors">
                     ข้อตกลงการใช้งาน (Terms)
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary transition-colors">
+                  <Link href="/privacy" className="hover:text-primary transition-colors">
                     นโยบายความเป็นส่วนตัว (Privacy)
                   </Link>
                 </li>

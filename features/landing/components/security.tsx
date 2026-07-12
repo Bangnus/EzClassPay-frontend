@@ -37,7 +37,7 @@ const SECURITY_DATA = [
 
 export default function Security() {
   return (
-    <div className="w-full flex items-start justify-between px-[80px] py-16">
+    <div id="security" className="w-full flex items-start justify-between px-[80px] py-16">
       <div className="w-1/2 pr-10">
         <Image
           src={Undrawsetup}
