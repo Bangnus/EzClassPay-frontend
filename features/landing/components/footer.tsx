@@ -5,8 +5,8 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="w-full bg-white border-t border-gray-100 mt-10">
-      <div className="mx-[80px] py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+      <div className="mx-[80px]">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 py-12">
           <div className="w-full md:w-1/3 space-y-4">
             <div className="flex items-end gap-1">
               <Image
@@ -76,7 +76,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-gray-200 flex justify-center items-center">
+        <div className="pb-4 pt-6 border-t border-gray-200 flex justify-center items-center">
           <p className="text-sm text-text-secondary">
             © {new Date().getFullYear()} ClassPay. All rights reserved.
           </p>

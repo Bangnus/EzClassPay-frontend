@@ -75,7 +75,7 @@ export default function Pricing() {
             </li>
             <li className="flex items-start gap-3 text-text-secondary py-4">
               <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <span>ระบบตรวจสอบสลิปอัตโนมัติ</span>
+              <span>ตรวจสอบและอนุมัติสลิปด้วยตนเอง</span>
             </li>
             <li className="flex items-start gap-3 text-text-secondary py-4">
               <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
