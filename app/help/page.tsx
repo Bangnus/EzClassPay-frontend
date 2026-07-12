@@ -22,7 +22,7 @@ export default function HelpCenter() {
               เจ้าหน้าที่จะคอยตอบคำถามและช่วยเหลือคุณในวันจันทร์ - ศุกร์ เวลา 09.00 - 18.00 น.
             </p>
             <div className="mt-8 w-[250px]">
-              <Button type="primary" href="https://line.me/R/ti/p/@ClassPay" target="_blank" padding={12} borderRadius={20}>
+              <Button type="primary" href="https://line.me/R/ti/p/@EzClassPay" target="_blank" padding={12} borderRadius={20}>
                 ติดต่อเราผ่าน LINE
               </Button>
             </div>

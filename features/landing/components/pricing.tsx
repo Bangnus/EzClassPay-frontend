@@ -40,7 +40,7 @@ export default function Pricing() {
               <span>รับการแจ้งเตือนเมื่อมีการอัปเดต</span>
             </li>
           </ul>
-          <Button type="default" padding={12} href="https://line.me/R/ti/p/@ClassPay" target="_blank">
+          <Button type="default" padding={12} href="https://line.me/R/ti/p/@EzClassPay" target="_blank">
             เริ่มใช้งานฟรี
           </Button>
         </div>
@@ -82,7 +82,7 @@ export default function Pricing() {
               <span>จัดการสมาชิกและยอดเงินแบบเรียลไทม์</span>
             </li>
           </ul>
-          <Button type="primary" padding={12} href="https://line.me/R/ti/p/@ClassPay" target="_blank">
+          <Button type="primary" padding={12} href="https://line.me/R/ti/p/@EzClassPay" target="_blank">
             ทดลองใช้ฟรี 30 วัน
           </Button>
         </div>

@@ -20,10 +20,10 @@ export default function CTA() {
             type="default"
             padding={14}
             borderRadius={30}
-            href="https://line.me/R/ti/p/@ClassPay"
+            href="https://line.me/R/ti/p/@EzClassPay"
             target="_blank"
           >
-            <span className="text-primary text-lg">เพิ่มเพื่อน @ClassPay ใน LINE เลย</span>
+            <span className="text-primary text-lg">เพิ่มเพื่อน @EzClassPay ใน LINE เลย</span>
           </Button>
         </div>
       </div>

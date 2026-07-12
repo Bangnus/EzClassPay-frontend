@@ -52,7 +52,7 @@ export default function Navbar() {
               type="primary"
               borderRadius={15}
               padding={13}
-              href="https://line.me/R/ti/p/@ClassPay"
+              href="https://line.me/R/ti/p/@EzClassPay"
               target="_blank"
             >
               <span className="max-md:text-sm">เพิ่มเพื่อน</span><span className="max-md:hidden">ใน LINE</span>
