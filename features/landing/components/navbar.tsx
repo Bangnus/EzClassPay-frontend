@@ -52,8 +52,8 @@ export default function Navbar() {
           <div className="w-[180px]">
             <Button
               type="primary"
-              borderRadius={20}
-              padding={10}
+              borderRadius={15}
+              padding={13}
               href="https://line.me/R/ti/p/@ClassPay"
               target="_blank"
             >

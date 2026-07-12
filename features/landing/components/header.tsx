@@ -29,15 +29,15 @@ export default function Header() {
         <div className="flex items-center gap-4 w-[380px]">
           <Button
             type="primary"
-            borderRadius={20}
-            padding={10}
+            borderRadius={15}
+            padding={13}
             icon={<Plus size={17} strokeWidth={3} />}
             href="https://line.me/R/ti/p/@ClassPay"
             target="_blank"
           >
             เพิ่มเพื่อนใน LINE
           </Button>
-          <Button type="default" borderRadius={20} padding={11}>
+          <Button type="default" borderRadius={15} padding={13}>
             ดูตัวอย่างการใช้งาน
           </Button>
         </div>
