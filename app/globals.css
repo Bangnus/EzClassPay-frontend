@@ -8,7 +8,7 @@
   --ecp-border: #e0e0e0;
   --ecp-text-primary: #333333;
   --ecp-text-secondary: #7d7d7d;
-  --ecp-bg: #f2f2f7;
+  --ecp-bg: #fafafa;
   --background: var(--ecp-bg);
   --foreground: var(--ecp-text-primary);
 }

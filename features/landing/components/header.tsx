@@ -42,7 +42,7 @@ export default function Header() {
             borderRadius={15}
             padding={13}
             icon={<Plus size={17} strokeWidth={3} />}
-            href="https://line.me/R/ti/p/@EzClassPay"
+            href="https://line.me/R/ti/p/@640skksf"
             target="_blank"
           >
             เพิ่มเพื่อนใน LINE

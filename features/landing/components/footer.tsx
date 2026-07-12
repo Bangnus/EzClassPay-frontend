@@ -52,8 +52,8 @@ export default function Footer() {
               <h3 className="font-semibold text-text-primary">ติดต่อเรา / สนับสนุน</h3>
               <ul className="space-y-3 text-sm text-text-secondary">
                 <li>
-                  <Link href="https://line.me/R/ti/p/@EzClassPay" target="_blank" className="hover:text-[#00B900] transition-colors">
-                    LINE Official: @EzClassPay
+                  <Link href="https://line.me/R/ti/p/@640skksf" target="_blank" className="hover:text-[#00B900] transition-colors">
+                    LINE Official: @640skksf
                   </Link>
                 </li>
                 <li>
